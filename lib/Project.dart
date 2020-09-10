@@ -20,7 +20,7 @@ class Project {
       this.manager, this.observers,this.members,this.company, this.attachments,);
 
   getName(){
-    return name;
+    return id;
   }
 
   @override

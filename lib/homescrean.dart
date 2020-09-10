@@ -4,8 +4,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'timeSheet.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Project.dart';
+import 'profile.dart';
+import 'Task.dart';
 
 class Home extends StatefulWidget {
   final Widget child;
@@ -15,16 +17,61 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Project> projects = new List<Project>();
 
-  Future<String> fetchProjects() async {
+  List<Tasking> taskings = new List<Tasking>();
+
+
+  Future<String> fetchTaskings() async {
+    SharedPreferences prefs =
+    await SharedPreferences.getInstance();
+
+    String stringValue = prefs.getString('token');
+
     final response = await http.get(
-        'https://app.idolconsulting.co.za/idols/projects/all',
-        headers: {"Accept": "application/json"});
+        'https://app.idolconsulting.co.za/idols/tasks/all',
+
+        headers: {"Accept": "application/json",
+          "X_TOKEN": "$stringValue",
+        });
 
     if (response.statusCode == 200) {
       setState(() {
+
         var data = json.decode((response.body));
+        print(response.body);
+        for (int x = 0; x < data.length; x++) {
+          var tasking = new Tasking(
+              data[x]['id'],
+              data[x]['createDate'],
+              data[x]['dueDate'],
+              data[x]['description'],
+              data[x]['status'],
+              data[x]['profilePicture']);
+          taskings.add(tasking);
+        }
+      });
+    }
+  }
+  List<Project> projects = new List<Project>();
+
+  Future<String> fetchProjects() async {
+    SharedPreferences prefs =
+        await SharedPreferences.getInstance();
+
+    String stringValue = prefs.getString('token');
+
+    final response = await http.get(
+        'https://app.idolconsulting.co.za/idols/projects/all',
+
+        headers: {"Accept": "application/json",
+                  "X_TOKEN": "$stringValue",
+        });
+
+    if (response.statusCode == 200) {
+      setState(() {
+
+        var data = json.decode((response.body));
+        print(response.body);
         for (int x = 0; x < data.length; x++) {
           var project = new Project(
               data[x]['name'],
@@ -94,6 +141,7 @@ class _HomeState extends State<Home> {
     _seriesPieData = List<charts.Series<Task, String>>();
     _generateData();
     this.fetchProjects();
+    this.fetchTaskings();
   }
 
   @override
@@ -285,7 +333,7 @@ class _HomeState extends State<Home> {
                         width: 500,
                         child: SizedBox(
                           child: ListView.builder(
-                            itemCount: projects == null ? 0 : projects.length,
+                            itemCount: taskings == null ? 0 : taskings.length,
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
                             itemBuilder: (BuildContext context, int index) {
@@ -322,8 +370,8 @@ class _HomeState extends State<Home> {
                                             ],
                                             rows: [
                                               DataRow(cells: [
-                                                DataCell(Text('Created Date')),
-                                                DataCell(Text('Due Date')),
+                                                DataCell(Text(taskings.elementAt(index).createDate)),
+                                                DataCell(Text(taskings.elementAt(index).dueDate)),
                                                 DataCell(Text('Task Age')),
                                               ])
                                             ],
@@ -341,7 +389,7 @@ class _HomeState extends State<Home> {
                                               borderRadius:
                                                   BorderRadius.circular(20.0)),
                                           child: Text(
-                                              projects.elementAt(index).status),
+                                              taskings.elementAt(index).status),
                                         ),
                                       ),
                                     ],
@@ -373,16 +421,20 @@ class DrawerCodeOnly extends StatelessWidget {
           UserAccountsDrawerHeader(
             accountName: Text("accountName"),
             accountEmail: Text("accountPosition & Task"),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor:
-                  Theme.of(context).platform == TargetPlatform.android
-                      ? Colors.white
-                      : Colors.white,
-              child: Image.asset(
-                'images/logo1.png',
-                width: 50,
-                height: 100,
-              ),
+            currentAccountPicture: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                       builder: (context) => new Profile()
+                    ));
+              },
+              child: CircleAvatar(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.green,
+                              child: Image.asset('images/logo1.png'),
+                            ),
             ),
             decoration: BoxDecoration(
                 image: DecorationImage(
