@@ -111,7 +111,7 @@ Widget _ImageView(){
                     radius: 50,
                     backgroundImage: AssetImage("images/logo1.png"),
                   ),
-                    Text("* Required field",textAlign: TextAlign.right),
+                   // Text("* Required field",textAlign: TextAlign.right),
                    ],
                 ),
               ),
