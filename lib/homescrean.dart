@@ -9,6 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Project.dart';
 import 'profile.dart';
 import 'Task.dart';
+import 'projecttask.dart';
+import 'Taskdetails.dart';
+
 
 class Home extends StatefulWidget {
   final Widget child;
@@ -20,26 +23,32 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   List<Tasking> taskings = new List<Tasking>();
-
+  String name;
 
   Future<String> fetchTaskings() async {
     SharedPreferences prefs =
-    await SharedPreferences.getInstance();
+   await SharedPreferences.getInstance();
 
-    String stringValue = prefs.getString('token');
+    String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
-        'https://app.idolconsulting.co.za/idols/tasks/all',
+        //'https://app.idolconsulting.co.za/idols/tasks/all',
+        'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate?keyword=',
 
         headers: {"Accept": "application/json",
-          "X_TOKEN": "$stringValue",
+          "X_TOKEN": stringValue,
         });
 
-    if (response.statusCode == 200) {
-      setState(() {
+    var data;
 
-        var data = json.decode((response.body));
-        print(response.body);
+    if (response.statusCode == 200) {
+
+      setState(() {
+        //print('Token ' + stringValue);
+        data = json.decode((response.body));
+        //String firstName=response.toString();
+       // print('The full data is ' + firstName);
+
         for (int x = 0; x < data.length; x++) {
           var tasking = new Tasking(
               data[x]['id'],
@@ -59,24 +68,29 @@ class _HomeState extends State<Home> {
     SharedPreferences prefs =
         await SharedPreferences.getInstance();
 
-    String stringValue = prefs.getString('token');
+    String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
         'https://app.idolconsulting.co.za/idols/projects/all',
 
         headers: {"Accept": "application/json",
-                  "X_TOKEN": "$stringValue",
+                  "X_TOKEN": stringValue,
         });
 
     if (response.statusCode == 200) {
       setState(() {
+        print('Token ' + stringValue);
+
 
         var data = json.decode((response.body));
-        print(response.body);
+
+      // print(response.body);
+
+       // print(response.body);
         for (int x = 0; x < data.length; x++) {
           var project = new Project(
               data[x]['name'],
-              data[x]['id'],
+              data[x]['name'],
               data[x]['createDate'],
               data[x]['endDate'],
               data[x]['description'],
@@ -88,7 +102,8 @@ class _HomeState extends State<Home> {
               data[x]['observers'],
               data[x]['members'],
               data[x]['company'],
-              data[x]['attachments']);
+              data[x]['attachments']
+          );
           projects.add(project);
         }
       });
@@ -248,7 +263,16 @@ class _HomeState extends State<Home> {
                                         charts.ArcLabelPosition.inside)
                               ])),
                     ),
-                    Card(
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                                builder: (context) => new ProjectTask()
+                            ));
+                      },
+                    child: Card(
                       elevation: 2,
                       child: Container(
                         height: 100,
@@ -284,6 +308,7 @@ class _HomeState extends State<Home> {
                           ),
                         ),
                       ),
+                    ),
                     ),
                   ]),
                 ),
@@ -327,7 +352,16 @@ class _HomeState extends State<Home> {
                                         charts.ArcLabelPosition.inside)
                               ])),
                     ),
-                    Card(
+                  GestureDetector(
+                      onTap: (){
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                                builder: (context) => new TaskDetails()
+                            ));
+                      },
+                    child: Card(
                       elevation: 5.0,
                       child: Container(
                         height: 100,
@@ -365,7 +399,7 @@ class _HomeState extends State<Home> {
                                           ),
                                           DataTable(
                                             columns: [
-                                              DataColumn(label: Text('Task')),
+                                              DataColumn(label: Text(name)),
                                               DataColumn(label: Text('')),
                                               DataColumn(label: Text('')),
                                             ],
@@ -402,6 +436,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
+                  ),
                   ]),
                 ),
               ),
@@ -449,7 +484,7 @@ class DrawerCodeOnly extends StatelessWidget {
               Navigator.push(
                   context,
                   new MaterialPageRoute(
-                      // builder: (context) => new CreatingUsers()
+                      builder: (context) => new Home()
                       ));
             },
           ),
@@ -655,7 +690,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
           if (isDropdownOpened) {
             floatingDropdown.remove();
           } else {
-            print("zzzaa");
+           // print("zzzaa");
             findDropdownData();
 
             floatingDropdown = _createFloatingDropdown();

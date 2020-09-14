@@ -34,7 +34,7 @@ class _Login extends State<LoginBody> {
         child: ListView(
           children: <Widget>[
             Container(
-              height: 300,
+              height: 200,
               decoration: BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage('images/logo1.png'),
@@ -131,8 +131,17 @@ class _Login extends State<LoginBody> {
                             if (response.statusCode == 200) {
                               message = "login success";
 
+                              loginMessage = json.decode(response.body);
+                              String nn=loginMessage['token'];
+
+                              SharedPreferences pref=await SharedPreferences.getInstance();
+                              pref.setString('userToken',nn);
+
                               setState(() {
-                                loginMessage = json.decode(response.body);
+
+                               // print('The Token is' + loginMessage['token']);
+
+                               // print(' Logged in user ' +pref.getString('userToken'));
 
                                 //If the authentication is successful switch to the home page
                                 Navigator.push(

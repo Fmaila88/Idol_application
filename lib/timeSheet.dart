@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'timesheetClass.dart';
+import 'homescrean.dart';
 
 //Future<Timesheet> TimesheetSendData(String comment, String end, String endTime,
 //    String start, String startTime) async {
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
       title: 'TimeSheet Details',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
@@ -135,6 +137,7 @@ class _HomepageState extends State<Homepage> {
 
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: DrawerCodeOnly(),
       appBar: AppBar(
         title: Text("TimeSheet Details"),
         backgroundColor: Colors.blueGrey,
@@ -399,6 +402,7 @@ class _homeScreenState extends State<homeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: DrawerCodeOnly(),
       appBar: AppBar(
         title: Text("Time Sheets"),
         backgroundColor: Colors.blueGrey,
