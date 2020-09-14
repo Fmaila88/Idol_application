@@ -99,8 +99,8 @@ Widget _ImageView(){
           SizedBox(width: 50),
 //          Icon(LineAwesomeIcons.arrow_left,size: ScreenUtil().setSp(300)
 //          ),
-          Expanded(
-            child: Column(
+          //Expanded(
+             Column(
               children: <Widget>[
               Container(
                 //height: 50,
@@ -134,7 +134,7 @@ Widget _ImageView(){
                 ))
                ],
             ),
-          ),
+         // ),
 //          Icon(LineAwesomeIcons.sun,size: ScreenUtil().setSp(300)
 //          ),
           SizedBox(width: 20),
