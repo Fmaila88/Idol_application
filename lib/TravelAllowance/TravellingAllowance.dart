@@ -26,7 +26,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
         for(int x = 0; x<data.length; x++){
           var project = new EmployeeData(
             //change name to user when login issue is fixed
-              data[x]['id'].toString(),
+              data[x]['name'].toString(),
               data[x]['user'].toString(),
               data[x]['startKm'].toString(),
               data[x]['endKm'].toString(),
@@ -163,15 +163,41 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                             DataRow(cells: [
                               DataCell(Text(
                                   employee_allowance.elementAt(index).user
-                              )),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => Apply()),
+                                );
+                              }),
                               DataCell(Text(
                                   employee_allowance.elementAt(index).startKm
-                              )),
+                              ),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => Apply()),
+                                    );
+                                  }
+                              ),
                               DataCell(Text(
                                   employee_allowance.elementAt(index).endKm
-                      )),
+                      ),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => Apply()),
+                                    );
+                                  }),
                               DataCell(Text(
-                                  employee_allowance.elementAt(index).travelDate)),
+                                  employee_allowance.elementAt(index).travelDate),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => Apply()),
+                                    );
+                                  }
+                              ),
                             ])],
                         ),);
                     },),
