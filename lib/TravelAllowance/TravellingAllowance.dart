@@ -16,7 +16,6 @@ class TravelAllowance extends StatefulWidget {
 class _TravelAllowanceState extends State<TravelAllowance> {
 
   List<EmployeeData> employee_allowance = new List<EmployeeData>();
-
   final DateFormat dateformat = DateFormat('MM/YYYY');
 
   Future<EmployeeData> fetchEmployData() async{
@@ -54,7 +53,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.green[50],
       appBar: AppBar(
         title: Text(
           'Travel Allowance',
@@ -115,104 +114,105 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                     ),
                   )),
             ),
-            Container(
-              padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-              child: Column(
-                children: <Widget> [
-                  Container(
-                    height: 54,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        prefixIcon: Icon(
-                          Icons.search,
-                        ),
-                        border: OutlineInputBorder(),
-                      ),
-                      onTap: () {
-                        //_selectDate(context);
-                      },
-                      //keyboardType: TextInputType.multiline,
-                    ),
-                  ),
-                ],
-              ),
-            ),
            // bodyDate(),
-            Card(
-              elevation:2,
-              child: Container(
-                height: 100,
-                width: 500,
-                child:SizedBox(
-                  child:  ListView.builder(
-                    itemCount: employee_allowance==null ? 0:employee_allowance.length,
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context,int index) {
+            Container(
+              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+              child: Card(
+                elevation:2,
+                child: Column(
+                  children: [
+                    Container(
+                      height: 54,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          prefixIcon: Icon(
+                            Icons.search,
+                          ),
+                          border: OutlineInputBorder(),
+                        ),
+                        onTap: () {
+                          //_selectDate(context);
+                        },
+                        //keyboardType: TextInputType.multiline,
+                      ),
+                    ),
+                    Container(
+                      height: 100,
+                      width: 500,
+                      child:SizedBox(
+                        child:  ListView.builder(
+                          itemCount: employee_allowance==null ? 0:employee_allowance.length,
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context,int index) {
 
-                      return Container(
-                        child:DataTable(
-                          columns: [
-                            DataColumn(label: Text('Name')),
-                            DataColumn(label: Text('Start Km')),
-                            DataColumn(label: Text('End Km')),
-                            DataColumn(label: Text('Travel Date')),
-                            DataColumn(label: Text('')),
-                          ],
-                          rows: [
-                            DataRow(cells: [
-                              DataCell(Text(employee_allowance.elementAt(index).user)),
-                              DataCell(Text(employee_allowance.elementAt(index).startKm)),
-                              DataCell(Text(employee_allowance.elementAt(index).endKm)),
-                              DataCell(Text((employee_allowance.elementAt(index)
-                                  .convertDateFromString()) ??
-                                  employee_allowance)),
-                              DataCell(
-                                Container(
-                                  child: Row(
-                                    children: [
-                                      FlatButton.icon(
-                                        onPressed: () {},
-                                        icon: Icon(
-                                          Icons.thumb_up,
-                                          size: 15,
-                                          color: Colors.white,
-                                        ),
-                                        color: Colors.green,
-                                        label: Text(
-                                          'Approve',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 17),
-                                        ),
-                                      ),
-                                      FlatButton.icon(
-                                        onPressed: () {},
-                                        icon: Icon(
-                                          Icons.thumb_down,
-                                          size: 15,
-                                          color: Colors.white,
-                                        ),
-                                        color: Colors.red[500],
-                                        label: Text(
-                                          'Decline',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: 17),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                )
-                              ),
-                            ])],
-                        ),);
-                    },),
-                ),),
-            ),
+                            return Container(
+                              child:DataTable(
+                                columns: [
+                                  DataColumn(label: Text('Name')),
+                                  DataColumn(label: Text('Start Km')),
+                                  DataColumn(label: Text('End Km')),
+                                  DataColumn(label: Text('Travel Date')),
+                                  DataColumn(label: Text('')),
+                                ],
+                                rows: [
+                                  DataRow(cells: [
+                                    DataCell(Text(employee_allowance.elementAt(index).user)),
+                                    DataCell(Text(employee_allowance.elementAt(index).startKm)),
+                                    DataCell(Text(employee_allowance.elementAt(index).endKm)),
+                                    DataCell(Text((employee_allowance.elementAt(index)
+                                        .convertDateFromString()) ??
+                                        employee_allowance)),
+                                    DataCell(
+                                        Container(
+                                            child: Row(
+                                              children: [
+                                                FlatButton.icon(
+                                                  onPressed: () {},
+                                                  icon: Icon(
+                                                    Icons.thumb_up,
+                                                    size: 15,
+                                                    color: Colors.white,
+                                                  ),
+                                                  color: Colors.green,
+                                                  label: Text(
+                                                    'Approve',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight: FontWeight.w400,
+                                                        fontSize: 17),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 5),
+                                                FlatButton.icon(
+                                                  onPressed: () {},
+                                                  icon: Icon(
+                                                    Icons.thumb_down,
+                                                    size: 15,
+                                                    color: Colors.white,
+                                                  ),
+                                                  color: Colors.red[500],
+                                                  label: Text(
+                                                    'Decline',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight: FontWeight.w400,
+                                                        fontSize: 17),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                        )
+                                    ),
+                                  ])],
+                              ),);
+                          },),
+                      ),),
+                  ],
+                )
+              ),
+            )
           ],
         ),
       )
