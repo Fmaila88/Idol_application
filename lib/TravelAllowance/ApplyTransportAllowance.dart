@@ -25,31 +25,10 @@ class _ApplyState extends State<Apply> {
   String emplyeeName;
   var items;
 
-  //Integrating the API with flutter.
-  //Fetching first name and last name of user
-  Future<User> fetchEmployData() async{
-    final response = await http.get ('https://app.idolconsulting.co.za/idols/users/all',
-        headers: {"Accept": "application/json"});
-    if(response.statusCode == 200){
-      setState(() {
-        var data = json.decode((response.body));
-        for(int x = 0; x<data.length; x++){
-          var project = new User(
-              data[x]['firstName'],
-              data[x]['lastName'],
-          );
-          employeeList.add(project);
-        }
-      });
-    }
-  }
-
 @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchEmployData();
-
     }
 
   @override
@@ -83,44 +62,6 @@ class _ApplyState extends State<Apply> {
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
-                  child: Text(
-                    'Employee:',
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black12)),
-                  margin: const EdgeInsets.all(11),
-                  alignment: Alignment.topCenter,
-
-                  child: DropdownButton <User>(
-                    hint: Text('Select your Name'),
-                    elevation: 5,
-                    icon: Icon(Icons.arrow_drop_down),
-                    iconSize: 36,
-                   // isExpanded: true,
-                    items: employeeList.map((User employeeName) {
-                      return DropdownMenuItem<User>(
-                        value: employeeName,
-                        child: Text("$employeeName"),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        this.items = value;
-                      });
-                    },
-                    value: items,
                   ),
                 ),
                 Container(

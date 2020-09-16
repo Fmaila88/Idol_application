@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:date_format/date_format.dart';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +16,8 @@ class TravelAllowance extends StatefulWidget {
 class _TravelAllowanceState extends State<TravelAllowance> {
 
   List<EmployeeData> employee_allowance = new List<EmployeeData>();
+
+  final DateFormat dateformat = DateFormat('MM/YYYY');
 
   Future<EmployeeData> fetchEmployData() async{
 
@@ -150,53 +154,59 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                       return Container(
                         child:DataTable(
                           columns: [
-                            DataColumn(
-                                label: Text('Name')),
-                            DataColumn(label: Text(
-                                'Start Km')),
-                            DataColumn(label: Text(
-                                'End Km')),
-                            DataColumn(label: Text(
-                                'Travel Date')),
+                            DataColumn(label: Text('Name')),
+                            DataColumn(label: Text('Start Km')),
+                            DataColumn(label: Text('End Km')),
+                            DataColumn(label: Text('Travel Date')),
+                            DataColumn(label: Text('')),
                           ],
                           rows: [
                             DataRow(cells: [
-                              DataCell(Text(
-                                  employee_allowance.elementAt(index).user
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => Apply()),
-                                );
-                              }),
-                              DataCell(Text(
-                                  employee_allowance.elementAt(index).startKm
-                              ),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => Apply()),
-                                    );
-                                  }
-                              ),
-                              DataCell(Text(
-                                  employee_allowance.elementAt(index).endKm
-                      ),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => Apply()),
-                                    );
-                                  }),
-                              DataCell(Text(
-                                  employee_allowance.elementAt(index).travelDate),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => Apply()),
-                                    );
-                                  }
+                              DataCell(Text(employee_allowance.elementAt(index).user)),
+                              DataCell(Text(employee_allowance.elementAt(index).startKm)),
+                              DataCell(Text(employee_allowance.elementAt(index).endKm)),
+                              DataCell(Text((employee_allowance.elementAt(index)
+                                  .convertDateFromString()) ??
+                                  employee_allowance)),
+                              DataCell(
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      FlatButton.icon(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.thumb_up,
+                                          size: 15,
+                                          color: Colors.white,
+                                        ),
+                                        color: Colors.green,
+                                        label: Text(
+                                          'Approve',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 17),
+                                        ),
+                                      ),
+                                      FlatButton.icon(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.thumb_down,
+                                          size: 15,
+                                          color: Colors.white,
+                                        ),
+                                        color: Colors.red[500],
+                                        label: Text(
+                                          'Decline',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 17),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                )
                               ),
                             ])],
                         ),);
