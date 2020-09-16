@@ -42,7 +42,7 @@ class _TaskDetailsState extends State<TaskDetails> {
                               children: <Widget>[
                                 //from here
                                 Container(
-                                  padding: EdgeInsets.fromLTRB(0, 5, 200, 0),
+                                  padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
 //                            padding: EdgeInsets.symmetric(
 //                                horizontal: 90.0, vertical: 0),
                                   decoration: BoxDecoration(
@@ -56,29 +56,55 @@ class _TaskDetailsState extends State<TaskDetails> {
                                         )
                                       ]),
                                   //copy here
-                                  child: Column(
+                                  child:Row(
                                     children: <Widget>[
-                                      Padding(padding: EdgeInsets.fromLTRB(50, 0, 200, 0)),
+                                     // Padding(padding: EdgeInsets.fromLTRB(50, 0, 200, 0)),
                                   Padding(padding: EdgeInsets.symmetric(
-                                      horizontal: 90.0, vertical:0)),
-                                      Container(
-                                        child: FlatButton(
-                                          onPressed: () {},
-                                          color: Colors.orange,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                              BorderRadius.circular(20.0)),
-                                          child: Text('New'),
+                                      horizontal: 0.0, vertical:0)),
+                                      Expanded(
+                                        child: Container(
+                                          child: FlatButton(
+                                            onPressed: () {},
+                                            color: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(20.0)),
+                                            child: Text('New'),
+                                          ),
                                         ),
                                       ),
-                                      Container(
+                                      Expanded(
                                         child: FlatButton(
                                           onPressed: () {},
-                                          color: Colors.orange,
+                                          color: Colors.white,
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
                                               BorderRadius.circular(20.0)),
-                                          child: Text('New'),
+                                          child: Text('Progres'),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          child: FlatButton(
+                                            onPressed: () {},
+                                            color: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(20.0)),
+                                            child: Text('Done'),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          child: FlatButton(
+                                            onPressed: () {},
+                                            color: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                BorderRadius.circular(20.0)),
+                                            child: Text('Escalat'),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -94,11 +120,27 @@ class _TaskDetailsState extends State<TaskDetails> {
                                 ),
                                 SizedBox(height: 25.0),
                                 Container(
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                        border: OutlineInputBorder()),
-                                    // controller: emailController,
-                                  ),
+                                  padding:EdgeInsets.fromLTRB(100, 10, 100, 0),
+                                  child:new Row(
+                                    children: <Widget>[
+                                      Padding(padding: const EdgeInsets.all(11.0),
+                                        child: Text('Task Title *',
+                                          style: TextStyle(
+                                            fontSize: 15.0,
+                                          )
+                                          ,),
+                                      ),
+                                      new Flexible(
+                                        child: TextFormField(
+//                                          validator: (value)  => value.isEmpty
+//                                              ? 'User name is required' : null,
+//                                          onChanged: (value){
+//                                            //this.email = value;
+//                                          },
+                                          decoration: InputDecoration(
+                                              border: OutlineInputBorder()),
+                                        ),),
+                                    ],),
                                 ),
                                 SizedBox(height: 25.0),
                                 Container(

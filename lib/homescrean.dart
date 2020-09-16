@@ -22,7 +22,11 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   List<Tasking> taskings = new List<Tasking>();
-  String name;
+ // String name;
+  Map<String,dynamic> data;
+  Map<String, dynamic> data2;
+
+
 
   Future<String> fetchTaskings() async {
     SharedPreferences prefs =
@@ -30,34 +34,45 @@ class _HomeState extends State<Home> {
 
     String stringValue = prefs.getString('userToken');
 
+
+
+
     final response = await http.get(
         //'https://app.idolconsulting.co.za/idols/tasks/all',
-        'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate?keyword=',
+        'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/tasks?keyword=tasks',
 
         headers: {"Accept": "application/json",
           "X_TOKEN": stringValue,
         });
 
-    var data;
 
     if (response.statusCode == 200) {
 
       setState(() {
         //print('Token ' + stringValue);
-        data = json.decode((response.body));
-        //String firstName=response.toString();
-       // print('The full data is ' + firstName);
+        data = json.decode(response.body);
 
-        for (int x = 0; x < data.length; x++) {
-          var tasking = new Tasking(
-              data[x]['id'],
-              data[x]['createDate'],
-              data[x]['dueDate'],
-              data[x]['description'],
-              data[x]['status'],
-              data[x]['profilePicture']);
-          taskings.add(tasking);
-        }
+        //String firstName=response.toString();
+        print(response.body);
+
+//              data['id'];
+//              data['createDate'];
+//              data['dueDate'];
+//              data['description'];
+//              data['status'];
+//              data['profilePicture'];
+
+
+//        for (int x = 0; x < data.length; x++) {
+//          var tasking = new Tasking(
+//              data['id'],
+//              data[x]['createDate'],
+//              data[x]['dueDate'],
+//              data[x]['description'],
+//              data[x]['status'],
+//              data[x]['profilePicture']);
+//          taskings.add(tasking);
+//        }
       });
     }
   }
@@ -70,41 +85,43 @@ class _HomeState extends State<Home> {
     String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
-        'https://app.idolconsulting.co.za/idols/projects/all',
+       //'https://app.idolconsulting.co.za/idols/projects/all',
+        "https://app.idolconsulting.co.za/idols/projects/1/10/DESC/createDate?keyword=",
 
         headers: {"Accept": "application/json",
-                  "X_TOKEN": stringValue,
+                  "X_TOKEN": "5f60c0d5c391b506a2e38f1a",
         });
+
+
 
     if (response.statusCode == 200) {
       setState(() {
-        print('Token ' + stringValue);
+        print('Token from shared preferance ' + stringValue);
 
+        data2 = json.decode(response.body);
 
-        var data = json.decode((response.body));
-
-      // print(response.body);
+       // print(data.toString());
 
        // print(response.body);
-        for (int x = 0; x < data.length; x++) {
-          var project = new Project(
-              data[x]['name'],
-              data[x]['name'],
-              data[x]['createDate'],
-              data[x]['endDate'],
-              data[x]['description'],
-              data[x]['budget'],
-              data[x]['status'],
-              data[x]['logo'],
-              data[x]['createdBy'],
-              data[x]['manager'],
-              data[x]['observers'],
-              data[x]['members'],
-              data[x]['company'],
-              data[x]['attachments']
-          );
-          projects.add(project);
-        }
+//        for (int x = 0; x < data.length; x++) {
+//          var project = new Project(
+//              data[x]['name'],
+//              data[x]['id'],
+//              data[x]['createDate'],
+//              data[x]['endDate'],
+//              data[x]['description'],
+//              data[x]['budget'],
+//              data[x]['status'],
+//              data[x]['logo'],
+//              data[x]['createdBy'],
+//              data[x]['manager'],
+//              data[x]['observers'],
+//              data[x]['members'],
+//              data[x]['company'],
+//              data[x]['attachments']
+//          );
+//          projects.add(project);
+//        }
       });
     }
   }
@@ -278,14 +295,15 @@ class _HomeState extends State<Home> {
                         width: 500,
                         child: SizedBox(
                           child: ListView.builder(
-                            itemCount: projects == null ? 0 : projects.length,
+                           // itemCount: projects == null ? 0 : projects.length,
+                            itemCount: data2 == null ? 0 : data2.length,
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
                             itemBuilder: (BuildContext context, int index) {
                               return Container(
                                 child: DataTable(
                                   columns: [
-                                    DataColumn(label: Text('Name')),
+                                    DataColumn(label: Text('name')),
                                     DataColumn(label: Text('End Date')),
                                     DataColumn(label: Text('Status')),
                                     DataColumn(label: Text('Manager')),
@@ -293,12 +311,10 @@ class _HomeState extends State<Home> {
                                   rows: [
                                     DataRow(cells: [
                                       DataCell(
-                                          Text(projects.elementAt(index).name)),
-                                      DataCell(Text(
-                                          projects.elementAt(index).endDate)),
-                                      DataCell(Text(
-                                          projects.elementAt(index).status)),
-                                      DataCell(Text("Andile Zulu")),
+                                          Text(data2['name']==null ? 'No name found ':data2['name'])),
+                                      DataCell(Text(data2['endDate']==null ? 'No date found ':data2['endDate'])),
+                                      DataCell(Text(data2['status']==null ? 'No status found ':data2['status'])),
+                                      DataCell(Text("Andile Zulu"))
                                     ])
                                   ],
                                 ),
@@ -398,8 +414,8 @@ class _HomeState extends State<Home> {
                                           ),
                                           DataTable(
                                             columns: [
-                                              DataColumn(label: Text(name)),
-                                              DataColumn(label: Text('')),
+                                              DataColumn(label: Text('sdfsdf')),
+                                              DataColumn(label: Text('sdf')),
                                               DataColumn(label: Text('')),
                                             ],
                                             rows: [

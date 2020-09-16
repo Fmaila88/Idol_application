@@ -139,9 +139,8 @@ class _Login extends State<LoginBody> {
 
                               setState(() {
 
-                               // print('The Token is' + loginMessage['token']);
 
-                               // print(' Logged in user ' +pref.getString('userToken'));
+                                print('Logged in user ' + loginMessage['firstName']  + '\n' + 'with ' + ' ' + pref.getString('userToken'));
 
                                 //If the authentication is successful switch to the home page
                                 Navigator.push(
