@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+//import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'timeSheet.dart';
@@ -86,10 +86,10 @@ class _HomeState extends State<Home> {
 
     final response = await http.get(
        //'https://app.idolconsulting.co.za/idols/projects/all',
-        "https://app.idolconsulting.co.za/idols/projects/1/10/DESC/createDate?keyword=",
+        'https://app.idolconsulting.co.za/idols/projects/1/10/DESC/createDate?keyword=',
 
         headers: {"Accept": "application/json",
-                  "X_TOKEN": "5f60c0d5c391b506a2e38f1a",
+                  "X_TOKEN": '5f60c0d5c391b506a2e38f1a',
         });
 
 
@@ -100,7 +100,7 @@ class _HomeState extends State<Home> {
 
         data2 = json.decode(response.body);
 
-       // print(data.toString());
+        print(data.toString());
 
        // print(response.body);
 //        for (int x = 0; x < data.length; x++) {
