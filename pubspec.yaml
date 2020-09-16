@@ -39,6 +39,8 @@ dependencies:
   http_methods: ^1.0.0
   shared_preferences: ^0.5.10
   http: 0.12.2
+  date_format:
+  file_picker: ^1.2.0
 
 dev_dependencies:
   flutter_test:

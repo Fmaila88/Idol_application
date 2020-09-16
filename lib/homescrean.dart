@@ -1,3 +1,5 @@
+import 'package:App_idolconsulting/PaySlips/DetailsScreen.dart';
+import 'package:App_idolconsulting/PaySlips/payslips.dart';
 import 'package:App_idolconsulting/TravelAllowance/TravellingAllowance.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -12,7 +14,6 @@ import 'Task.dart';
 import 'projecttask.dart';
 import 'Taskdetails.dart';
 
-
 class Home extends StatefulWidget {
   final Widget child;
   Home({Key key, this.child}) : super(key: key);
@@ -21,33 +22,30 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   List<Tasking> taskings = new List<Tasking>();
   String name;
 
   Future<String> fetchTaskings() async {
-    SharedPreferences prefs =
-   await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
         //'https://app.idolconsulting.co.za/idols/tasks/all',
         'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate?keyword=',
-
-        headers: {"Accept": "application/json",
+        headers: {
+          "Accept": "application/json",
           "X_TOKEN": stringValue,
         });
 
     var data;
 
     if (response.statusCode == 200) {
-
       setState(() {
         //print('Token ' + stringValue);
         data = json.decode((response.body));
         //String firstName=response.toString();
-       // print('The full data is ' + firstName);
+        // print('The full data is ' + firstName);
 
         for (int x = 0; x < data.length; x++) {
           var tasking = new Tasking(
@@ -62,31 +60,29 @@ class _HomeState extends State<Home> {
       });
     }
   }
+
   List<Project> projects = new List<Project>();
 
   Future<String> fetchProjects() async {
-    SharedPreferences prefs =
-        await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String stringValue = prefs.getString('userToken');
 
-    final response = await http.get(
-        'https://app.idolconsulting.co.za/idols/projects/all',
-
-        headers: {"Accept": "application/json",
-                  "X_TOKEN": stringValue,
-        });
+    final response = await http
+        .get('https://app.idolconsulting.co.za/idols/projects/all', headers: {
+      "Accept": "application/json",
+      "X_TOKEN": stringValue,
+    });
 
     if (response.statusCode == 200) {
       setState(() {
         print('Token ' + stringValue);
 
-
         var data = json.decode((response.body));
 
-      // print(response.body);
+        // print(response.body);
 
-       // print(response.body);
+        // print(response.body);
         for (int x = 0; x < data.length; x++) {
           var project = new Project(
               data[x]['name'],
@@ -102,8 +98,7 @@ class _HomeState extends State<Home> {
               data[x]['observers'],
               data[x]['members'],
               data[x]['company'],
-              data[x]['attachments']
-          );
+              data[x]['attachments']);
           projects.add(project);
         }
       });
@@ -264,51 +259,50 @@ class _HomeState extends State<Home> {
                               ])),
                     ),
                     GestureDetector(
-                      onTap: (){
+                      onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
                             context,
                             new MaterialPageRoute(
-                                builder: (context) => new ProjectTask()
-                            ));
+                                builder: (context) => new ProjectTask()));
                       },
-                    child: Card(
-                      elevation: 2,
-                      child: Container(
-                        height: 100,
-                        width: 500,
-                        child: SizedBox(
-                          child: ListView.builder(
-                            itemCount: projects == null ? 0 : projects.length,
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                child: DataTable(
-                                  columns: [
-                                    DataColumn(label: Text('Name')),
-                                    DataColumn(label: Text('End Date')),
-                                    DataColumn(label: Text('Status')),
-                                    DataColumn(label: Text('Manager')),
-                                  ],
-                                  rows: [
-                                    DataRow(cells: [
-                                      DataCell(
-                                          Text(projects.elementAt(index).name)),
-                                      DataCell(Text(
-                                          projects.elementAt(index).endDate)),
-                                      DataCell(Text(
-                                          projects.elementAt(index).status)),
-                                      DataCell(Text("Andile Zulu")),
-                                    ])
-                                  ],
-                                ),
-                              );
-                            },
+                      child: Card(
+                        elevation: 2,
+                        child: Container(
+                          height: 100,
+                          width: 500,
+                          child: SizedBox(
+                            child: ListView.builder(
+                              itemCount: projects == null ? 0 : projects.length,
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Container(
+                                  child: DataTable(
+                                    columns: [
+                                      DataColumn(label: Text('Name')),
+                                      DataColumn(label: Text('End Date')),
+                                      DataColumn(label: Text('Status')),
+                                      DataColumn(label: Text('Manager')),
+                                    ],
+                                    rows: [
+                                      DataRow(cells: [
+                                        DataCell(Text(
+                                            projects.elementAt(index).name)),
+                                        DataCell(Text(
+                                            projects.elementAt(index).endDate)),
+                                        DataCell(Text(
+                                            projects.elementAt(index).status)),
+                                        DataCell(Text("Andile Zulu")),
+                                      ])
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     ),
                   ]),
                 ),
@@ -352,91 +346,96 @@ class _HomeState extends State<Home> {
                                         charts.ArcLabelPosition.inside)
                               ])),
                     ),
-                  GestureDetector(
-                      onTap: (){
+                    GestureDetector(
+                      onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
                             context,
                             new MaterialPageRoute(
-                                builder: (context) => new TaskDetails()
-                            ));
+                                builder: (context) => new TaskDetails()));
                       },
-                    child: Card(
-                      elevation: 5.0,
-                      child: Container(
-                        height: 100,
-                        width: 500,
-                        child: SizedBox(
-                          child: ListView.builder(
-                            itemCount: taskings == null ? 0 : taskings.length,
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                child: Container(
-                                  //width: MediaQuery.of(context).size.width,
-                                  // padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Container(
-                                            width: 55.0,
-                                            height: 60.0,
-                                            color: Colors.white,
-                                            child: CircleAvatar(
-                                              backgroundColor: Colors.green,
-                                              foregroundColor: Colors.green,
-                                              child: Image.asset(
-                                                  'images/logo1.png'),
+                      child: Card(
+                        elevation: 5.0,
+                        child: Container(
+                          height: 100,
+                          width: 500,
+                          child: SizedBox(
+                            child: ListView.builder(
+                              itemCount: taskings == null ? 0 : taskings.length,
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Container(
+                                  child: Container(
+                                    //width: MediaQuery.of(context).size.width,
+                                    // padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Container(
+                                              width: 55.0,
+                                              height: 60.0,
+                                              color: Colors.white,
+                                              child: CircleAvatar(
+                                                backgroundColor: Colors.green,
+                                                foregroundColor: Colors.green,
+                                                child: Image.asset(
+                                                    'images/logo1.png'),
+                                              ),
                                             ),
-                                          ),
-                                          DataTable(
-                                            columns: [
-                                              DataColumn(label: Text(name)),
-                                              DataColumn(label: Text('')),
-                                              DataColumn(label: Text('')),
-                                            ],
-                                            rows: [
-                                              DataRow(cells: [
-                                                DataCell(Text(taskings.elementAt(index).createDate)),
-                                                DataCell(Text(taskings.elementAt(index).dueDate)),
-                                                DataCell(Text('Task Age')),
-                                              ])
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        alignment: Alignment.center,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 90.0, vertical: 10.0),
-                                        child: FlatButton(
-                                          onPressed: () {},
-                                          color: Colors.orange,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0)),
-                                          child: Text(
-                                              taskings.elementAt(index).status),
+                                            DataTable(
+                                              columns: [
+                                                DataColumn(label: Text(name)),
+                                                DataColumn(label: Text('')),
+                                                DataColumn(label: Text('')),
+                                              ],
+                                              rows: [
+                                                DataRow(cells: [
+                                                  DataCell(Text(taskings
+                                                      .elementAt(index)
+                                                      .createDate)),
+                                                  DataCell(Text(taskings
+                                                      .elementAt(index)
+                                                      .dueDate)),
+                                                  DataCell(Text('Task Age')),
+                                                ])
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
+                                        Container(
+                                          alignment: Alignment.center,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 90.0, vertical: 10.0),
+                                          child: FlatButton(
+                                            onPressed: () {},
+                                            color: Colors.orange,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        20.0)),
+                                            child: Text(taskings
+                                                .elementAt(index)
+                                                .status),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
                   ]),
                 ),
               ),
@@ -460,17 +459,14 @@ class DrawerCodeOnly extends StatelessWidget {
             currentAccountPicture: GestureDetector(
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                       builder: (context) => new Profile()
-                    ));
+                Navigator.push(context,
+                    new MaterialPageRoute(builder: (context) => new Profile()));
               },
               child: CircleAvatar(
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.green,
-                              child: Image.asset('images/logo1.png'),
-                            ),
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.green,
+                child: Image.asset('images/logo1.png'),
+              ),
             ),
             decoration: BoxDecoration(
                 image: DecorationImage(
@@ -481,11 +477,8 @@ class DrawerCodeOnly extends StatelessWidget {
             title: new Text("Home"),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (context) => new Home()
-                      ));
+              Navigator.push(context,
+                  new MaterialPageRoute(builder: (context) => new Home()));
             },
           ),
           new ListTile(
@@ -552,11 +545,8 @@ class DrawerCodeOnly extends StatelessWidget {
             title: new Text("PaySlips"),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      //builder: (context) => new Abondonedtickets()
-                      ));
+              Navigator.push(context,
+                  new MaterialPageRoute(builder: (context) => new MyAppl()));
             },
           ),
           new ListTile(
@@ -690,7 +680,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
           if (isDropdownOpened) {
             floatingDropdown.remove();
           } else {
-           // print("zzzaa");
+            // print("zzzaa");
             findDropdownData();
 
             floatingDropdown = _createFloatingDropdown();
