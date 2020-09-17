@@ -177,14 +177,13 @@ class _ApplyState extends State<Apply> {
                     color: Colors.lightBlue,
                     onPressed: () async {
                       SharedPreferences prefs =await SharedPreferences.getInstance();
-
                       String stringValue = prefs.getString('token');
                       Map<String, String> headers = {"content-type": "application/json",
                         "Accept": "application/json",
                         "X_TOKEN":"$stringValue",
                       };
                       final body = jsonEncode({
-                        'user': _employeeController.text,
+                        'id': _employeeController.text,
                         'startKm': _startKmController.text,
                         'endKm': _endKmController.text,
                         'travelDate': _travelDateController.text,
@@ -197,12 +196,12 @@ class _ApplyState extends State<Apply> {
                       );
                       setState(() {
 
-                        print('dddddddddddddddddd');
+                        print('sfadfsdfsf');
                         if(response.statusCode == 200) {
                           print(json.decode(response.body));
                         }
                       });
-print("$stringValue");
+                      print("$stringValue");
                       print(json.decode(response.body));
                     },
                     child: Text(

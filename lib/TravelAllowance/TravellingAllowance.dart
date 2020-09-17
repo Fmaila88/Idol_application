@@ -169,7 +169,10 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                             child: Row(
                                               children: [
                                                 FlatButton.icon(
-                                                  onPressed: () {},
+                                                  onPressed: () async {
+                                                    final result = await showDialog(
+                                                        context: context, builder: (_) => Approve());
+                                                  },
                                                   icon: Icon(
                                                     Icons.thumb_up,
                                                     size: 15,
@@ -186,7 +189,10 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                                 ),
                                                 SizedBox(width: 5),
                                                 FlatButton.icon(
-                                                  onPressed: () {},
+                                                  onPressed: () async {
+                                                    final result = await showDialog(
+                                                        context: context, builder: (_) => Decline());
+                                                  },
                                                   icon: Icon(
                                                     Icons.thumb_down,
                                                     size: 15,
@@ -220,13 +226,22 @@ class _TravelAllowanceState extends State<TravelAllowance> {
   }
 }
 
-class Delete extends StatelessWidget {
+class Decline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Warning'),
-      content: Text('Are you sure you want to delete?'),
-      actions: [
+      backgroundColor: Colors.white,
+      title: Text('Warning!',
+        style: TextStyle(
+            color: Colors.red[800]
+        ),),
+      content: Text('Are you sure you want to decline this allowance?',
+        style: TextStyle(
+            color: Colors.black54,
+            fontWeight: FontWeight.w400,
+            fontSize: 18
+        ),),
+      actions: <Widget>[
         FlatButton(
           child: Text('Yes'),
           onPressed: () {
@@ -244,6 +259,38 @@ class Delete extends StatelessWidget {
   }
 }
 
+class Approve extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      title: Text('Warning!',
+      style: TextStyle(
+        color: Colors.green[500]
+      ),),
+      content: Text('Are you sure you want to approve this allowance?',
+      style: TextStyle(
+        color: Colors.black54,
+        fontWeight: FontWeight.w400,
+        fontSize: 18
+      ),),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('Yes'),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+        ),
+        FlatButton(
+          child: Text('No'),
+          onPressed: () {
+            Navigator.of(context).pop(false);
+          },
+        ),
+      ],
+    );
+  }
+}
 
 
 
