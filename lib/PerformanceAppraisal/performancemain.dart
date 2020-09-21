@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    title: 'Performance Appraisals',
+    title: 'Performance Appraisalss',
     home: Performance(),
   ));
 }
