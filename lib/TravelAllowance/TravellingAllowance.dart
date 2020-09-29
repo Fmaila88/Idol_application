@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:date_format/date_format.dart';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +16,7 @@ class TravelAllowance extends StatefulWidget {
 class _TravelAllowanceState extends State<TravelAllowance> {
 
   List<EmployeeData> employee_allowance = new List<EmployeeData>();
+  final DateFormat dateformat = DateFormat('MM/YYYY');
 
   Future<EmployeeData> fetchEmployData() async{
 
@@ -50,7 +53,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.green[50],
       appBar: AppBar(
         title: Text(
           'Travel Allowance',
@@ -111,98 +114,111 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                     ),
                   )),
             ),
-            Container(
-              padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-              child: Column(
-                children: <Widget> [
-                  Container(
-                    height: 54,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        prefixIcon: Icon(
-                          Icons.search,
-                        ),
-                        border: OutlineInputBorder(),
-                      ),
-                      onTap: () {
-                        //_selectDate(context);
-                      },
-                      //keyboardType: TextInputType.multiline,
-                    ),
-                  ),
-                ],
-              ),
-            ),
            // bodyDate(),
-            Card(
-              elevation:2,
-              child: Container(
-                height: 100,
-                width: 500,
-                child:SizedBox(
-                  child:  ListView.builder(
-                    itemCount: employee_allowance==null ? 0:employee_allowance.length,
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context,int index) {
-
-                      return Container(
-                        child:DataTable(
-                          columns: [
-                            DataColumn(
-                                label: Text('Name')),
-                            DataColumn(label: Text(
-                                'Start Km')),
-                            DataColumn(label: Text(
-                                'End Km')),
-                            DataColumn(label: Text(
-                                'Travel Date')),
-                          ],
-                          rows: [
-                            DataRow(cells: [
-                              DataCell(Text(
-                                  employee_allowance.elementAt(index).user
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => Apply()),
-                                );
-                              }),
-                              DataCell(Text(
-                                  employee_allowance.elementAt(index).startKm
-                              ),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => Apply()),
-                                    );
-                                  }
-                              ),
-                              DataCell(Text(
-                                  employee_allowance.elementAt(index).endKm
+            Container(
+              padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+              child: Card(
+                elevation:2,
+                child: Column(
+                  children: [
+                    Container(
+                      height: 54,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search',
+                          prefixIcon: Icon(
+                            Icons.search,
+                          ),
+                          border: OutlineInputBorder(),
+                        ),
+                        onTap: () {
+                          //_selectDate(context);
+                        },
+                        //keyboardType: TextInputType.multiline,
                       ),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => Apply()),
-                                    );
-                                  }),
-                              DataCell(Text(
-                                  employee_allowance.elementAt(index).travelDate),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => Apply()),
-                                    );
-                                  }
-                              ),
-                            ])],
-                        ),);
-                    },),
-                ),),
-            ),
+                    ),
+                    Container(
+                      height: 100,
+                      width: 500,
+                      child:SizedBox(
+                        child:  ListView.builder(
+                          itemCount: employee_allowance==null ? 0:employee_allowance.length,
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context,int index) {
+
+                            return Container(
+                              child:DataTable(
+                                columns: [
+                                  DataColumn(label: Text('Name')),
+                                  DataColumn(label: Text('Start Km')),
+                                  DataColumn(label: Text('End Km')),
+                                  DataColumn(label: Text('Travel Date')),
+                                  DataColumn(label: Text('')),
+                                ],
+                                rows: [
+                                  DataRow(cells: [
+                                    DataCell(Text(employee_allowance.elementAt(index).user)),
+                                    DataCell(Text(employee_allowance.elementAt(index).startKm)),
+                                    DataCell(Text(employee_allowance.elementAt(index).endKm)),
+                                    DataCell(Text((employee_allowance.elementAt(index)
+                                        .convertDateFromString()) ??
+                                        employee_allowance)),
+                                    DataCell(
+                                        Container(
+                                            child: Row(
+                                              children: [
+                                                FlatButton.icon(
+                                                  onPressed: () async {
+                                                    final result = await showDialog(
+                                                        context: context, builder: (_) => Approve());
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.thumb_up,
+                                                    size: 15,
+                                                    color: Colors.white,
+                                                  ),
+                                                  color: Colors.green,
+                                                  label: Text(
+                                                    'Approve',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight: FontWeight.w400,
+                                                        fontSize: 17),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 5),
+                                                FlatButton.icon(
+                                                  onPressed: () async {
+                                                    final result = await showDialog(
+                                                        context: context, builder: (_) => Decline());
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.thumb_down,
+                                                    size: 15,
+                                                    color: Colors.white,
+                                                  ),
+                                                  color: Colors.red[500],
+                                                  label: Text(
+                                                    'Decline',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight: FontWeight.w400,
+                                                        fontSize: 17),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                        )
+                                    ),
+                                  ])],
+                              ),);
+                          },),
+                      ),),
+                  ],
+                )
+              ),
+            )
           ],
         ),
       )
@@ -210,13 +226,22 @@ class _TravelAllowanceState extends State<TravelAllowance> {
   }
 }
 
-class Delete extends StatelessWidget {
+class Decline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Warning'),
-      content: Text('Are you sure you want to delete?'),
-      actions: [
+      backgroundColor: Colors.white,
+      title: Text('Warning!',
+        style: TextStyle(
+            color: Colors.red[800]
+        ),),
+      content: Text('Are you sure you want to decline this allowance?',
+        style: TextStyle(
+            color: Colors.black54,
+            fontWeight: FontWeight.w400,
+            fontSize: 18
+        ),),
+      actions: <Widget>[
         FlatButton(
           child: Text('Yes'),
           onPressed: () {
@@ -234,6 +259,38 @@ class Delete extends StatelessWidget {
   }
 }
 
+class Approve extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: Colors.white,
+      title: Text('Warning!',
+      style: TextStyle(
+        color: Colors.green[500]
+      ),),
+      content: Text('Are you sure you want to approve this allowance?',
+      style: TextStyle(
+        color: Colors.black54,
+        fontWeight: FontWeight.w400,
+        fontSize: 18
+      ),),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('Yes'),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+        ),
+        FlatButton(
+          child: Text('No'),
+          onPressed: () {
+            Navigator.of(context).pop(false);
+          },
+        ),
+      ],
+    );
+  }
+}
 
 
 
