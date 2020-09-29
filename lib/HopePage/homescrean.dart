@@ -1,3 +1,6 @@
+import 'package:App_idolconsulting/PaySlips/DetailsScreen.dart';
+import 'package:App_idolconsulting/PaySlips/payslips.dart';
+import 'package:App_idolconsulting/TravelAllowance/TravellingAllowance.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 //import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,7 +14,6 @@ import 'Task.dart';
 import 'projecttask.dart';
 import 'Taskdetails.dart';
 
-
 class Home extends StatefulWidget {
   final Widget child;
   Home({Key key, this.child}) : super(key: key);
@@ -21,107 +23,116 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
+
+  Map<String, dynamic> data4;
+  bool isLoading=true;
+
+  Future<String> fetchDrawer() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('userToken');
+
+    final response = await http.get(
+        'http://app.idolconsulting.co.za/idols/users/profile',
+        headers: {"Accept": "application/json",
+          'X_TOKEN': stringValue});
+
+    if(response.statusCode ==200){
+      setState((){
+        data4=json.decode(response.body);
+
+      });
+    }
+  }
+
+
   List<Tasking> taskings = new List<Tasking>();
  // String name;
-  Map<String,dynamic> data;
-  Map<String, dynamic> data2;
-
+ // Map<String,dynamic> data;
+  //Map<String, dynamic> data2;
 
 
   Future<String> fetchTaskings() async {
-    SharedPreferences prefs =
-   await SharedPreferences.getInstance();
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('userToken');
 
-
-
-
     final response = await http.get(
-        //'https://app.idolconsulting.co.za/idols/tasks/all',
-        'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/tasks?keyword=tasks',
+        'https://app.idolconsulting.co.za/idols/tasks/all',
 
-        headers: {"Accept": "application/json",
+       // 'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate?keyword=',
+        //my id: 5f3a6104c391b506469af574
+        headers: {
+          "Accept": "application/json",
           "X_TOKEN": stringValue,
         });
 
 
     if (response.statusCode == 200) {
-
       setState(() {
         //print('Token ' + stringValue);
-        data = json.decode(response.body);
+       var data = json.decode(response.body);
 
         //String firstName=response.toString();
-        print(response.body);
+       // print(response.body);
+        // print('The full data is ' + firstName);
 
-//              data['id'];
-//              data['createDate'];
-//              data['dueDate'];
-//              data['description'];
-//              data['status'];
-//              data['profilePicture'];
-
-
-//        for (int x = 0; x < data.length; x++) {
-//          var tasking = new Tasking(
-//              data['id'],
-//              data[x]['createDate'],
-//              data[x]['dueDate'],
-//              data[x]['description'],
-//              data[x]['status'],
-//              data[x]['profilePicture']);
-//          taskings.add(tasking);
-//        }
+        for (int x = 0; x < data.length; x++) {
+          var tasking = new Tasking(
+              data[x]['id'],
+              data[x]['createDate'],
+              data[x]['dueDate'],
+              data[x]['description'],
+              data[x]['status'],
+              data[x]['profilePicture']);
+          taskings.add(tasking);
+        }
       });
     }
   }
+
   List<Project> projects = new List<Project>();
 
   Future<String> fetchProjects() async {
-    SharedPreferences prefs =
-        await SharedPreferences.getInstance();
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
        //'https://app.idolconsulting.co.za/idols/projects/all',
-        'https://app.idolconsulting.co.za/idols/projects/1/10/DESC/createDate?keyword=',
+        'https://app.idolconsulting.co.za/idols/projects/all',
 
         headers: {"Accept": "application/json",
-                  "X_TOKEN": '5f60c0d5c391b506a2e38f1a',
+                  "X_TOKEN": stringValue,
         });
-
-
 
     if (response.statusCode == 200) {
       setState(() {
         print('Token from shared preferance ' + stringValue);
+        var data = json.decode((response.body));
 
-        data2 = json.decode(response.body);
-
-        print(data.toString());
-
+        //print(data2.toString());
        // print(response.body);
-//        for (int x = 0; x < data.length; x++) {
-//          var project = new Project(
-//              data[x]['name'],
-//              data[x]['id'],
-//              data[x]['createDate'],
-//              data[x]['endDate'],
-//              data[x]['description'],
-//              data[x]['budget'],
-//              data[x]['status'],
-//              data[x]['logo'],
-//              data[x]['createdBy'],
-//              data[x]['manager'],
-//              data[x]['observers'],
-//              data[x]['members'],
-//              data[x]['company'],
-//              data[x]['attachments']
-//          );
-//          projects.add(project);
-//        }
+        for (int x = 0; x < data.length; x++) {
+          var project = new Project(
+              data[x]['name'],
+              data[x]['id'],
+              data[x]['createDate'],
+              data[x]['endDate'],
+              data[x]['description'],
+              data[x]['budget'],
+              data[x]['status'],
+              data[x]['logo'],
+              data[x]['createdBy'],
+              data[x]['manager'],
+              data[x]['observers'],
+              data[x]['members'],
+              data[x]['company'],
+              data[x]['attachments']
+          );
+          projects.add(project);
+        }
+
       });
     }
   }
@@ -174,6 +185,7 @@ class _HomeState extends State<Home> {
     _generateData();
     this.fetchProjects();
     this.fetchTaskings();
+    this.fetchDrawer();
   }
 
   @override
@@ -280,14 +292,14 @@ class _HomeState extends State<Home> {
                               ])),
                     ),
                     GestureDetector(
-                      onTap: (){
+                      onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
                             context,
                             new MaterialPageRoute(
-                                builder: (context) => new ProjectTask()
-                            ));
+                                builder: (context) => new ProjectTask()));
                       },
+
                     child: Card(
                       elevation: 2,
                       child: Container(
@@ -295,8 +307,8 @@ class _HomeState extends State<Home> {
                         width: 500,
                         child: SizedBox(
                           child: ListView.builder(
-                           // itemCount: projects == null ? 0 : projects.length,
-                            itemCount: data2 == null ? 0 : data2.length,
+                            itemCount: projects == null ? 0 : projects.length,
+                           // itemCount: data == null ? 0 : data.length,
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
                             itemBuilder: (BuildContext context, int index) {
@@ -310,12 +322,18 @@ class _HomeState extends State<Home> {
                                   ],
                                   rows: [
                                     DataRow(cells: [
-                                      DataCell(
-                                          Text(data2['name']==null ? 'No name found ':data2['name'])),
-                                      DataCell(Text(data2['endDate']==null ? 'No date found ':data2['endDate'])),
-                                      DataCell(Text(data2['status']==null ? 'No status found ':data2['status'])),
-                                      DataCell(Text("Andile Zulu"))
+                                      DataCell(Text(projects.elementAt(index).name)),
+                                      DataCell(Text(projects.elementAt(index).endDate)),
+                                      DataCell(Text(projects.elementAt(index).status)),
+                                      DataCell(Text("Andile Zulu")),
                                     ])
+//                                    DataRow(cells: [
+//                                      DataCell(
+//                                          Text(data2['name']==null ? 'No name found ':data2['name'])),
+//                                      DataCell(Text(data2['endDate']==null ? 'No date found ':data2['endDate'])),
+//                                      DataCell(Text(data2['status']==null ? 'No status found ':data2['status'])),
+//                                      DataCell(Text("Andile Zulu"))
+//                                    ])
                                   ],
                                 ),
                               );
@@ -324,11 +342,11 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
-                    ),
+                    )
                   ]),
+                  )
+                 ),
                 ),
-              ),
-            ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Container(
@@ -367,80 +385,82 @@ class _HomeState extends State<Home> {
                                         charts.ArcLabelPosition.inside)
                               ])),
                     ),
-                  GestureDetector(
-                      onTap: (){
+                    GestureDetector(
+                      onTap: () {
                         Navigator.pop(context);
                         Navigator.push(
                             context,
                             new MaterialPageRoute(
-                                builder: (context) => new TaskDetails()
-                            ));
+                                builder: (context) => new TaskDetails()));
                       },
-                    child: Card(
-                      elevation: 5.0,
-                      child: Container(
-                        height: 100,
-                        width: 500,
-                        child: SizedBox(
-                          child: ListView.builder(
-                            itemCount: taskings == null ? 0 : taskings.length,
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                child: Container(
-                                  //width: MediaQuery.of(context).size.width,
-                                  // padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Container(
-                                            width: 55.0,
-                                            height: 60.0,
-                                            color: Colors.white,
-                                            child: CircleAvatar(
-                                              backgroundColor: Colors.green,
-                                              foregroundColor: Colors.green,
-                                              child: Image.asset(
-                                                  'images/logo1.png'),
+                      child: Card(
+                        elevation: 5.0,
+                        child: Container(
+                          height: 100,
+                          width: 500,
+                          child: SizedBox(
+                            child: ListView.builder(
+                              itemCount: taskings == null ? 0 : taskings.length,
+                              scrollDirection: Axis.horizontal,
+                              shrinkWrap: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Container(
+                                  child: Container(
+                                    //width: MediaQuery.of(context).size.width,
+                                    // padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Container(
+
+                                              width: 55.0,
+                                              height: 60.0,
+                                              color: Colors.white,
+                                              child: isLoading ? Center(child: CircularProgressIndicator()):
+                                              CircleAvatar(
+                                                radius:50,
+                                                backgroundColor: Colors.blue,
+                                                backgroundImage:NetworkImage('http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']),
+                                              ),
                                             ),
-                                          ),
-                                          DataTable(
-                                            columns: [
-                                              DataColumn(label: Text('sdfsdf')),
-                                              DataColumn(label: Text('sdf')),
-                                              DataColumn(label: Text('')),
-                                            ],
-                                            rows: [
-                                              DataRow(cells: [
-                                                DataCell(Text(taskings.elementAt(index).createDate)),
-                                                DataCell(Text(taskings.elementAt(index).dueDate)),
-                                                DataCell(Text('Task Age')),
-                                              ])
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        alignment: Alignment.center,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 90.0, vertical: 10.0),
-                                        child: FlatButton(
-                                          onPressed: () {},
-                                          color: Colors.orange,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0)),
-                                          child: Text(
-                                              taskings.elementAt(index).status),
+                                            DataTable(
+                                              columns: [
+                                                DataColumn(label: Text(taskings.elementAt(index).description)),
+                                                DataColumn(label: Text('')),
+                                                DataColumn(label: Text('')),
+                                              ],
+                                              rows: [
+                                                DataRow(cells: [
+                                                  DataCell(Text(taskings.elementAt(index).createDate)),
+                                                  DataCell(Text(taskings.elementAt(index).dueDate)),
+                                                  DataCell(Text('Task Age')),
+                                                ])
+                                              ],
+                                            ),
+                                          ],
                                         ),
+                                        Container(
+                                          alignment: Alignment.center,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 90.0, vertical: 10.0),
+                                          child: FlatButton(
+                                            onPressed: () {},
+                                            color: Colors.orange,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        20.0)),
+                                            child: Text(taskings
+                                                .elementAt(index)
+                                                .status),
+                                          ),
                                       ),
                                     ],
                                   ),
@@ -460,49 +480,112 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+
+  }
+  @override
+  void setState(fn) {
+    isLoading=false;
+    super.setState(fn);
   }
 }
 
-class DrawerCodeOnly extends StatelessWidget {
+class DrawerCodeOnly extends StatefulWidget {
+  final Widget child;
+  DrawerCodeOnly({Key key, this.child}) : super(key: key);
+
+  _DrawerCodeOnlyState createState() => _DrawerCodeOnlyState();
+}
+
+class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
+
+  Map<String, dynamic> data3;
+  bool isLoading=true;
+
+  Future<String> fetchDrawer() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('userToken');
+
+    final response = await http.get(
+        'http://app.idolconsulting.co.za/idols/users/profile',
+        headers: {"Accept": "application/json",
+          'X_TOKEN': stringValue});
+
+    if(response.statusCode ==200){
+      setState((){
+        data3=json.decode(response.body);
+
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    this.fetchDrawer();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Drawer(
-      child: new ListView(
+    return Drawer(
+        child:Column(
         children: <Widget>[
-          UserAccountsDrawerHeader(
-            accountName: Text("accountName"),
-            accountEmail: Text("accountPosition & Task"),
-            currentAccountPicture: GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                       builder: (context) => new Profile()
-                    ));
-              },
-              child: CircleAvatar(
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.green,
-                              child: Image.asset('images/logo1.png'),
-                            ),
+         Container(
+           height: 80,
+            margin: EdgeInsets.only(top: 10),
+            color: Colors.white,
+            child: Image(image: AssetImage('images/logo1.png'),),
+          ),
+          Expanded(
+            child: DrawerHeader(
+              child: isLoading ? Center(child: CircularProgressIndicator()):
+              Container(
+                child: Column(
+                  children:[
+                    Center(
+                      child:CircleAvatar(
+                        radius:50,
+                        backgroundColor: Colors.blue,
+                        backgroundImage:NetworkImage('http://app.idolconsulting.co.za/idols/file/' + data3['profilePicture']['id']),
+                      ),
+                    ),
+                    Center(
+                      child: Text(data3['firstName']==null? 'no name' :data3['firstName'] + '' + data3['lastName'],
+                        style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),),
+                    ),
+                    Center(
+                        child: Text(data3['company']==null? 'company found' :data3['company']['name'],
+                          style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),)
+                    ),
+                    Center(
+                        child: Text(data3['position']==null? 'position not found' : data3['position']['name'],
+                          style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),)
+                    ) ,
+                  ],
+                ),
+              ),
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage('images/background.jpg'), fit: BoxFit.fill)
+              ),
             ),
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('images/backend.jpg'), fit: BoxFit.fill)),
-          ),
-          new ListTile(
-            leading: Icon(Icons.home, size: 30.0),
-            title: new Text("Home"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (context) => new Home()
-                      ));
-            },
-          ),
+         ),
+         Container(
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 400,
+                child: ListView(
+                  children: <Widget>[
+                    ListTile(
+                      leading: Icon(Icons.home, size: 30.0),
+                      title: new Text("Home"),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context,
+                            new MaterialPageRoute(builder: (context) => new Home()));
+                      },
+                    ),
           new ListTile(
             leading: Icon(Icons.card_travel, size: 30.0),
             title: new Text("Companies"),
@@ -511,8 +594,8 @@ class DrawerCodeOnly extends StatelessWidget {
               Navigator.push(
                   context,
                   new MaterialPageRoute(
-                      // builder: (context) => new Services()
-                      ));
+                    // builder: (context) => new Services()
+                  ));
             },
           ),
           new ListTile(
@@ -523,8 +606,8 @@ class DrawerCodeOnly extends StatelessWidget {
               Navigator.push(
                   context,
                   new MaterialPageRoute(
-                      //builder: (context) => new Teller()
-                      ));
+                    //builder: (context) => new Teller()
+                  ));
             },
           ),
           new ListTile(
@@ -535,8 +618,8 @@ class DrawerCodeOnly extends StatelessWidget {
               Navigator.push(
                   context,
                   new MaterialPageRoute(
-                      //builder: (context) => new Lcddisplays()
-                      ));
+                    //builder: (context) => new Lcddisplays()
+                  ));
             },
           ),
           new ListTile(
@@ -558,8 +641,8 @@ class DrawerCodeOnly extends StatelessWidget {
               Navigator.push(
                   context,
                   new MaterialPageRoute(
-                      //builder: (context) => new Reports()
-                      ));
+                    //builder: (context) => new Reports()
+                  ));
             },
           ),
           new ListTile(
@@ -567,11 +650,8 @@ class DrawerCodeOnly extends StatelessWidget {
             title: new Text("PaySlips"),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      //builder: (context) => new Abondonedtickets()
-                      ));
+              Navigator.push(context,
+                  new MaterialPageRoute(builder: (context) => new MyAppl()));
             },
           ),
           new ListTile(
@@ -582,15 +662,39 @@ class DrawerCodeOnly extends StatelessWidget {
               Navigator.push(
                   context,
                   new MaterialPageRoute(
-                      // builder: (context) => new Activequeue()
-                      ));
+                    // builder: (context) => new Activequeue()
+                  ));
             },
           ),
+          new ListTile(
+            leading: Icon(Icons.card_travel, size: 30.0),
+            title: new Text("Travel Allowance"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (context) => new TravelAllowance()));
+            },
+             ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
         ],
       ),
     );
   }
+
+  @override
+  void setState(fn) {
+    isLoading=false;
+    super.setState(fn);
+  }
 }
+
 
 class Task {
   String task;
@@ -694,7 +798,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
           if (isDropdownOpened) {
             floatingDropdown.remove();
           } else {
-           // print("zzzaa");
+            // print("zzzaa");
             findDropdownData();
 
             floatingDropdown = _createFloatingDropdown();
