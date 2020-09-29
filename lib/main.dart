@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
       title: 'App_Idolconsulting',
       theme: ThemeData(
         primarySwatch: Colors.grey,
+        accentColor: Colors.white
         //visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: LoginBody(),

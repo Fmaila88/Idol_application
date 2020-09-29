@@ -6,13 +6,14 @@ import 'package:charts_flutter/flutter.dart' as charts;
 //import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'timeSheet.dart';
+//import 'timeSheet.dart';
+import 'package:App_idolconsulting/timeSheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Project.dart';
-import 'profile.dart';
-import 'Task.dart';
-import 'projecttask.dart';
-import 'Taskdetails.dart';
+import 'package:App_idolconsulting/HopePage/Project.dart';
+import 'package:App_idolconsulting/HopePage/profile.dart';
+import 'package:App_idolconsulting/HopePage/Task.dart';
+import 'package:App_idolconsulting/HopePage/Projecttask.dart';
+import 'package:App_idolconsulting/HopePage/Taskdetails.dart';
 
 class Home extends StatefulWidget {
   final Widget child;
@@ -46,53 +47,52 @@ class _HomeState extends State<Home> {
   }
 
 
-  List<Tasking> taskings = new List<Tasking>();
- // String name;
- // Map<String,dynamic> data;
-  //Map<String, dynamic> data2;
+  List<Tasks> task = new List<Tasks>();
 
+  Map<String,dynamic> data3;
 
-  Future<String> fetchTaskings() async {
+  Future<String> fetchTask() async {
+    SharedPreferences prefs =
+    await SharedPreferences.getInstance();
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
-        'https://app.idolconsulting.co.za/idols/tasks/all',
+        'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate/5f3504f0c391b51061db90e3?keyword=',
 
-       // 'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate?keyword=',
-        //my id: 5f3a6104c391b506469af574
-        headers: {
-          "Accept": "application/json",
+        headers: {"Accept": "application/json",
           "X_TOKEN": stringValue,
         });
 
-
     if (response.statusCode == 200) {
       setState(() {
-        //print('Token ' + stringValue);
-       var data = json.decode(response.body);
+       // print('Token ' + stringValue);
 
-        //String firstName=response.toString();
-       // print(response.body);
-        // print('The full data is ' + firstName);
+        var data = json.decode((response.body));
 
+        data3 = json.decode((response.body));
+
+        //print(detail['endDate'].toString());
+
+
+        // print('createDate');
         for (int x = 0; x < data.length; x++) {
-          var tasking = new Tasking(
-              data[x]['id'],
-              data[x]['createDate'],
-              data[x]['dueDate'],
-              data[x]['description'],
-              data[x]['status'],
-              data[x]['profilePicture']);
-          taskings.add(tasking);
+          var project = new Tasks(
+            data3['name'].toString(),
+            data3['startDate'].toString(),
+            data3['endDate'].toString(),
+            data3['status'].toString(),
+            data3['dueDate'].toString(),
+          );
+          task.add(project);
         }
       });
     }
   }
 
-  List<Project> projects = new List<Project>();
 
+  List<Project> projects = new List<Project>();
+  Map<String,dynamic> detail;
   Future<String> fetchProjects() async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -100,7 +100,7 @@ class _HomeState extends State<Home> {
 
     final response = await http.get(
        //'https://app.idolconsulting.co.za/idols/projects/all',
-        'https://app.idolconsulting.co.za/idols/projects/all',
+        'https://app.idolconsulting.co.za/idols/projects/5f3504f0c391b51061db90e3',
 
         headers: {"Accept": "application/json",
                   "X_TOKEN": stringValue,
@@ -108,27 +108,27 @@ class _HomeState extends State<Home> {
 
     if (response.statusCode == 200) {
       setState(() {
-        print('Token from shared preferance ' + stringValue);
+       // print('Token from shared preferance ' + stringValue);
         var data = json.decode((response.body));
-
+        detail = json.decode((response.body));
         //print(data2.toString());
        // print(response.body);
         for (int x = 0; x < data.length; x++) {
           var project = new Project(
-              data[x]['name'],
-              data[x]['id'],
-              data[x]['createDate'],
-              data[x]['endDate'],
-              data[x]['description'],
-              data[x]['budget'],
-              data[x]['status'],
-              data[x]['logo'],
-              data[x]['createdBy'],
-              data[x]['manager'],
-              data[x]['observers'],
-              data[x]['members'],
-              data[x]['company'],
-              data[x]['attachments']
+              detail['name'].toString(),
+              detail['id'].toString(),
+              detail['createDate'].toString(),
+              detail['endDate'].toString(),
+              detail['description'].toString(),
+             // data[x]['budget'],
+              detail['status'].toString(),
+              detail['logo'].toString(),
+              detail['createdBy'],
+              detail['manager'],
+              detail['observers'],
+              detail['members'],
+              detail['company'],
+              detail['attachments']
           );
           projects.add(project);
         }
@@ -184,7 +184,8 @@ class _HomeState extends State<Home> {
     _seriesPieData = List<charts.Series<Task, String>>();
     _generateData();
     this.fetchProjects();
-    this.fetchTaskings();
+   // this.fetchTaskings();
+    this. fetchTask();
     this.fetchDrawer();
   }
 
@@ -300,51 +301,74 @@ class _HomeState extends State<Home> {
                                 builder: (context) => new ProjectTask()));
                       },
 
-                    child: Card(
+                     child: Card(
                       elevation: 2,
                       child: Container(
                         height: 100,
-                        width: 500,
+                        width: 400,
                         child: SizedBox(
-                          child: ListView.builder(
-                            itemCount: projects == null ? 0 : projects.length,
-                           // itemCount: data == null ? 0 : data.length,
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                child: DataTable(
-                                  columns: [
-                                    DataColumn(label: Text('name')),
-                                    DataColumn(label: Text('End Date')),
-                                    DataColumn(label: Text('Status')),
-                                    DataColumn(label: Text('Manager')),
-                                  ],
-                                  rows: [
-                                    DataRow(cells: [
-                                      DataCell(Text(projects.elementAt(index).name)),
-                                      DataCell(Text(projects.elementAt(index).endDate)),
-                                      DataCell(Text(projects.elementAt(index).status)),
-                                      DataCell(Text("Andile Zulu")),
-                                    ])
-//                                    DataRow(cells: [
-//                                      DataCell(
-//                                          Text(data2['name']==null ? 'No name found ':data2['name'])),
-//                                      DataCell(Text(data2['endDate']==null ? 'No date found ':data2['endDate'])),
-//                                      DataCell(Text(data2['status']==null ? 'No status found ':data2['status'])),
-//                                      DataCell(Text("Andile Zulu"))
-//                                    ])
+                          child:  Container(
+                            child: Column(
+                              children: <Widget>[
+                                //SizedBox(height: 60.0),
+                                Row(
+                                  children: <Widget>[
+                                    Text('Name',style: TextStyle(fontSize: 15.0),),
+                                    SizedBox(width: 40.0),
+                                    Text('End Date',style: TextStyle(fontSize: 15.0),),
+                                    SizedBox(width: 40.0),
+                                    Text('Status',style: TextStyle(fontSize: 15.0),),
+                                    SizedBox(width: 40.0),
+                                    Text('Manager',style: TextStyle(fontSize: 15.0),),
                                   ],
                                 ),
-                              );
-                            },
-                          ),
+                                SizedBox(height: 30.0),
+                                Row(
+                                  children: <Widget>[
+                                    Text(detail['name'].toString()),
+                                    SizedBox(width: 5.0),
+                                    Text(detail['endDate'].toString()),
+                                    SizedBox(width: 5.0),
+                                    Text(detail['status'].toString()),
+                                    SizedBox(width: 40.0),
+                                    Text(detail['manager']['firstName'].toString()),//createDate
+                                  ],
+                                ),
+                              ],
+                            ),
+
+//                                child: DataTable(
+//                                  columns: [
+//                                    DataColumn(label: Text('Name')),
+//                                    DataColumn(label: Text('End Date')),
+//                                    DataColumn(label: Text('Status')),
+//                                    DataColumn(label: Text('Manager')),
+//                                  ],
+//                                  rows: [
+//                                    DataRow(cells: [
+//                                      DataCell(Text(detail['name'].toString())),
+//                                      DataCell(Text(detail['endDate'].toString())),
+//                                      DataCell(Text(detail['status'].toString())),
+//                                      DataCell(Text(detail['manager']['status'].toString())),
+//                                    ])
+////                                    DataRow(cells: [
+////                                      DataCell(
+////                                          Text(data2['name']==null ? 'No name found ':data2['name'])),
+////                                      DataCell(Text(data2['endDate']==null ? 'No date found ':data2['endDate'])),
+////                                      DataCell(Text(data2['status']==null ? 'No status found ':data2['status'])),
+////                                      DataCell(Text("Andile Zulu"))
+////                                    ])
+//                                  ],
+//                                ),
+                              ),
+//                            },
+//                          ),
                         ),
                       ),
-                    ),
+                   ),
                     )
                   ]),
-                  )
+                  ),
                  ),
                 ),
             Padding(
@@ -396,30 +420,14 @@ class _HomeState extends State<Home> {
                       child: Card(
                         elevation: 5.0,
                         child: Container(
-                          height: 100,
-                          width: 500,
                           child: SizedBox(
-                            child: ListView.builder(
-                              itemCount: taskings == null ? 0 : taskings.length,
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Container(
-                                  child: Container(
+                            child:  Container(
                                     //width: MediaQuery.of(context).size.width,
-                                    // padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
                                           children: <Widget>[
                                             Container(
-
                                               width: 55.0,
                                               height: 60.0,
                                               color: Colors.white,
@@ -430,45 +438,61 @@ class _HomeState extends State<Home> {
                                                 backgroundImage:NetworkImage('http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']),
                                               ),
                                             ),
-                                            DataTable(
-                                              columns: [
-                                                DataColumn(label: Text(taskings.elementAt(index).description)),
-                                                DataColumn(label: Text('')),
-                                                DataColumn(label: Text('')),
-                                              ],
-                                              rows: [
-                                                DataRow(cells: [
-                                                  DataCell(Text(taskings.elementAt(index).createDate)),
-                                                  DataCell(Text(taskings.elementAt(index).dueDate)),
-                                                  DataCell(Text('Task Age')),
-                                                ])
+                                            Column(
+                                              children: <Widget>[
+                                                Text(data3['content'][0]['name'].toString()),
+                                                FlatButton(
+                                                  onPressed: () {},
+                                                  color: Colors.orange,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0)),
+                                                  child: Text(detail['status'].toString(),
+                                                  ),
+                                                ),
+                                                SizedBox(height:15.0),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text('Created:',style: TextStyle(fontSize: 15.0)),
+                                                    SizedBox(width: 10.0),
+                                                    Text(detail['createDate'].toString()),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text('Due Date:',style: TextStyle(fontSize: 15.0)),
+                                                    SizedBox(width: 10.0),
+                                                    Text(detail['endDate'].toString()),
+                                                  ],
+                                                ),
                                               ],
                                             ),
                                           ],
                                         ),
-                                        Container(
-                                          alignment: Alignment.center,
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 90.0, vertical: 10.0),
-                                          child: FlatButton(
-                                            onPressed: () {},
-                                            color: Colors.orange,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        20.0)),
-                                            child: Text(taskings
-                                                .elementAt(index)
-                                                .status),
-                                          ),
-                                      ),
+//                                        Container(
+//                                          alignment: Alignment.center,
+//                                          padding: EdgeInsets.symmetric(
+//                                              horizontal: 90.0, vertical: 10.0),
+//                                          child: FlatButton(
+//                                            onPressed: () {},
+//                                            color: Colors.orange,
+//                                            shape: RoundedRectangleBorder(
+//                                                borderRadius:
+//                                                    BorderRadius.circular(
+//                                                        20.0)),
+//                                            child: Text(task
+//                                                .elementAt(index)
+//                                                .status),
+//                                          ),
+//                                      ),
                                     ],
                                   ),
                                 ),
-                              );
-                            },
-                          ),
-                        ),
+                              ),
+                         //   },
+                         // ),
+                      //  ),
                       ),
                     ),
                   ),
@@ -539,7 +563,12 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
           Expanded(
             child: DrawerHeader(
               child: isLoading ? Center(child: CircularProgressIndicator()):
-              Container(
+              GestureDetector(
+                onTap: () {
+                 Navigator.pop(context);
+                 Navigator.push(context, new MaterialPageRoute(builder: (context) => new Profile()));
+                },
+              child: Container(
                 child: Column(
                   children:[
                     Center(
@@ -563,6 +592,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                     ) ,
                   ],
                 ),
+              ),
               ),
               decoration: BoxDecoration(
                   image: DecorationImage(
@@ -630,7 +660,8 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
               Navigator.push(
                   context,
                   new MaterialPageRoute(
-                      builder: (context) => new homeScreen()));
+                     // builder: (context) => new homeScreen()
+                     ));
             },
           ),
           new ListTile(
