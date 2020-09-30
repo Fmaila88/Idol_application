@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
   Future<String> fetchDrawer() async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String stringValue = prefs.getString('userToken ');
+    String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
         'http://app.idolconsulting.co.za/idols/users/profile',
