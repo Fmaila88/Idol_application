@@ -457,7 +457,7 @@ class _HomeState extends State<Home> {
                                           radius:50,
                                           backgroundColor: Colors.blue,
                                           backgroundImage:NetworkImage(
-                                              'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
+                                              'http://app.idolconsulting.co.za/idols/file/' + data3['profilePicture']['id']
                                                 //  ==null ? 'https://www.w3schools.com/w3css/img_lights.jpg'
                                                  // :'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
                                           ),
