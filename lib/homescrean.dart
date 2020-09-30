@@ -569,7 +569,7 @@ class DrawerCodeOnly extends StatelessWidget {
               Navigator.push(
                   context,
                   new MaterialPageRoute(
-                      builder: (context) => new TravelAllowance()));
+                      builder: (context) => TravelAllowance()));
             },
           ),
         ],
