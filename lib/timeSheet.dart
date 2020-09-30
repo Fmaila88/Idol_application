@@ -155,14 +155,14 @@ class _HomepageState extends State<Homepage> {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              backgroundColor: Colors.blueGrey[300],
+              backgroundColor: Colors.white,
               insetPadding: EdgeInsets.fromLTRB(5.0, 0, 5.0, 0),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0))),
               title: Center(
                   child: new Text(
                 "${dateFormat.format(_controller.selectedDay)}",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.blueGrey),
               )),
               content: SingleChildScrollView(
                 child: new Column(
