@@ -13,6 +13,7 @@ import 'profile.dart';
 import 'Task.dart';
 import 'projecttask.dart';
 import 'Taskdetails.dart';
+import 'PerformanceAppraisal/performancemain.dart';
 import 'LeaveDays/leavedays.dart';
 
 class Home extends StatefulWidget {
@@ -552,13 +553,13 @@ class DrawerCodeOnly extends StatelessWidget {
           ),
           new ListTile(
             leading: Icon(Icons.forum, size: 30.0),
-            title: new Text("Performance"),
+            title: new Text("Performance Appraisals"),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
                   context,
                   new MaterialPageRoute(
-                      // builder: (context) => new Activequeue()
+                       builder: (context) => new Performance()
                       ));
             },
           ),

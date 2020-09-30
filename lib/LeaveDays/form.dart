@@ -19,6 +19,8 @@ class _FormpageState extends State<Formpage> {
   TextEditingController endDate;
   String _filePath;
 
+
+
   void getFilePath() async {
     try {
       String filePath = await FilePicker.getFilePath(type: FileType.any);
@@ -77,11 +79,18 @@ class _FormpageState extends State<Formpage> {
   }
   Widget build(BuildContext context) {
     return new Scaffold(
-      drawer: DrawerCodeOnly(),
-      //debugShowCheckedModeBanner: false,
-      appBar: new AppBar(
-        title: new Text('Leave Details'),
+      backgroundColor: Colors.grey[400],
+      appBar: AppBar(
+        title: Text(
+        'Leave',
+        style:TextStyle(
+        fontWeight: FontWeight.w600,
+        color: Colors.white,
+        ),
       ),
+      backgroundColor: Colors.blueGrey[400],
+    ),
+
 
       body: Container(
         alignment: Alignment.topRight,
@@ -166,7 +175,9 @@ class _FormpageState extends State<Formpage> {
                       ),
                     ],
                   ),
+
                 ),
+
 
                 Container(
                   padding: EdgeInsets.fromLTRB(0, 20, 200, 0),

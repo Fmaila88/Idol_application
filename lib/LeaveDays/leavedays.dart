@@ -14,7 +14,12 @@ class Leaveday extends StatefulWidget {
 
 class _LeavedayState extends State<Leaveday> {
 
-  List<Days> days = new List<Days>();
+ // Map<String,dynamic> detail;
+  var detailList;
+  List<Days> detailDays=new List<Days>();
+  var days;
+
+ // List<Days> days = new List<Days>();
 
   Future<String> fetchDay() async {
     SharedPreferences prefs =
@@ -23,26 +28,35 @@ class _LeavedayState extends State<Leaveday> {
     String stringValue = prefs.getString('token');
 
     final response = await http.get(
+      // 'https://app.idolconsulting.co.za/idols/leaves/1/10/ASC/id?keyword=',
         'https://app.idolconsulting.co.za/idols/leaves/all',
-
         headers: {"Accept": "application/json",
-          "X_TOKEN": "$stringValue",
+          "X_TOKEN": stringValue,
         });
-    print('freddy mokoele');
+
     if (response.statusCode == 200) {
       setState(() {
 
-        var data = json.decode((response.body));
-        print(response.body);
-        for (int x = 0; x < data.length; x++) {
-          var day = new Days(
-              data[x]['id'],
-              data[x]['endDate'].toString(),
-              data[x]['startDate'].toString(),
-              data[x]['employee'].toString(),
-              data[x]['totalDays'].toString());
-          days.add(day);
+        //var data = json.decode((response.body));
+       var detailList = json.decode((response.body));
+
+        for (int x = 0; x < detailList.length; x++) {
+        var days = new Days(
+
+              detailList[x]['id'],
+              detailList[x]['firstName'],
+              detailList[x]['start'],
+              detailList[x]['end'],
+              detailList[x]['days'].toString());
+
+
+          print(detailList[x]['firstName']);
+        detailDays.add(days);
         }
+
+
+
+
       });
     }
   }
@@ -147,7 +161,7 @@ class _LeavedayState extends State<Leaveday> {
                           width: 500,
                           child:SizedBox(
                             child:  ListView.builder(
-                              itemCount: days==null ? 0:days.length,
+                              itemCount: detailDays==null? 0: detailDays.length,
                               scrollDirection: Axis.horizontal,
                               shrinkWrap: true,
                               itemBuilder: (BuildContext context,int index) {
@@ -162,10 +176,10 @@ class _LeavedayState extends State<Leaveday> {
                                     ],
                                     rows: [
                                       DataRow(cells: [
-                                        DataCell(Text(days.elementAt(index).employee)),
-                                        DataCell(Text(days.elementAt(index).startDate)),
-                                        DataCell(Text(days.elementAt(index).endDate)),
-                                        DataCell(Text(days.elementAt(index).totalDays)),
+                                        DataCell(Text(detailDays.elementAt(index).employee==null ? 'Employee name not  found' : detailDays.elementAt(index).employee)),
+                                       DataCell(Text(detailDays.elementAt(index).startDate==null ? 'Start Date not updated ' : detailDays.elementAt(index).startDate )),
+                                        DataCell(Text(detailDays.elementAt(index).end==null? 'End Date not updated' : detailDays.elementAt(index).startDate)),
+                                        DataCell(Text(detailDays.elementAt(index).totalDays==null? 'Total days not found' : detailDays.elementAt(index).totalDays))
                                       ])],
                                   ),);
                               },),
