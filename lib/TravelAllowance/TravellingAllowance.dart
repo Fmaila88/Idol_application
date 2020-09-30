@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -18,11 +19,16 @@ class _TravelAllowanceState extends State<TravelAllowance> {
 
   List<EmployeeData> employee_allowance = new List<EmployeeData>();
   final DateFormat dateformat = DateFormat('MM/YYYY');
-  String token;
 
   Future<EmployeeData> fetchEmployData() async{
+    /*
+    * Need to know how to retrieve the id of the saved data from the database (get id of travel allowance)
+    * Need to retrieve the id inside a for loop to and pass up it in a list,
+    * pass the list to the url
+    * */
     final response = await http.get ('https://app.idolconsulting.co.za/idols/travel-allowance/all',
         headers: {"Accept": "application/json"});
+
     if(response.statusCode == 200){
       setState(() {
         var data = json.decode((response.body));
@@ -40,6 +46,8 @@ class _TravelAllowanceState extends State<TravelAllowance> {
         //print(jsonDecode(response.body));
       });
     }
+    print(response.body);
+    print('==================================================');
   }
 
   @override
@@ -53,7 +61,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.lightGreen[10],
-        //drawer: DrawerCodeOnly(),
+        drawer: DrawerCodeOnly(),
         appBar: AppBar(
           title: Text(
             'Travel Allowance',
@@ -120,29 +128,29 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                     elevation:40,
                     child: Column(
                       children: [
+                        // Container(
+                        //   height: 54,
+                        //   child: TextField(
+                        //     decoration: InputDecoration(
+                        //       hintText: 'Search',
+                        //       prefixIcon: Icon(
+                        //         Icons.search,
+                        //       ),
+                        //       border: OutlineInputBorder(),
+                        //     ),
+                        //     onChanged: (text) {
+                        //       text = text.toLowerCase();
+                        //       setState(() {
+                        //         employee_allowance = employee_allowance.where((text) {
+                        //           return employee_allowance.contains(text);
+                        //         }).toList();
+                        //       });
+                        //     },
+                        //
+                        //   ),
+                        // ),
                         Container(
-                          height: 54,
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Search',
-                              prefixIcon: Icon(
-                                Icons.search,
-                              ),
-                              border: OutlineInputBorder(),
-                            ),
-                            onChanged: (text) {
-                              text = text.toLowerCase();
-                              setState(() {
-                                employee_allowance = employee_allowance.where((text) {
-                                  return employee_allowance.contains(text);
-                                }).toList();
-                              });
-                            },
-
-                          ),
-                        ),
-                        Container(
-                          height: 550,
+                          height: 590,
                           child:SizedBox(
                             child:  ListView.builder(
                               itemCount: 1,
@@ -152,11 +160,11 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                     child: SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
                                       child: DataTable (
-                                        columnSpacing: 25,
+                                        columnSpacing: 30,
                                         dataRowHeight: 50,
                                         headingRowHeight: 60,
                                         columns: [
-                                          DataColumn(label: Text('Name',
+                                           DataColumn(label: Text('Name',
                                             style: TextStyle(
                                                 color: Colors.black54,
                                                 fontSize: 16,
@@ -184,9 +192,6 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                                 fontWeight: FontWeight.w800
                                             ),),
                                           ),
-                                          // DataColumn(label: Text(''),
-                                          //   numeric: false,
-                                          // ),
                                         ],
                                         rows: List.generate(
                                             employee_allowance.length, (index) =>
@@ -291,39 +296,6 @@ class Decline extends StatelessWidget {
             color: Colors.red[800]
         ),),
       content: Text('Are you sure you want to decline this allowance?',
-        style: TextStyle(
-            color: Colors.black54,
-            fontWeight: FontWeight.w400,
-            fontSize: 18
-        ),),
-      actions: <Widget>[
-        FlatButton(
-          child: Text('Yes'),
-          onPressed: () {
-            Navigator.of(context).pop(true);
-          },
-        ),
-        FlatButton(
-          child: Text('No'),
-          onPressed: () {
-            Navigator.of(context).pop(false);
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class Approve extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: Colors.white,
-      title: Text('Warning!',
-        style: TextStyle(
-            color: Colors.green[500]
-        ),),
-      content: Text('Are you sure you want to approve this allowance?',
         style: TextStyle(
             color: Colors.black54,
             fontWeight: FontWeight.w400,

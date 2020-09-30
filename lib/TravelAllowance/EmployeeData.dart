@@ -8,6 +8,7 @@ class EmployeeData {
   String endKm;
   String travelDate;
   String comment;
+  String rate;
   final DateFormat dateformat = DateFormat('dd MMMM YYYY');
 
   EmployeeData(this.user, this.startKm, this.endKm, this.travelDate);

@@ -562,7 +562,7 @@ class DrawerCodeOnly extends StatelessWidget {
             },
           ),
           new ListTile(
-            leading: Icon(Icons.card_travel, size: 30.0),
+            leading: Icon(Icons.monetization_on, size: 30.0),
             title: new Text("Travel Allowance"),
             onTap: () {
               Navigator.pop(context);

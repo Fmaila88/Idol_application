@@ -255,7 +255,7 @@ class _ApplyState extends State<Apply> {
                       );
                       setState(() {
                         if(response.statusCode == 200) {
-                          //print(response.body);
+                           print(response.body);
                           print(jsonDecode(body));
                           //print(stringValue);
                         }
