@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-
 import 'dart:convert';
 
+import '../homescrean.dart';
 import 'DetailsScreen.dart';
 import 'ListEmp.dart';
 import 'main.dart';
@@ -18,7 +18,8 @@ class MyAppl extends StatefulWidget {
 
 class MyApplState extends State<MyAppl> {
   get searchController => null;
-
+  //Future future;
+//Future<bool>
   List<ListEmp> employee_Details = new List<ListEmp>();
   String names;
 
@@ -54,14 +55,34 @@ class MyApplState extends State<MyAppl> {
     super.initState();
   }
 
+  Future<bool> _onBackPressed() {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Do you really want to leave this page"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("No"),
+                  onPressed: () => Navigator.pop(context, false),
+                ),
+                FlatButton(
+                  child: Text("Yes"),
+                  onPressed: () => Navigator.pop(context, true),
+                ),
+              ],
+            ));
+  }
+
   //DateTime now = new DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      //debugShowCheckedModeBanner: false,
+      child: Scaffold(
         backgroundColor: Colors.blueGrey[90],
+        // drawer: DrawerCodeOnly(),
         appBar: AppBar(
           title: Text('Payslips'),
           backgroundColor: Colors.blueGrey[300],
@@ -119,9 +140,10 @@ class MyApplState extends State<MyAppl> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
+                padding: EdgeInsets.fromLTRB(7, 0, 4, 0),
                 child: Card(
-                  elevation: 2,
+                  margin: const EdgeInsets.all(0.0),
+                  elevation: 6,
                   child: Column(
                     // crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -139,19 +161,24 @@ class MyApplState extends State<MyAppl> {
                         ),
                       ),
                       Container(
-                        height: 300,
-                        width: 800,
+                        height: 350,
+                        //  width: 90,
                         child: SizedBox(
                           child: ListView.builder(
-                            itemCount: employee_Details == null
-                                ? 0
-                                : employee_Details.length,
-                            scrollDirection: Axis.horizontal,
+                            itemCount: 1,
+                            // employee_Details == null
+                            //     ? 0
+                            //     : employee_Details.length,
+                            scrollDirection: Axis.vertical,
+
                             shrinkWrap: true,
                             //crossAxisCount: 2,
                             itemBuilder: (BuildContext context, int index) {
                               return Container(
                                 child: DataTable(
+                                  columnSpacing: 10,
+                                  dataRowHeight: 60,
+                                  headingRowHeight: 60,
                                   columns: [
                                     DataColumn(
                                         label: Text(
@@ -170,8 +197,9 @@ class MyApplState extends State<MyAppl> {
                                     DataColumn(label: Text('')),
                                     DataColumn(label: Text('')),
                                   ],
-                                  rows: [
-                                    DataRow(cells: [
+                                  rows: List.generate(
+                                    employee_Details.length,
+                                    (index) => DataRow(cells: [
                                       DataCell(Text((employee_Details
                                               .elementAt(index)
                                               .convertDateFromString()) ??
@@ -185,7 +213,12 @@ class MyApplState extends State<MyAppl> {
 
                                       DataCell(
                                         FlatButton.icon(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        DetailsScreen()));
+                                          },
                                           icon: Icon(
                                             Icons.remove_red_eye,
                                             size: 15,
@@ -197,7 +230,7 @@ class MyApplState extends State<MyAppl> {
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w400,
-                                                fontSize: 17),
+                                                fontSize: 14),
                                           ),
                                         ),
                                       ),
@@ -216,12 +249,13 @@ class MyApplState extends State<MyAppl> {
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w400,
-                                                fontSize: 17),
+                                                fontSize: 14),
                                           ),
                                         ),
                                       ),
                                     ]),
-                                  ],
+                                    // ],
+                                  ),
                                 ),
                               );
                             },
