@@ -5,39 +5,10 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'Back.dart';
 import 'timesheetClass.dart';
 import 'homescrean.dart';
-
-//Future<Timesheet> TimesheetSendData(String comment, String end, String endTime,
-//    String start, String startTime) async {
-//  var url = 'https://app.idolconsulting.co.za/idols/timesheetitems';
-//  final http.Response response = await http.put(
-//    url,
-//    headers: <String, String>{
-//      'Content-Type': 'application/json; charset=UTF-8',
-//      'Accept': 'application/json text/plain, */*',
-//    },
-//    body: jsonEncode(<String, String>{
-//      "comment": comment,
-//      "end": end,
-//      "endTime": endTime,
-//      "start": start,
-//      "startTime": startTime,
-//    }),
-//  );
-//  if (response.statusCode == 200) {
-//    // If the server did return a 201 CREATED response,
-//    // then parse the JSON.
-//    print(response.body);
-//    //return Timesheet.fromJson(json.decode(response.body));
-//  } else {
-//    print(response.body);
-//    // If the server did not return a 201 CREATED response,
-//    // then throw an exception.
-//    print(response.body);
-//    //throw Exception('Failed to load timesheet');
-//  }
-//}
+import 'time_sheetclass_list.dart';
 
 void main() {
   runApp(MyApp());
@@ -48,7 +19,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       title: 'TimeSheet Details',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
@@ -72,8 +42,10 @@ class _HomepageState extends State<Homepage> {
   List<dynamic> _selectedEvents;
   SharedPreferences prefs;
   Future<Timesheet> timeData;
-  final DateFormat dateFormat = DateFormat('dd MMMM yyyy');
+  Back back = Back();
 
+  final DateFormat dateFormat = DateFormat('dd MMMM yyyy');
+  var data;
   TimeOfDay time = TimeOfDay.now();
   TimeOfDay endtime = TimeOfDay.now();
   String startTimeDate = " ";
@@ -87,6 +59,7 @@ class _HomepageState extends State<Homepage> {
         time = timePicker;
 
         _startController.text = "${time.hour}:${time.minute}";
+        print(_startController.text);
         startTimeDate =
             "${dateFormat.format(_controller.selectedDay)} ${time.hour}:${time.minute} ";
         print(startTimeDate);
@@ -115,8 +88,8 @@ class _HomepageState extends State<Homepage> {
   initPrefs() async {
     prefs = await SharedPreferences.getInstance();
     setState(() {});
-    _events = Map<DateTime, List<dynamic>>.from(
-        decodeMap(json.decode(prefs.getString("events") ?? "{}")));
+//    _events = Map<DateTime, List<dynamic>>.from(
+//        decodeMap(json.decode(prefs.getString("events") ?? "{}")));
   }
 
   Map<String, dynamic> encodeMap(Map<DateTime, dynamic> map) {
@@ -161,6 +134,10 @@ class _HomepageState extends State<Homepage> {
                 setState(() {
                   _selectedEvents = event;
                   _showAddDialog();
+//                  if (_eventController.text == null) {
+//                    _startController.text = 'adsads';
+//                    _endtController.text = 'asdsa';
+//                  }
                 });
               },
               calendarController: _controller,
@@ -178,14 +155,14 @@ class _HomepageState extends State<Homepage> {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
-              backgroundColor: Colors.blueGrey[300],
+              backgroundColor: Colors.white,
               insetPadding: EdgeInsets.fromLTRB(5.0, 0, 5.0, 0),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(20.0))),
               title: Center(
                   child: new Text(
                 "${dateFormat.format(_controller.selectedDay)}",
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.blueGrey),
               )),
               content: SingleChildScrollView(
                 child: new Column(
@@ -268,7 +245,7 @@ class _HomepageState extends State<Homepage> {
                     Padding(
                       padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
                       child: Text(
-                        "Total Hours:",
+                        "Total Hours:${endtime.hour - time.hour}",
                         style: TextStyle(color: Colors.black),
                       ),
                     ),
@@ -308,61 +285,70 @@ class _HomepageState extends State<Homepage> {
                           ),
                           RaisedButton(
                             child: Text("close"),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
                           ),
                           SizedBox(
                             width: 7.0,
                           ),
                           RaisedButton(
                             child: Text("save"),
-                            onPressed: () {
-                              setState(() async {
-                                if (_eventController.text.isEmpty) return;
-                                if (_events[_controller.selectedDay] != null) {
-                                  _events[_controller.selectedDay]
-                                      .add(_eventController.text);
-                                } else {
+                            onPressed: () async {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+
+                              String stringValue = prefs.getString('token');
+                              var response;
+                              Map<String, String> headers = {
+                                "Content-Type": "application/json",
+                                "Accept": "application/json",
+                                "X_TOKEN": "$stringValue",
+                              };
+                              final body = jsonEncode({
+                                "comment": _eventController.text,
+                                "end": "$endTimeDate",
+                                "endTime": _startController.text,
+                                "start": "$startTimeDate",
+                                "startTime": _startController.text,
+                              });
+                              print(body);
+                              response = await http.put(
+                                  'https://app.idolconsulting.co.za/idols/timesheetitems',
+                                  headers: headers,
+                                  body: body);
+                              setState(() {
+                                if (_events[_controller.selectedDay] != null ||
+                                    _eventController.text.isNotEmpty) {
                                   _events[_controller.selectedDay] = [
-                                    _eventController.text
+                                    "comment:${_eventController.text}",
+                                    "StartTime:${_startController.text}",
+                                    "EndTime:${_endtController.text}"
                                   ];
-                                  prefs.setString("events",
-                                      json.encode(encodeMap(_events)));
+                                  if (_startController.text != null &&
+                                      _endtController.text != null) {
+                                    back = Back(
+                                        startDate: _startController.text,
+                                        endDate: _endtController.text);
+                                  }
                                   _eventController.clear();
                                   Navigator.pop(context);
+//                                  _startController.text = " ";
+//                                  _endtController.text = " ";
                                 }
-//                                timeData = TimesheetSendData(
-//                                    _eventController.text,
-//                                    endTimeDate,
-//                                    _startController.text,
-//                                    startTimeDate,
-//                                    _startController.text);
-                                var response;
-                                Map<String, String> headers = {
-                                  "Content-Type": "application/json",
-                                  "Accept": "application/json"
-                                };
-                                final body = jsonEncode({
-                                  "comment": _eventController.text,
-                                  "end": endTimeDate,
-                                  "endTime": _startController.text,
-                                  "start": startTimeDate,
-                                  "startTime": _startController.text,
-                                });
-                                response = await http.put(
-                                    'https://app.idolconsulting.co.za/idols/timesheetitems',
-                                    headers: headers,
-                                    body: body);
+                                prefs.setString(
+                                    "events", json.encode(encodeMap(_events)));
+
                                 if (response.statusCode == 200) {
-                                  // If the server did return a 201 CREATED response,
-                                  // then parse the JSON.
                                   print(response.body);
-                                  //return Timesheet.fromJson(json.decode(response.body));
+                                  return Timesheet.fromJson(
+                                      json.decode(response.body));
                                 } else {
                                   print(response.body);
-                                  // If the server did not return a 201 CREATED response,
-                                  // then throw an exception.
+                                  print("Token: $stringValue");
+
                                   print(response.body);
-                                  //throw Exception('Failed to load timesheet');
+                                  throw Exception('Failed to load timesheet');
                                 }
                               });
                             },
@@ -397,6 +383,32 @@ class homeScreen extends StatefulWidget {
 }
 
 class _homeScreenState extends State<homeScreen> {
+  List<ListTimeSheet> listTimeSheetArr = new List<ListTimeSheet>();
+  Future<String> fetchTimeSheet() async {
+    //https://app.idolconsulting.co.za/idols/timesheetitems/items?start=2020-08-30&end=2020-10-11&_=1600085537769
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('token');
+    final response = await http.get(
+        'https://app.idolconsulting.co.za/idols/timesheetitems/items?start=2020-08-30&end=2020-10-11&_=1600424572212',
+        headers: {"Accept": "application/json", "X_TOKEN": stringValue});
+
+    if (response.statusCode == 200) {
+      setState(() {
+        var data = json.decode((response.body));
+        print(response.body);
+      });
+    } else {
+      print(response.body);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    this.fetchTimeSheet();
+  }
+
   var table_info = TabelData();
   int rowPerPage = PaginatedDataTable.defaultRowsPerPage;
   @override
@@ -478,9 +490,9 @@ class _homeScreenState extends State<homeScreen> {
                   // DataColumn(label: Text("Col#4")),
                 ],
                 source: table_info,
-                onRowsPerPageChanged: (r) {
+                onRowsPerPageChanged: (int r) {
                   setState(() {
-                    rowPerPage = r;
+                    this.rowPerPage = r;
                   });
                 },
               ),
