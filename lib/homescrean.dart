@@ -10,9 +10,14 @@ import 'timeSheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Project.dart';
 import 'profile.dart';
-import 'Task.dart';
 import 'projecttask.dart';
 import 'Taskdetails.dart';
+import 'package:App_idolconsulting/timeSheet.dart';
+import 'package:App_idolconsulting/Project.dart';
+import 'package:App_idolconsulting/profile.dart';
+import 'package:App_idolconsulting/Task.dart';
+import 'package:App_idolconsulting/Taskdetails.dart';
+
 
 class Home extends StatefulWidget {
   final Widget child;
@@ -22,85 +27,128 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Tasking> taskings = new List<Tasking>();
-  String name;
 
-  Future<String> fetchTaskings() async {
+
+  Map<String, dynamic> data4;
+  bool isLoading=true;
+  bool load=true;
+
+
+
+
+  Future<String> fetchDrawer() async {
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('userToken');
+
+    final response = await http.get(
+        'http://app.idolconsulting.co.za/idols/users/profile',
+        headers: {"Accept": "application/json",
+          'X_TOKEN': stringValue});
+
+    if(response.statusCode ==200){
+      setState((){
+        data4=json.decode(response.body);
+
+
+
+      });
+    }
+  }
+
+
+  List<Tasks> task = new List<Tasks>();
+
+  Map<String,dynamic> data3;
+
+  Future<String> fetchTask() async {
+    SharedPreferences prefs =
+    await SharedPreferences.getInstance();
 
     String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
-        //'https://app.idolconsulting.co.za/idols/tasks/all',
-        'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate?keyword=',
-        headers: {
-          "Accept": "application/json",
+        'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate/5f3504f0c391b51061db90e3?keyword=',
+
+        headers: {"Accept": "application/json",
           "X_TOKEN": stringValue,
         });
 
-    var data;
-
     if (response.statusCode == 200) {
       setState(() {
-        //print('Token ' + stringValue);
-        data = json.decode((response.body));
-        //String firstName=response.toString();
-        // print('The full data is ' + firstName);
+        // print('Token ' + stringValue);
 
+        var data = json.decode((response.body));
+
+        data3 = json.decode((response.body));
+
+        //print(detail['endDate'].toString());
+
+
+        // print('createDate');
         for (int x = 0; x < data.length; x++) {
-          var tasking = new Tasking(
-              data[x]['id'],
-              data[x]['createDate'],
-              data[x]['dueDate'],
-              data[x]['description'],
-              data[x]['status'],
-              data[x]['profilePicture']);
-          taskings.add(tasking);
+          var project = new Tasks(
+            data3['name'].toString(),
+            data3['startDate'].toString(),
+            data3['endDate'].toString(),
+            data3['status'].toString(),
+            data3['dueDate'].toString(),
+          );
+          task.add(project);
         }
       });
     }
   }
 
+
   List<Project> projects = new List<Project>();
-
+  Map<String,dynamic> detail;
+  Project project;
   Future<String> fetchProjects() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool load=true;
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('userToken');
 
-    final response = await http
-        .get('https://app.idolconsulting.co.za/idols/projects/all', headers: {
-      "Accept": "application/json",
-      "X_TOKEN": stringValue,
-    });
+    final response = await http.get(
+      //'https://app.idolconsulting.co.za/idols/projects/all',
+        'https://app.idolconsulting.co.za/idols/projects/5f3504f0c391b51061db90e3',
+
+        headers: {"Accept": "application/json",
+          "X_TOKEN": stringValue,
+        });
 
     if (response.statusCode == 200) {
       setState(() {
-        print('Token ' + stringValue);
-
+        // print('Token from shared preferance ' + stringValue);
         var data = json.decode((response.body));
+        detail = json.decode((response.body));
 
-        // print(response.body);
 
+
+        //project=Project.fromJson(detail);
+        //print(data2.toString());
         // print(response.body);
         for (int x = 0; x < data.length; x++) {
           var project = new Project(
-              data[x]['name'],
-              data[x]['name'],
-              data[x]['createDate'],
-              data[x]['endDate'],
-              data[x]['description'],
-              data[x]['budget'],
-              data[x]['status'],
-              data[x]['logo'],
-              data[x]['createdBy'],
-              data[x]['manager'],
-              data[x]['observers'],
-              data[x]['members'],
-              data[x]['company'],
-              data[x]['attachments']);
+              detail['name'].toString(),
+              detail['id'].toString(),
+              detail['createDate'].toString(),
+              detail['endDate'].toString(),
+              detail['description'].toString(),
+            // data[x]['budget'],
+              detail['status'].toString(),
+              detail['logo'].toString(),
+              detail['createdBy'],
+              detail['manager'],
+              detail['observers'],
+              detail['members'],
+              detail['company'],
+              detail['attachments']
+          );
           projects.add(project);
         }
+
       });
     }
   }
@@ -152,7 +200,9 @@ class _HomeState extends State<Home> {
     _seriesPieData = List<charts.Series<Task, String>>();
     _generateData();
     this.fetchProjects();
-    this.fetchTaskings();
+    // this.fetchTaskings();
+    this. fetchTask();
+    this.fetchDrawer();
   }
 
   @override
@@ -219,7 +269,8 @@ class _HomeState extends State<Home> {
 //                                                    },
 //                                                           ),
               ]),
-          body: TabBarView(children: <Widget>[
+          body:  load ? Center(child: CircularProgressIndicator()):
+          TabBarView(children: <Widget>[
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Container(
@@ -238,11 +289,11 @@ class _HomeState extends State<Home> {
                           behaviors: [
                             new charts.DatumLegend(
                               outsideJustification:
-                                  charts.OutsideJustification.endDrawArea,
+                              charts.OutsideJustification.endDrawArea,
                               horizontalFirst: false,
                               desiredMaxRows: 2,
                               cellPadding:
-                                  new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                              new EdgeInsets.only(right: 4.0, bottom: 4.0),
                               entryTextStyle: charts.TextStyleSpec(
                                   color: charts
                                       .MaterialPalette.purple.shadeDefault,
@@ -255,7 +306,7 @@ class _HomeState extends State<Home> {
                               arcRendererDecorators: [
                                 new charts.ArcLabelDecorator(
                                     labelPosition:
-                                        charts.ArcLabelPosition.inside)
+                                    charts.ArcLabelPosition.inside)
                               ])),
                     ),
                     GestureDetector(
@@ -266,51 +317,81 @@ class _HomeState extends State<Home> {
                             new MaterialPageRoute(
                                 builder: (context) => new ProjectTask()));
                       },
+
                       child: Card(
                         elevation: 2,
                         child: Container(
                           height: 100,
-                          width: 500,
+                          width: 400,
                           child: SizedBox(
-                            child: ListView.builder(
-                              itemCount: projects == null ? 0 : projects.length,
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Container(
-                                  child: DataTable(
-                                    columns: [
-                                      DataColumn(label: Text('Name')),
-                                      DataColumn(label: Text('End Date')),
-                                      DataColumn(label: Text('Status')),
-                                      DataColumn(label: Text('Manager')),
-                                    ],
-                                    rows: [
-                                      DataRow(cells: [
-                                        DataCell(Text(
-                                            projects.elementAt(index).name)),
-                                        DataCell(Text(
-                                            projects.elementAt(index).endDate)),
-                                        DataCell(Text(
-                                            projects.elementAt(index).status)),
-                                        DataCell(Text("Andile Zulu")),
-                                      ])
+                            child:  Container(
+                              child: Column(
+                                children: <Widget>[
+                                  //SizedBox(height: 60.0),
+                                  Row(
+                                    children: <Widget>[
+                                      Text('Name',style: TextStyle(fontSize: 15.0),),
+                                      SizedBox(width: 40.0),
+                                      Text('End Date',style: TextStyle(fontSize: 15.0),),
+                                      SizedBox(width: 40.0),
+                                      Text('Status',style: TextStyle(fontSize: 15.0),),
+                                      SizedBox(width: 40.0),
+                                      Text('Manager',style: TextStyle(fontSize: 15.0),),
                                     ],
                                   ),
-                                );
-                              },
+                                  SizedBox(height: 30.0),
+                                  Row(
+                                    children: <Widget>[
+                                      Text(detail['name']==null ? 'Project Name not updated' : detail['name']),
+                                      SizedBox(width: 5.0),
+                                      Text(detail['endDate'].toString()),
+                                      SizedBox(width: 5.0 ),
+                                      Text(detail['status'].toString()),
+                                      SizedBox(width: 40.0),
+                                      Text(detail['manager']['firstName'].toString()),//createDate
+                                    ],
+                                  ),
+                                ],
+                              ),
+
+//                                child: DataTable(
+//                                  columns: [
+//                                    DataColumn(label: Text('Name')),
+//                                    DataColumn(label: Text('End Date')),
+//                                    DataColumn(label: Text('Status')),
+//                                    DataColumn(label: Text('Manager')),
+//                                  ],
+//                                  rows: [
+//                                    DataRow(cells: [
+//                                      DataCell(Text(detail['name'].toString())),
+//                                      DataCell(Text(detail['endDate'].toString())),
+//                                      DataCell(Text(detail['status'].toString())),
+//                                      DataCell(Text(detail['manager']['status'].toString())),
+//                                    ])
+////                                    DataRow(cells: [
+////                                      DataCell(
+////                                          Text(data2['name']==null ? 'No name found ':data2['name'])),
+////                                      DataCell(Text(data2['endDate']==null ? 'No date found ':data2['endDate'])),
+////                                      DataCell(Text(data2['status']==null ? 'No status found ':data2['status'])),
+////                                      DataCell(Text("Andile Zulu"))
+////                                    ])
+//                                  ],
+//                                ),
                             ),
+//                            },
+//                          ),
                           ),
                         ),
                       ),
-                    ),
+                    )
                   ]),
                 ),
               ),
             ),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Container(
+              child:
+              Container(
                 child: Center(
                   child: Column(children: <Widget>[
                     Text(
@@ -326,11 +407,11 @@ class _HomeState extends State<Home> {
                           behaviors: [
                             new charts.DatumLegend(
                               outsideJustification:
-                                  charts.OutsideJustification.endDrawArea,
+                              charts.OutsideJustification.endDrawArea,
                               horizontalFirst: false,
                               desiredMaxRows: 2,
                               cellPadding:
-                                  new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                              new EdgeInsets.only(right: 4.0, bottom: 4.0),
                               entryTextStyle: charts.TextStyleSpec(
                                   color: charts
                                       .MaterialPalette.purple.shadeDefault,
@@ -343,7 +424,7 @@ class _HomeState extends State<Home> {
                               arcRendererDecorators: [
                                 new charts.ArcLabelDecorator(
                                     labelPosition:
-                                        charts.ArcLabelPosition.inside)
+                                    charts.ArcLabelPosition.inside)
                               ])),
                     ),
                     GestureDetector(
@@ -354,85 +435,89 @@ class _HomeState extends State<Home> {
                             new MaterialPageRoute(
                                 builder: (context) => new TaskDetails()));
                       },
-                      child: Card(
+                      child: load ? Center(child: CircularProgressIndicator()):
+                      Card(
                         elevation: 5.0,
-                        child: Container(
-                          height: 100,
-                          width: 500,
+                        child:
+                        Container(
                           child: SizedBox(
-                            child: ListView.builder(
-                              itemCount: taskings == null ? 0 : taskings.length,
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Container(
-                                  child: Container(
-                                    //width: MediaQuery.of(context).size.width,
-                                    // padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Container(
-                                              width: 55.0,
-                                              height: 60.0,
-                                              color: Colors.white,
-                                              child: CircleAvatar(
-                                                backgroundColor: Colors.green,
-                                                foregroundColor: Colors.green,
-                                                child: Image.asset(
-                                                    'images/logo1.png'),
-                                              ),
-                                            ),
-                                            DataTable(
-                                              columns: [
-                                                DataColumn(label: Text(name)),
-                                                DataColumn(label: Text('')),
-                                                DataColumn(label: Text('')),
-                                              ],
-                                              rows: [
-                                                DataRow(cells: [
-                                                  DataCell(Text(taskings
-                                                      .elementAt(index)
-                                                      .createDate)),
-                                                  DataCell(Text(taskings
-                                                      .elementAt(index)
-                                                      .dueDate)),
-                                                  DataCell(Text('Task Age')),
-                                                ])
-                                              ],
-                                            ),
-                                          ],
+                            child:  Container(
+                              //width: MediaQuery.of(context).size.width,
+                              child: Row(
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      load ? Center(child: CircularProgressIndicator()):
+                                      Container(
+                                        width: 55.0,
+                                        height: 60.0,
+                                        color: Colors.white,
+                                        child:  load ? Center(child: CircularProgressIndicator()):
+                                        CircleAvatar(
+                                          radius:50,
+                                          backgroundColor: Colors.blue,
+                                          backgroundImage:NetworkImage(
+                                              'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
+                                                //  ==null ? 'https://www.w3schools.com/w3css/img_lights.jpg'
+                                                 // :'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
+                                          ),
                                         ),
-                                        Container(
-                                          alignment: Alignment.center,
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 90.0, vertical: 10.0),
-                                          child: FlatButton(
+                                      ),
+                                      Column(
+                                        children: <Widget>[
+                                          Text(data3['content'][0]['name'].toString()==null ? '' :data3['content'][0]['name'].toString()),
+                                          FlatButton(
                                             onPressed: () {},
                                             color: Colors.orange,
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(
-                                                        20.0)),
-                                            child: Text(taskings
-                                                .elementAt(index)
-                                                .status),
+                                                BorderRadius.circular(
+                                                    20.0)),
+                                            child: Text(detail['status'].toString(),
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
+                                          SizedBox(height:15.0),
+                                          Row(
+                                            children: <Widget>[
+                                              Text('Created:',style: TextStyle(fontSize: 15.0)),
+                                              SizedBox(width: 10.0),
+                                              Text(detail['createDate'].toString()),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Text('Due Date:',style: TextStyle(fontSize: 15.0)),
+                                              SizedBox(width: 10.0),
+                                              Text(detail['endDate'].toString()),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                );
-                              },
+//                                        Container(
+//                                          alignment: Alignment.center,
+//                                          padding: EdgeInsets.symmetric(
+//                                              horizontal: 90.0, vertical: 10.0),
+//                                          child: FlatButton(
+//                                            onPressed: () {},
+//                                            color: Colors.orange,
+//                                            shape: RoundedRectangleBorder(
+//                                                borderRadius:
+//                                                    BorderRadius.circular(
+//                                                        20.0)),
+//                                            child: Text(task
+//                                                .elementAt(index)
+//                                                .status),
+//                                          ),
+//                                      ),
+                                ],
+                              ),
                             ),
                           ),
+                          //   },
+                          // ),
+                          //  ),
                         ),
                       ),
                     ),
@@ -444,139 +529,229 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
+
+  }
+  @override
+  void setState(fn) {
+    isLoading=false;
+    load=false;
+    super.setState(fn);
   }
 }
 
-class DrawerCodeOnly extends StatelessWidget {
+class DrawerCodeOnly extends StatefulWidget {
+  final Widget child;
+  DrawerCodeOnly({Key key, this.child}) : super(key: key);
+
+  _DrawerCodeOnlyState createState() => _DrawerCodeOnlyState();
+}
+
+class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
+
+  Map<String, dynamic> data3;
+  bool isLoading=true;
+
+  Future<String> fetchDrawer() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('userToken');
+
+    final response = await http.get(
+        'http://app.idolconsulting.co.za/idols/users/profile',
+        headers: {"Accept": "application/json",
+          'X_TOKEN': stringValue});
+
+    if(response.statusCode ==200){
+      setState((){
+        data3=json.decode(response.body);
+
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    this.fetchDrawer();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Drawer(
-      child: new ListView(
+    return Drawer(
+      child:Column(
         children: <Widget>[
-          UserAccountsDrawerHeader(
-            accountName: Text("accountName"),
-            accountEmail: Text("accountPosition & Task"),
-            currentAccountPicture: GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context,
-                    new MaterialPageRoute(builder: (context) => new Profile()));
-              },
-              child: CircleAvatar(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.green,
-                child: Image.asset('images/logo1.png'),
+          Container(
+            height: 80,
+            margin: EdgeInsets.only(top: 10),
+            color: Colors.white,
+            child: Image(image: AssetImage('images/logo1.png'),),
+          ),
+          Expanded(
+            child: DrawerHeader(
+              child: isLoading ? Center(child: CircularProgressIndicator()):
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Profile()));
+                },
+                child: Container(
+                  child: Column(
+                    children:[
+                      Center(
+                        child:CircleAvatar(
+                          radius:50,
+                          backgroundColor: Colors.blue,
+                          backgroundImage:NetworkImage('http://app.idolconsulting.co.za/idols/file/' + data3['profilePicture']['id']),
+                        ),
+                      ),
+                      Center(
+                        child: Text(data3['firstName']==null? 'no name' :data3['firstName'] + '' + data3['lastName'],
+                          style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),),
+                      ),
+                      Center(
+                          child: Text(data3['company']==null? 'company found' :data3['company']['name'],
+                            style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),)
+                      ),
+                      Center(
+                          child: Text(data3['position']==null? 'position not found' : data3['position']['name'],
+                            style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),)
+                      ) ,
+                    ],
+                  ),
+                ),
+              ),
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: AssetImage('images/background.jpg'), fit: BoxFit.fill)
               ),
             ),
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('images/backend.jpg'), fit: BoxFit.fill)),
           ),
-          new ListTile(
-            leading: Icon(Icons.home, size: 30.0),
-            title: new Text("Home"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context,
-                  new MaterialPageRoute(builder: (context) => new Home()));
-            },
-          ),
-          new ListTile(
-            leading: Icon(Icons.card_travel, size: 30.0),
-            title: new Text("Companies"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      // builder: (context) => new Services()
-                      ));
-            },
-          ),
-          new ListTile(
-            leading: Icon(Icons.timelapse, size: 30.0),
-            title: new Text("Project"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      //builder: (context) => new Teller()
-                      ));
-            },
-          ),
-          new ListTile(
-            leading: Icon(Icons.group, size: 30.0),
-            title: new Text("Employees"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      //builder: (context) => new Lcddisplays()
-                      ));
-            },
-          ),
-          new ListTile(
-            leading: Icon(Icons.calendar_today, size: 30.0),
-            title: new Text("Timesheets"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (context) => new homeScreen()));
-            },
-          ),
-          new ListTile(
-            leading: Icon(Icons.rate_review, size: 30.0),
-            title: new Text("Leave Days"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      //builder: (context) => new Reports()
-                      ));
-            },
-          ),
-          new ListTile(
-            leading: Icon(Icons.assessment, size: 30.0),
-            title: new Text("PaySlips"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context,
-                  new MaterialPageRoute(builder: (context) => new MyAppl()));
-            },
-          ),
-          new ListTile(
-            leading: Icon(Icons.forum, size: 30.0),
-            title: new Text("Performance"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      // builder: (context) => new Activequeue()
-                      ));
-            },
-          ),
-          new ListTile(
-            leading: Icon(Icons.card_travel, size: 30.0),
-            title: new Text("Travel Allowance"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (context) => new TravelAllowance()));
-            },
+          Container(
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: 400,
+                  child: ListView(
+                    children: <Widget>[
+                      ListTile(
+                        leading: Icon(Icons.home, size: 30.0),
+                        title: new Text("Home"),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(context,
+                              new MaterialPageRoute(builder: (context) => new Home()));
+                        },
+                      ),
+                      new ListTile(
+                        leading: Icon(Icons.card_travel, size: 30.0),
+                        title: new Text("Companies"),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                // builder: (context) => new Services()
+                              ));
+                        },
+                      ),
+                      new ListTile(
+                        leading: Icon(Icons.timelapse, size: 30.0),
+                        title: new Text("Project"),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                //builder: (context) => new Teller()
+                              ));
+                        },
+                      ),
+                      new ListTile(
+                        leading: Icon(Icons.group, size: 30.0),
+                        title: new Text("Employees"),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                //builder: (context) => new Lcddisplays()
+                              ));
+                        },
+                      ),
+                      new ListTile(
+                        leading: Icon(Icons.calendar_today, size: 30.0),
+                        title: new Text("Timesheets"),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => new homeScreen()
+                              ));
+                        },
+                      ),
+                      new ListTile(
+                        leading: Icon(Icons.rate_review, size: 30.0),
+                        title: new Text("Leave Days"),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                // builder: (context) => new Leaveday()
+                              ));
+                        },
+                      ),
+                      new ListTile(
+                        leading: Icon(Icons.assessment, size: 30.0),
+                        title: new Text("PaySlips"),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(context,
+                              new MaterialPageRoute(builder: (context) => new MyAppl()));
+                        },
+                      ),
+                      new ListTile(
+                        leading: Icon(Icons.forum, size: 30.0),
+                        title: new Text("Performance"),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                // builder: (context) => new Activequeue()
+                              ));
+                        },
+                      ),
+                      new ListTile(
+                        leading: Icon(Icons.card_travel, size: 30.0),
+                        title: new Text("Travel Allowance"),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => new TravelAllowance()));
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
+
+  @override
+  void setState(fn) {
+    isLoading=false;
+    super.setState(fn);
+  }
 }
+
 
 class Task {
   String task;

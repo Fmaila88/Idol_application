@@ -35,88 +35,88 @@ class _ProfileState extends State<Profile> {
     Navigator.of(context).pop();
   }
 
-Future<void> _showChoiceDialog (BuildContext context){
-  return showDialog(context: context,builder: (BuildContext context){
-    return AlertDialog(
-      title: Text("Make A Choice!"),
-      content: SingleChildScrollView(
-        child: ListBody(
-          children: <Widget>[
-            GestureDetector(
-              child: Text("Gallery"),
-              onTap: (){
-                _openGallery(context);
-              },
-            ),
-            Padding(padding: EdgeInsets.all(8.0)),
-            GestureDetector(
-              child: Text("Camera"),
-              onTap: (){
-                _openCamera(context);
-              },
-            ),
-          ],
+  Future<void> _showChoiceDialog (BuildContext context){
+    return showDialog(context: context,builder: (BuildContext context){
+      return AlertDialog(
+        title: Text("Make A Choice!"),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              GestureDetector(
+                child: Text("Gallery"),
+                onTap: (){
+                  _openGallery(context);
+                },
+              ),
+              Padding(padding: EdgeInsets.all(8.0)),
+              GestureDetector(
+                child: Text("Camera"),
+                onTap: (){
+                  _openCamera(context);
+                },
+              ),
+            ],
+          ),
         ),
-      ),
+      );
+    }
     );
   }
-  );
-}
 
-Widget _ImageView(){
+  Widget _ImageView(){
     if(imageFile == null){
       return Text("No Image Selected");
     } else{
-  Image.file(imageFile,width: 200, height: 200);
+      Image.file(imageFile,width: 200, height: 200);
+    }
   }
-}
 
 
   @override
   Widget build(BuildContext context) {
-   // ScreenUtil.init(context,height: 869,width: 414, allowFontScaling: true);
+    // ScreenUtil.init(context,height: 869,width: 414, allowFontScaling: true);
     return Scaffold(
-        drawer: DrawerCodeOnly(),
-        appBar: AppBar(
-            backgroundColor: Colors.grey,
-            title: Text("Profile",style: TextStyle(
-              color: Colors.white,
-            ),),
-            actions:<Widget>[
-              Padding(
-                padding: EdgeInsets.all(8.0),
-              ),
+      drawer: DrawerCodeOnly(),
+      appBar: AppBar(
+          backgroundColor: Colors.grey,
+          title: Text("Profile",style: TextStyle(
+            color: Colors.white,
+          ),),
+          actions:<Widget>[
+            Padding(
+              padding: EdgeInsets.all(8.0),
+            ),
 
-                              FlatButton(
-                                       child: new Text('Logout',style: new TextStyle(fontSize:17.0,color:Colors.white)),
-                                         onPressed: (){
-                                          //AuthService().signOut();
-                                                    },
-                                                           ),
-            ]),
+            FlatButton(
+              child: new Text('Logout',style: new TextStyle(fontSize:17.0,color:Colors.white)),
+              onPressed: (){
+                //AuthService().signOut();
+              },
+            ),
+          ]),
       body: Column(
         children: <Widget>[
           SizedBox(width: 50),
 //          Icon(LineAwesomeIcons.arrow_left,size: ScreenUtil().setSp(300)
 //          ),
           //Expanded(
-             Column(
-              children: <Widget>[
+          Column(
+            children: <Widget>[
               Container(
                 //height: 50,
-               // width: 500,
-               margin: EdgeInsets.only(top: 10),
+                // width: 500,
+                margin: EdgeInsets.only(top: 10),
                 child: Stack(
                   children: [ CircleAvatar(
                     radius: 50,
                     backgroundImage: AssetImage("images/logo1.png"),
                   ),
                     Text("* Required field",textAlign: TextAlign.right),
-                   ],
+                  ],
                 ),
               ),
-                SizedBox(height: 20),
-                Container(
+              SizedBox(height: 20),
+              Container(
                   height: 40,
                   width: 200,
 //                  decoration: BoxDecoration(
@@ -125,16 +125,16 @@ Widget _ImageView(){
 //                  ),
                   child: Center(
                     child: FlatButton(
-                    color: Colors.blue,
+                      color: Colors.blue,
                       child: new Text('Upload Profile Picture',style: new TextStyle(fontSize:17.0,color:Colors.white)),
-                    onPressed: (){
-                      _showChoiceDialog(context);
-                    },
-                  ),
-                ))
-               ],
-            ),
-         // ),
+                      onPressed: (){
+                        _showChoiceDialog(context);
+                      },
+                    ),
+                  ))
+            ],
+          ),
+          // ),
 //          Icon(LineAwesomeIcons.sun,size: ScreenUtil().setSp(300)
 //          ),
           SizedBox(width: 20),
@@ -182,13 +182,13 @@ class ProfileListItem extends StatelessWidget{
     this.icon,
     this.text,
     this.hasNavigation,
-}): super(key: key);
+  }): super(key: key);
 
   @override
   Widget build(BuildContext context){
     return Container(
-        alignment: Alignment.topRight,
-       // margin: EdgeInsets.fromLTRB(0, 0, 20, 0),
+      alignment: Alignment.topRight,
+      // margin: EdgeInsets.fromLTRB(0, 0, 20, 0),
 
       child: Form(child: Padding(padding: EdgeInsets.fromLTRB(20, 2, 50, 0),
         child: Column(
@@ -206,9 +206,9 @@ class ProfileListItem extends StatelessWidget{
             ),
           ],
         ),
-    ),
       ),
-     );
+      ),
+    );
   }
 }
 
