@@ -637,10 +637,9 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         leading: Icon(Icons.home, size: 30.0),
                         title: new Text("Home"),
                         onTap: () {
-                         // Navigator.pop(context);
+                          Navigator.pop(context);
                           Navigator.push(context,
-                              new MaterialPageRoute(builder: (context) => new Home())
-                          );
+                              new MaterialPageRoute(builder: (context) => new Home()));
                         },
                       ),
                       new ListTile(
