@@ -245,7 +245,7 @@ class _HomepageState extends State<Homepage> {
                     Padding(
                       padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
                       child: Text(
-                        "Total Hours:",
+                        "Total Hours:${endtime.hour - time.hour}",
                         style: TextStyle(color: Colors.black),
                       ),
                     ),
