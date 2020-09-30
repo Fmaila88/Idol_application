@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'EmployeeList.dart';
 import 'form.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -18,6 +19,8 @@ class _LeavedayState extends State<Leaveday> {
   var detailList;
   List<Days> detailDays=new List<Days>();
   var days;
+  EmployeeList empList;
+
 
  // List<Days> days = new List<Days>();
 
@@ -40,6 +43,7 @@ class _LeavedayState extends State<Leaveday> {
         //var data = json.decode((response.body));
        var detailList = json.decode((response.body));
 
+
         for (int x = 0; x < detailList.length; x++) {
         var days = new Days(
 
@@ -49,8 +53,10 @@ class _LeavedayState extends State<Leaveday> {
               detailList[x]['end'],
               detailList[x]['days'].toString());
 
-
           print(detailList[x]['firstName']);
+
+
+
         detailDays.add(days);
         }
 

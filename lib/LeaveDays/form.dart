@@ -3,6 +3,13 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:App_idolconsulting/homescrean.dart';
+import 'package:App_idolconsulting/PaySlips/Employees.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+import 'EmployeeList.dart';
+
+
 
 class Formpage extends StatefulWidget {
   @override
@@ -18,6 +25,40 @@ class _FormpageState extends State<Formpage> {
   TextEditingController startDate;
   TextEditingController endDate;
   String _filePath;
+  List<Employees> employeeList=new List<Employees>();
+  List empList;
+  var items;
+  List<Employees> _employeeName = new List<Employees>();
+
+
+  Future<String> fetchEmployees() async {
+
+
+    final response = await http.get(
+      // 'https://app.idolconsulting.co.za/idols/leaves/1/10/ASC/id?keyword=',
+        'http://app.idolconsulting.co.za/idols/users/all',
+        headers: {"Accept": "application/json",
+
+        });
+
+    if (response.statusCode == 200) {
+      setState(() {
+
+        //var data = json.decode((response.body));
+         empList = json.decode((response.body));
+
+         for (int x = 0; x < empList.length; x++) {
+           var employees = new Employees(
+               empList[x]['firstName'].toString(), empList[x]['lastName'].toString());
+
+           _employeeName.add(employees);
+         }
+
+
+      });
+    }
+  }
+
 
 
 
@@ -70,19 +111,21 @@ class _FormpageState extends State<Formpage> {
       });
     }
   }
-
-
   @override
   void initState(){
     startDate=TextEditingController();
     endDate=TextEditingController();
+    this.fetchEmployees();
+    super.initState();
   }
+
+
   Widget build(BuildContext context) {
     return new Scaffold(
-      backgroundColor: Colors.grey[400],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-        'Leave',
+        'Leave Details',
         style:TextStyle(
         fontWeight: FontWeight.w600,
         color: Colors.white,
@@ -109,19 +152,7 @@ class _FormpageState extends State<Formpage> {
 
                 Container(
                   padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-//                            padding: EdgeInsets.symmetric(
-//                                horizontal: 90.0, vertical: 0),
-//                      decoration: BoxDecoration(
-//                          color: Colors.white,
-//                          borderRadius: BorderRadius.circular(0),
-//                          boxShadow: [
-//                            BoxShadow(
-//                              color: Color.fromRGBO(143, 148, 251, 3),
-//                              //blurRadius: 3.0,
-//                              offset: Offset(0, 10),
-//                            )
-//                          ]),
-                  //copy here
+
                   child:Row(
                     children: <Widget>[
                       // Padding(padding: EdgeInsets.fromLTRB(50, 0, 200, 0)),
@@ -180,8 +211,52 @@ class _FormpageState extends State<Formpage> {
 
 
                 Container(
-                  padding: EdgeInsets.fromLTRB(0, 20, 200, 0),
-                  child:  Text("Start Date*"),
+
+                  child:  Column(
+
+                    children: <Widget>[
+
+                      Container(
+                        // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black54)),
+                        margin: const EdgeInsets.all(11.0),
+                        alignment: Alignment.topCenter,
+
+                        child: DropdownButton<Employees>(
+                          hint: Text('Employee Names'),
+                          elevation: 5,
+                          icon: Icon(Icons.arrow_drop_down),
+                          iconSize: 40.0,
+                          items: _employeeName.map((Employees names) {
+                            return DropdownMenuItem<Employees>(
+                              value: names,
+                              child: Text("$names"),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              this.items = value;
+                            });
+                          },
+                          value: items,
+                        ),
+                      ),
+
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 200, 0),
+
+                        child: Text("Start Date*"),
+
+                      ),
+
+
+
+
+                    ],
+
+                  ),
                 ),
 
 
