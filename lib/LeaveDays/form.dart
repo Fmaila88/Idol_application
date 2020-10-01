@@ -125,7 +125,7 @@ class _FormpageState extends State<Formpage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-        'Leave Detailss',
+        'Leave Details',
         style:TextStyle(
         fontWeight: FontWeight.w600,
         color: Colors.white,
