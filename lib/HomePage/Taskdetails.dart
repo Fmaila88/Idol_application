@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'homescrean.dart';
+import 'package:App_idolconsulting/HomePage/homescrean.dart';
 
 import 'package:flutter/material.dart';
-import 'homescrean.dart';
+import 'package:App_idolconsulting/HomePage/homescrean.dart';
 
 class TaskDetails extends StatefulWidget {
 

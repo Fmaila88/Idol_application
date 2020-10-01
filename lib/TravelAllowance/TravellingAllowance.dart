@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
 import 'package:App_idolconsulting/TravelAllowance/ApplyTransportAllowance.dart';
 
-import '../homescrean.dart';
+import 'package:App_idolconsulting/HomePage/homescrean.dart';
 
 class TravelAllowance extends StatefulWidget {
 

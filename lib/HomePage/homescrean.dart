@@ -6,17 +6,13 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'timeSheet.dart';
+import 'package:App_idolconsulting/timeSheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Project.dart';
 import 'profile.dart';
-import 'projecttask.dart';
+import 'Projecttask.dart';
 import 'Taskdetails.dart';
-import 'package:App_idolconsulting/timeSheet.dart';
-import 'package:App_idolconsulting/Project.dart';
-import 'package:App_idolconsulting/profile.dart';
-import 'package:App_idolconsulting/Task.dart';
-import 'package:App_idolconsulting/Taskdetails.dart';
+import 'Task.dart';
 
 
 class Home extends StatefulWidget {

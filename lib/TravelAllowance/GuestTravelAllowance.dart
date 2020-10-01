@@ -8,7 +8,7 @@ import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
 import 'package:App_idolconsulting/TravelAllowance/ApplyTransportAllowance.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
-import '../homescrean.dart';
+import 'package:App_idolconsulting/HomePage/homescrean.dart';
 
 class GuestTravelAllowance extends StatefulWidget {
 
