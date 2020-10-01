@@ -19,7 +19,8 @@ class _DeedeState extends State<Deede> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(),
-    );
+        // drawer: Drawer(),
+
+        );
   }
 }

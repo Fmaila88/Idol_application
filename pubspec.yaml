@@ -41,6 +41,7 @@ dependencies:
   http: 0.12.2
   date_format:
   file_picker: ^1.2.0
+  responsive_table: ^0.1.1+8
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +69,7 @@ flutter:
     - images/logo1.png
     - images/logo2.png
     - images/backend.jpg
+    - images/background.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

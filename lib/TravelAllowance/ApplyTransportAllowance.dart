@@ -1,9 +1,14 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:App_idolconsulting/TravelAllowance/User.dart';
+import 'package:file_picker/file_picker.dart';
+
+import 'TravellingAllowance.dart';
 
 class Apply extends StatefulWidget {
   @override
@@ -15,15 +20,32 @@ class _ApplyState extends State<Apply> {
   DateTime _selectedDate;
   TextEditingController _textEditingController = TextEditingController();
 
-  TextEditingController _employeeController = TextEditingController();
   TextEditingController _startKmController = TextEditingController();
   TextEditingController _endKmController = TextEditingController();
   TextEditingController _travelDateController = TextEditingController();
   TextEditingController _commentController = TextEditingController();
+  TextEditingController _ratePerKm = TextEditingController();
 
   List<User> employeeList = new List<User>();
   String emplyeeName;
   var items;
+
+  String _filePath;
+
+  void getFilePath() async {
+    try {
+      String filePath = await FilePicker.getFilePath(type: FileType.any);
+      if (filePath == '') {
+        return;
+      }
+      print("File path: " + filePath);
+      setState(() {
+        this._filePath = filePath;
+      });
+    } on PlatformException catch (e) {
+      print("Error while picking the file: " + e.toString());
+    }
+  }
 
 @override
   void initState() {
@@ -34,7 +56,7 @@ class _ApplyState extends State<Apply> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[400],
+      backgroundColor: Colors.lightGreen[10],
       appBar: AppBar(
         title: Text(
           'Travel Allowance',
@@ -49,6 +71,7 @@ class _ApplyState extends State<Apply> {
         padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
         child: SingleChildScrollView(
           child: Card(
+            elevation: 40,
             color: Colors.white,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,14 +87,14 @@ class _ApplyState extends State<Apply> {
                     ),
                   ),
                 ),
+
                 Container(
                   margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
                   child: Text(
                     'Start Kilometers*',
                     style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -79,6 +102,7 @@ class _ApplyState extends State<Apply> {
                   padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
                   height: 34,
                   child: TextField(
+                    controller: _startKmController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                     ),
@@ -89,9 +113,8 @@ class _ApplyState extends State<Apply> {
                   child: Text(
                     'End Kilometers*',
                     style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -99,6 +122,7 @@ class _ApplyState extends State<Apply> {
                   padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
                   height: 34,
                   child: TextField(
+                    controller: _endKmController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                     ),
@@ -107,11 +131,10 @@ class _ApplyState extends State<Apply> {
                 Container(
                   margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
                   child: Text(
-                    'Rate Per Hour*',
+                    'Rate Per Kilometer*',
                     style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -119,6 +142,7 @@ class _ApplyState extends State<Apply> {
                   padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
                   height: 34,
                   child: TextField(
+                    controller: _ratePerKm,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                     ),
@@ -129,9 +153,8 @@ class _ApplyState extends State<Apply> {
                   child: Text(
                     'Travel Date*',
                     style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -152,25 +175,60 @@ class _ApplyState extends State<Apply> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.fromLTRB(10, 0, 10, 5),
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
                   child: Text(
                     'Comment*',
                     style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                      fontSize: 14,
                     ),
                   ),
                 ),
                 Container(
                   padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
-                  height: 100,
+                  height: 60,
                   child: TextField(
+                    keyboardType: TextInputType.multiline,
+                    controller: _commentController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                     ),
                   ),
                 ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(150, 19, 80, 12),
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black54)),
+                        child: _filePath == null
+                            ? new Text('Attach File')
+                            : new Text('Path' + _filePath),
+
+                        //padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      ),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
+                        child: RaisedButton(
+                          padding: EdgeInsets.symmetric(vertical: 14.0),
+                          onPressed: getFilePath,
+                          child: Text(
+                            'Browse',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 17,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
                 Container(
                   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                   child: RaisedButton(
@@ -183,11 +241,12 @@ class _ApplyState extends State<Apply> {
                         "X_TOKEN":"$stringValue",
                       };
                       final body = jsonEncode({
-                        'id': _employeeController.text,
                         'startKm': _startKmController.text,
                         'endKm': _endKmController.text,
+                        // 'ratePerKm': _ratePerKm,
                         'travelDate': _travelDateController.text,
                         'comment': _commentController.text,
+                        // 'attachment' 'name': //PickedFile,
                       });
                       final response = await http.put(
                           'https://app.idolconsulting.co.za/idols/travel-allowance',
@@ -195,14 +254,17 @@ class _ApplyState extends State<Apply> {
                           body: body
                       );
                       setState(() {
-
-                        print('sfadfsdfsf');
                         if(response.statusCode == 200) {
-                          print(json.decode(response.body));
+                          //print(response.body);
+                          print(jsonDecode(body));
+                          //print(stringValue);
                         }
                       });
-                      print("$stringValue");
-                      print(json.decode(response.body));
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) => new TravelAllowance()));
                     },
                     child: Text(
                       'Apply',
