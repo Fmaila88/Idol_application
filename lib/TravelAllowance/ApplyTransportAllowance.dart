@@ -17,6 +17,7 @@ class Apply extends StatefulWidget {
 
 class _ApplyState extends State<Apply> {
 
+  String _filePath;
   DateTime _selectedDate;
   TextEditingController _textEditingController = TextEditingController();
 
@@ -26,26 +27,15 @@ class _ApplyState extends State<Apply> {
   TextEditingController _commentController = TextEditingController();
   TextEditingController _ratePerKm = TextEditingController();
 
-  List<User> employeeList = new List<User>();
-  String emplyeeName;
-  var items;
-
-  String _filePath;
-
   void getFilePath() async {
-    try {
-      String filePath = await FilePicker.getFilePath(type: FileType.any);
-      if (filePath == '') {
-        return;
-      }
-      print("File path: " + filePath);
-      setState(() {
-        this._filePath = filePath;
-      });
-    } on PlatformException catch (e) {
-      print("Error while picking the file: " + e.toString());
+    String filePath = await FilePicker.getFilePath(type: FileType.any);
+    if (filePath == '') {
+      return;
     }
-  }
+    setState(() {
+      this._filePath = filePath;
+    });
+        }
 
 @override
   void initState() {
@@ -206,15 +196,14 @@ class _ApplyState extends State<Apply> {
                             border: Border.all(color: Colors.black54)),
                         child: _filePath == null
                             ? new Text('Attach File')
-                            : new Text('Path' + _filePath),
+                            : new Text( _filePath),
 
-                        //padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                       ),
                       Container(
                         padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
                         child: RaisedButton(
                           padding: EdgeInsets.symmetric(vertical: 14.0),
-                          onPressed: getFilePath,
+                          onPressed: () {getFilePath();},
                           child: Text(
                             'Browse',
                             style: TextStyle(
@@ -246,7 +235,7 @@ class _ApplyState extends State<Apply> {
                         // 'ratePerKm': _ratePerKm,
                         'travelDate': _travelDateController.text,
                         'comment': _commentController.text,
-                        // 'attachment' 'name': //PickedFile,
+                        //'attachment' 'name': _filePath, => Need to test if this functionality works. if attached file can save on the database
                       });
                       final response = await http.put(
                           'https://app.idolconsulting.co.za/idols/travel-allowance',
@@ -255,7 +244,7 @@ class _ApplyState extends State<Apply> {
                       );
                       setState(() {
                         if(response.statusCode == 200) {
-                          //print(response.body);
+                          print(response.body);
                           print(jsonDecode(body));
                           //print(stringValue);
                         }

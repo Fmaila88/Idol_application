@@ -18,7 +18,6 @@ class _TravelAllowanceState extends State<TravelAllowance> {
 
   List<EmployeeData> employee_allowance = new List<EmployeeData>();
   final DateFormat dateformat = DateFormat('MM/YYYY');
-  String token;
 
   Future<EmployeeData> fetchEmployData() async{
     final response = await http.get ('https://app.idolconsulting.co.za/idols/travel-allowance/all',
@@ -28,13 +27,11 @@ class _TravelAllowanceState extends State<TravelAllowance> {
         var data = json.decode((response.body));
         for(int x = 0; x<data.length; x++){
           var bodyList = new EmployeeData(
-              data[x]['user']['firstName'].toString(),
+              data[x]['user'].toString(),
               data[x]['startKm'].toString(),
               data[x]['endKm'].toString(),
               data[x]['travelDate'].toString());
           employee_allowance.add(bodyList);
-          // final Iterable list = data[x]['user']['firstName'];
-          // var totalEmployees = list.map((model) => EmployeeData.fromJson(model)).toList();
         }
         print(data.length);
         //print(jsonDecode(response.body));
@@ -53,7 +50,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.lightGreen[10],
-        drawer: DrawerCodeOnly(),
+        // drawer: DrawerCodeOnly(),
         appBar: AppBar(
           title: Text(
             'Travel Allowance',
@@ -120,29 +117,29 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                     elevation:40,
                     child: Column(
                       children: [
-                        // Container(
-                        //   height: 54,
-                        //   child: TextField(
-                        //     decoration: InputDecoration(
-                        //       hintText: 'Search',
-                        //       prefixIcon: Icon(
-                        //         Icons.search,
-                        //       ),
-                        //       border: OutlineInputBorder(),
-                        //     ),
-                        //     onChanged: (text) {
-                        //       text = text.toLowerCase();
-                        //       setState(() {
-                        //         employee_allowance = employee_allowance.where((text) {
-                        //           return employee_allowance.contains(text);
-                        //         }).toList();
-                        //       });
-                        //     },
-                        //
-                        //   ),
-                        // ),
                         Container(
-                          height: 550,
+                          height: 54,
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Search',
+                              prefixIcon: Icon(
+                                Icons.search,
+                              ),
+                              border: OutlineInputBorder(),
+                            ),
+                            onChanged: (text) {
+                              text = text.toLowerCase();
+                              setState(() {
+                                employee_allowance = employee_allowance.where((text) {
+                                  return employee_allowance.contains(text);
+                                }).toList();
+                              });
+                            },
+
+                          ),
+                        ),
+                        Container(
+                          height: 600,
                           child:SizedBox(
                             child:  ListView.builder(
                               itemCount: 1,
@@ -152,7 +149,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                     child: SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
                                       child: DataTable (
-                                        columnSpacing: 25,
+                                        columnSpacing: 10,
                                         dataRowHeight: 50,
                                         headingRowHeight: 60,
                                         columns: [
@@ -191,12 +188,28 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                         rows: List.generate(
                                             employee_allowance.length, (index) =>
                                           DataRow(cells: <DataCell> [
-                                            DataCell(Text(employee_allowance.elementAt(index).user)),
-                                            DataCell(Text(employee_allowance.elementAt(index).startKm)),
-                                            DataCell(Text(employee_allowance.elementAt(index).endKm)),
+                                            DataCell(Text(employee_allowance.elementAt(index).user,
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14,
+                                            ),)),
+                                            DataCell(Text(employee_allowance.elementAt(index).startKm,
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 14
+                                              ),)),
+                                            DataCell(Text(employee_allowance.elementAt(index).endKm,
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 14
+                                              ),)),
                                             DataCell(Text((employee_allowance.elementAt(index)
                                                 .convertDateFromString()) ??
-                                                employee_allowance)),
+                                                employee_allowance,
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 14
+                                              ),)),
                                             // DataCell(
                                             //     Container(
                                             //         child: Row(
