@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 //import 'data.dart';
 import 'performanceclass.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'performancedetails.dart';
+//import 'package:perfomance_appraisals/PerfomanceAppraisalsDetails.dart';
 
 
 
@@ -24,7 +26,7 @@ class Performance extends StatefulWidget {
 
 class _PerformanceState extends State<Performance> {
 
-  List<PerformanceAppraisals> projects = new List<PerformanceAppraisals>();
+  List<Perform> projects = new List<Perform>();
 
 
   Future<String> fetchPerformanceAppraisals() async {
@@ -47,11 +49,12 @@ class _PerformanceState extends State<Performance> {
         var data = json.decode((response.body));
         print(response.body);
         for (int x = 0; x < data.length; x++) {
-          var project = new PerformanceAppraisals(
+          var project = new Perform(
+              data[x]['id'],
               data[x]['status'],
               data[x]['createdDate'],
               data[x]['firstName']);
-          PerformanceAppraisals.add(PerformanceAppraisals);
+          projects.add(project);
         }
       });
     }
@@ -74,7 +77,7 @@ class _PerformanceState extends State<Performance> {
         backgroundColor: Colors.blue[50],
 
         appBar: AppBar(
-            title: Text("Performance Appraisalssssss"),
+            title: Text("Performance Appraisals"),
             backgroundColor: Colors.blueGrey,
             actions: <Widget>[
               Padding(
@@ -100,13 +103,38 @@ class _PerformanceState extends State<Performance> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(8, 0, 0, 35),
+                  padding: EdgeInsets.fromLTRB(8, 0, 0, 15),
                   child: Text(
                     "View and give feedback about an Idol Employee.",
                     style: TextStyle(
                       fontSize: 12,
                     ),
                   ),
+                ),
+
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
+                  child: RaisedButton.icon(
+                      elevation: 15,
+                      color: Colors.lightBlue,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => perfomanceDetails()),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        'Write a review',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18,
+                        ),
+                      )),
                 ),
                 PaginatedDataTable(
                   header: Padding(
@@ -153,16 +181,19 @@ class _PerformanceState extends State<Performance> {
 
 
 
-  void _navigateToCreateTimeSheet(BuildContext context) {
+  void _navigateToperfomanceDetails(BuildContext context) {
     Navigator.push(
         context,
         MaterialPageRoute(
-          // builder: (context) => Homepage(),
+          builder: (context) => perfomanceDetails(),
         ));
   }
+
+  AppraisalDetails() {}
 }
 
 class Employees {
+  Employees(String string, String string2);
 }
 
 //class TableData extends DataTableSource {
@@ -181,9 +212,9 @@ class TableData extends DataTableSource {
   DataRow getRow(int index) {
     // TODO: implement getRow
     return DataRow.byIndex(index: index, cells: [
-      DataCell(Text("17/09/20$index")),
-      DataCell(Text("Prince$index")),
-      DataCell(Text("50%$index")),
+      DataCell(Text("")),
+      DataCell(Text("")),
+      DataCell(Text("")),
 
     ]);
   }

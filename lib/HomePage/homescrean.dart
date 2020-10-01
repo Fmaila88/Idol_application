@@ -1,3 +1,4 @@
+import 'package:App_idolconsulting/LeaveDays/leavedays.dart';
 import 'package:App_idolconsulting/PaySlips/DetailsScreen.dart';
 import 'package:App_idolconsulting/PaySlips/payslips.dart';
 import 'package:App_idolconsulting/TravelAllowance/TravellingAllowance.dart';
@@ -8,11 +9,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/timeSheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../employees_main.dart';
 import 'Project.dart';
 import 'profile.dart';
 import 'Projecttask.dart';
 import 'Taskdetails.dart';
-import 'Task.dart';
+import 'package:App_idolconsulting/PerformanceAppraisal/performancemain.dart';
 
 
 class Home extends StatefulWidget {
@@ -670,7 +672,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                //builder: (context) => new Lcddisplays()
+                                builder: (context) => new EmployeesHome()
                               ));
                         },
                       ),
@@ -694,7 +696,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                // builder: (context) => new Leaveday()
+                                 builder: (context) => new Leaveday()
                               ));
                         },
                       ),
@@ -715,7 +717,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                // builder: (context) => new Activequeue()
+                                  builder: (context) => new Performance()
                               ));
                         },
                       ),

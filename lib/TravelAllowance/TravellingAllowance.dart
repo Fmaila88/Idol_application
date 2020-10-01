@@ -120,27 +120,27 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                     elevation:40,
                     child: Column(
                       children: [
-                        Container(
-                          height: 54,
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Search',
-                              prefixIcon: Icon(
-                                Icons.search,
-                              ),
-                              border: OutlineInputBorder(),
-                            ),
-                            onChanged: (text) {
-                              text = text.toLowerCase();
-                              setState(() {
-                                employee_allowance = employee_allowance.where((text) {
-                                  return employee_allowance.contains(text);
-                                }).toList();
-                              });
-                            },
-
-                          ),
-                        ),
+                        // Container(
+                        //   height: 54,
+                        //   child: TextField(
+                        //     decoration: InputDecoration(
+                        //       hintText: 'Search',
+                        //       prefixIcon: Icon(
+                        //         Icons.search,
+                        //       ),
+                        //       border: OutlineInputBorder(),
+                        //     ),
+                        //     onChanged: (text) {
+                        //       text = text.toLowerCase();
+                        //       setState(() {
+                        //         employee_allowance = employee_allowance.where((text) {
+                        //           return employee_allowance.contains(text);
+                        //         }).toList();
+                        //       });
+                        //     },
+                        //
+                        //   ),
+                        // ),
                         Container(
                           height: 550,
                           child:SizedBox(
@@ -184,9 +184,9 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                                 fontWeight: FontWeight.w800
                                             ),),
                                           ),
-                                          DataColumn(label: Text(''),
-                                            numeric: false,
-                                          ),
+                                          // DataColumn(label: Text(''),
+                                          //   numeric: false,
+                                          // ),
                                         ],
                                         rows: List.generate(
                                             employee_allowance.length, (index) =>
@@ -197,73 +197,73 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                             DataCell(Text((employee_allowance.elementAt(index)
                                                 .convertDateFromString()) ??
                                                 employee_allowance)),
-                                            DataCell(
-                                                Container(
-                                                    child: Row(
-                                                      children: [
-                                                        FlatButton.icon(
-                                                          onPressed: () async {
-                                                            // final result = await showDialog(
-                                                            //     context: context, builder: (_) => Approve());
-                                                          },
-                                                          icon: Icon(
-                                                            Icons.arrow_downward,
-                                                            size: 15,
-                                                            color: Colors.white,
-                                                          ),
-                                                          color: Colors.orange,
-                                                          label: Text(
-                                                            'Download',
-                                                            style: TextStyle(
-                                                                color: Colors.white,
-                                                                fontWeight: FontWeight.w400,
-                                                                fontSize: 17),
-                                                          ),
-                                                        ),
-                                                        SizedBox(width: 2),
-                                                        FlatButton.icon(
-                                                          onPressed: () async {
-                                                            final result = await showDialog(
-                                                                context: context, builder: (_) => Approve());
-                                                          },
-                                                          icon: Icon(
-                                                            Icons.thumb_up,
-                                                            size: 15,
-                                                            color: Colors.white,
-                                                          ),
-                                                          color: Colors.green,
-                                                          label: Text(
-                                                            'Approve',
-                                                            style: TextStyle(
-                                                                color: Colors.white,
-                                                                fontWeight: FontWeight.w400,
-                                                                fontSize: 17),
-                                                          ),
-                                                        ),
-                                                        SizedBox(width: 2),
-                                                        FlatButton.icon(
-                                                          onPressed: () async {
-                                                            final result = await showDialog(
-                                                                context: context, builder: (_) => Decline());
-                                                          },
-                                                          icon: Icon(
-                                                            Icons.thumb_down,
-                                                            size: 15,
-                                                            color: Colors.white,
-                                                          ),
-                                                          color: Colors.red[500],
-                                                          label: Text(
-                                                            'Decline',
-                                                            style: TextStyle(
-                                                                color: Colors.white,
-                                                                fontWeight: FontWeight.w400,
-                                                                fontSize: 17),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    )
-                                                )
-                                            ),
+                                            // DataCell(
+                                            //     Container(
+                                            //         child: Row(
+                                            //           children: [
+                                            //             FlatButton.icon(
+                                            //               onPressed: () async {
+                                            //                 // final result = await showDialog(
+                                            //                 //     context: context, builder: (_) => Approve());
+                                            //               },
+                                            //               icon: Icon(
+                                            //                 Icons.arrow_downward,
+                                            //                 size: 15,
+                                            //                 color: Colors.white,
+                                            //               ),
+                                            //               color: Colors.orange,
+                                            //               label: Text(
+                                            //                 'Download',
+                                            //                 style: TextStyle(
+                                            //                     color: Colors.white,
+                                            //                     fontWeight: FontWeight.w400,
+                                            //                     fontSize: 17),
+                                            //               ),
+                                            //             ),
+                                            //             SizedBox(width: 2),
+                                            //             FlatButton.icon(
+                                            //               onPressed: () async {
+                                            //                 final result = await showDialog(
+                                            //                     context: context, builder: (_) => Approve());
+                                            //               },
+                                            //               icon: Icon(
+                                            //                 Icons.thumb_up,
+                                            //                 size: 15,
+                                            //                 color: Colors.white,
+                                            //               ),
+                                            //               color: Colors.green,
+                                            //               label: Text(
+                                            //                 'Approve',
+                                            //                 style: TextStyle(
+                                            //                     color: Colors.white,
+                                            //                     fontWeight: FontWeight.w400,
+                                            //                     fontSize: 17),
+                                            //               ),
+                                            //             ),
+                                            //             SizedBox(width: 2),
+                                            //             FlatButton.icon(
+                                            //               onPressed: () async {
+                                            //                 final result = await showDialog(
+                                            //                     context: context, builder: (_) => Decline());
+                                            //               },
+                                            //               icon: Icon(
+                                            //                 Icons.thumb_down,
+                                            //                 size: 15,
+                                            //                 color: Colors.white,
+                                            //               ),
+                                            //               color: Colors.red[500],
+                                            //               label: Text(
+                                            //                 'Decline',
+                                            //                 style: TextStyle(
+                                            //                     color: Colors.white,
+                                            //                     fontWeight: FontWeight.w400,
+                                            //                     fontSize: 17),
+                                            //               ),
+                                            //             ),
+                                            //           ],
+                                            //         )
+                                            //     )
+                                            // ),
                                           ])).toList()
                                       ),
                                     )

@@ -1,3 +1,16 @@
+import 'dart:ffi';
+
+class Perform {
+  String id;
+  String date;
+  String employee;
+  String status;
+
+
+  Perform(this.id,this.employee, this.date, this.status);
+
+  getName(){
+    return id;
 
 
 class PerformanceAppraisals {
@@ -22,10 +35,6 @@ class PerformanceAppraisals {
 
   @override
   String toString() {
-    return '{ ${this.firstName}, ${this.createDate} }' '{ ${this.status}';
+    return '{  ${this.id} }' '{ ${this.employee}, ${this.status} }' '{ ${this.date} }';
   }
-
-  static elementAt(int index) {}
-
-  static void add(Type performanceAppraisals) {}
 }
