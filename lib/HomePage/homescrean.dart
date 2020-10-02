@@ -4,7 +4,6 @@ import 'package:App_idolconsulting/PaySlips/payslips.dart';
 import 'package:App_idolconsulting/TravelAllowance/TravellingAllowance.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/timeSheet.dart';
@@ -15,7 +14,7 @@ import 'profile.dart';
 import 'Projecttask.dart';
 import 'Taskdetails.dart';
 import 'package:App_idolconsulting/PerformanceAppraisal/performancemain.dart';
-
+import 'package:date_format/date_format.dart';
 
 class Home extends StatefulWidget {
   final Widget child;
@@ -26,13 +25,56 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
+  _displayDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.blue[50],
+
+            //title: Text('reason for tech decling'),
+//             content: DropdownButton(
+//               items: _dropdownValue
+//                   .map((value) => DropdownMenuItem(
+//                         child: Text(value),
+//                         value: value,
+//                       ))
+//                   .toList(),
+//               onChanged: (String value) {},
+//               isExpanded: false,
+//               hint: Text('Select Reason'),
+//             ),
+
+            actions: <Widget>[
+              new RaisedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, new MaterialPageRoute
+                    (builder: (context) => new Profile()));
+                },
+                icon: Icon(
+                  Icons.person,
+                  color: Colors.lightBlue,
+                ),
+                label: Text('Profile',style: TextStyle(
+                  color: Colors.black)),
+              ),
+
+              new FlatButton(
+                child: new Text('Logout',style: TextStyle(
+                    color: Colors.lightBlue[900])),
+                onPressed: () {
+                  // _navigateToClient(context);
+                },
+              ),
+            ],
+          );
+        });
+  }
 
   Map<String, dynamic> data4;
   bool isLoading=true;
   bool load=true;
-
-
-
 
   Future<String> fetchDrawer() async {
 
@@ -48,15 +90,11 @@ class _HomeState extends State<Home> {
       setState((){
         data4=json.decode(response.body);
 
-
-
       });
     }
   }
 
-
   List<Tasks> task = new List<Tasks>();
-
   Map<String,dynamic> data3;
 
   Future<String> fetchTask() async {
@@ -64,10 +102,8 @@ class _HomeState extends State<Home> {
     await SharedPreferences.getInstance();
 
     String stringValue = prefs.getString('userToken');
-
     final response = await http.get(
         'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate/5f3504f0c391b51061db90e3?keyword=',
-
         headers: {"Accept": "application/json",
           "X_TOKEN": stringValue,
         });
@@ -75,15 +111,8 @@ class _HomeState extends State<Home> {
     if (response.statusCode == 200) {
       setState(() {
         // print('Token ' + stringValue);
-
         var data = json.decode((response.body));
-
         data3 = json.decode((response.body));
-
-        //print(detail['endDate'].toString());
-
-
-        // print('createDate');
         for (int x = 0; x < data.length; x++) {
           var project = new Tasks(
             data3['name'].toString(),
@@ -98,7 +127,6 @@ class _HomeState extends State<Home> {
     }
   }
 
-
   List<Project> projects = new List<Project>();
   Map<String,dynamic> detail;
   Project project;
@@ -111,7 +139,6 @@ class _HomeState extends State<Home> {
     final response = await http.get(
       //'https://app.idolconsulting.co.za/idols/projects/all',
         'https://app.idolconsulting.co.za/idols/projects/5f3504f0c391b51061db90e3',
-
         headers: {"Accept": "application/json",
           "X_TOKEN": stringValue,
         });
@@ -122,11 +149,6 @@ class _HomeState extends State<Home> {
         var data = json.decode((response.body));
         detail = json.decode((response.body));
 
-
-
-        //project=Project.fromJson(detail);
-        //print(data2.toString());
-        // print(response.body);
         for (int x = 0; x < data.length; x++) {
           var project = new Project(
               detail['name'].toString(),
@@ -155,13 +177,14 @@ class _HomeState extends State<Home> {
   List<charts.Series<Task, String>> _seriesPieData;
   _generateData() {
     var pieData = [
-      new Task('Initialized', 0, Colors.pinkAccent),
-      new Task('Pending', 98.8, Colors.blue),
-      new Task('Complite', 0, Colors.orangeAccent),
+      new Task('Initialized', 30, Colors.pinkAccent),
+      new Task('Pending', 50, Colors.blue),
+      //report['0']['count'],
+      new Task('Complite', 20, Colors.orangeAccent),
     ];
 
     var pieData1 = [
-      new Pollution('Initialized', 98.8, Colors.pinkAccent),
+      new Pollution('Initialized', 50.8, Colors.pinkAccent),
       new Pollution('Pending', 0, Colors.blue),
       new Pollution('Complite', 0, Colors.orangeAccent),
     ];
@@ -202,6 +225,10 @@ class _HomeState extends State<Home> {
     this. fetchTask();
     this.fetchDrawer();
   }
+  convertDateFromString() {
+    DateTime todayDate = DateTime.parse(detail['createDate'].toString());
+    return formatDate(todayDate, [dd,' ',MM, ' ', yyyy]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +245,7 @@ class _HomeState extends State<Home> {
                     insets: EdgeInsets.symmetric(horizontal: 16.0)),
                 indicatorColor: Colors.white30,
                 tabs: <Widget>[
-                  Tab(text: "Project Status"),
+                  Tab(text: "Project Statusss"),
                   Tab(text: "Task Status"),
                 ],
               ),
@@ -233,40 +260,23 @@ class _HomeState extends State<Home> {
                   padding: EdgeInsets.all(8.0),
                 ),
 
-//                          DropdownMenuItem(
-//                             CircleAvatar(
-//                              radius: 30.0,
-//                              backgroundImage: ExactAssetImage('images/logo1.png'),
-//                            ),
-//                         ),
-                CustomDropdown(text: "image"),
-                //DropdownButton(),
-                // Image.asset('images/logo1.png'),
-
-//                          InkWell(
-//                            onTap: () => DropdownButton,
-//                            child:CircleAvatar(
-//                              radius: 30.0,
-//                              backgroundImage: ExactAssetImage('images/logo1.png'),
-//                            ),
-//                          ),
-
-//                          InkWell(
-//                              onTap: () => print("image clicked"),
-//                            child: CircleAvatar(
-//                              backgroundColor: Colors.green,
-//                              foregroundColor: Colors.green,
-//                              child: Image.asset('images/logo1.png'),
-//                            ),
-//                          ),
-
-//                              FlatButton(
-//                                       child: new Text('Logout',style: new TextStyle(fontSize:17.0,color:Colors.white)),
-//                                         onPressed: (){
-//                                          //AuthService().signOut();
-//                                                    },
-//                                                           ),
+                GestureDetector(
+                  onTap: () {
+                    _displayDialog(context);
+                  },
+                 // width: 55.0,
+                 // height: 60.0,
+                 // color: Colors.grey,
+                  child: CircleAvatar(
+                    radius:30,
+                    backgroundColor: Colors.blue,
+                    backgroundImage:NetworkImage(
+                        'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
+                    ),
+                  ),
+                ),
               ]),
+
           body:  load ? Center(child: CircularProgressIndicator()):
           TabBarView(children: <Widget>[
             Padding(
@@ -386,10 +396,9 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            Padding(
+            Padding (
               padding: EdgeInsets.all(8.0),
-              child:
-              Container(
+              child: Container(
                 child: Center(
                   child: Column(children: <Widget>[
                     Text(
@@ -433,25 +442,22 @@ class _HomeState extends State<Home> {
                             new MaterialPageRoute(
                                 builder: (context) => new TaskDetails()));
                       },
-                      child: load ? Center(child: CircularProgressIndicator()):
-                      Card(
+                      child: Card(
                         elevation: 5.0,
                         child:
                         Container(
                           child: SizedBox(
-                            child:  Container(
+                            child: Container(
                               //width: MediaQuery.of(context).size.width,
                               child: Row(
                                 children: <Widget>[
                                   Row(
                                     children: <Widget>[
-                                      load ? Center(child: CircularProgressIndicator()):
                                       Container(
                                         width: 55.0,
                                         height: 60.0,
                                         color: Colors.white,
-                                        child:  load ? Center(child: CircularProgressIndicator()):
-                                        CircleAvatar(
+                                        child: CircleAvatar(
                                           radius:50,
                                           backgroundColor: Colors.blue,
                                           backgroundImage:NetworkImage(
@@ -479,7 +485,7 @@ class _HomeState extends State<Home> {
                                             children: <Widget>[
                                               Text('Created:',style: TextStyle(fontSize: 15.0)),
                                               SizedBox(width: 10.0),
-                                              Text(detail['createDate'].toString()),
+                                              Text(convertDateFromString()),
                                             ],
                                           ),
                                           Row(
@@ -590,7 +596,8 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
               GestureDetector(
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => new Profile()));
+                  Navigator.push(context, new MaterialPageRoute
+                    (builder: (context) => new Profile()));
                 },
                 child: Container(
                   child: Column(
