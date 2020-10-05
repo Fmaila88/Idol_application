@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:App_idolconsulting/PaySlips/payslips.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   String names;
 
   TextEditingController _employeeController = TextEditingController();
-  // TextEditingController namesController = TextEditingController();
+
   TextEditingController _paymentDateController = TextEditingController();
   TextEditingController _hourlyRateController = TextEditingController();
   TextEditingController _monthlyHoursController = TextEditingController();
@@ -69,38 +70,34 @@ class _DetailsScreenState extends State<DetailsScreen> {
     }
   }
 
-  TextEditingController _controller = TextEditingController();
-  TextEditingController _number = TextEditingController();
-  TextEditingController _overHours = TextEditingController();
-  TextEditingController _overRate = TextEditingController();
-
   @override
   void initState() {
     fetchEmployees();
     //savePay();
     super.initState();
-    _controller.text = "0";
-    _number.text = "0";
-    _overHours.text = "0";
-    _overRate.text = "0";
+    _hourlyRateController.text = "0";
+    _monthlyHoursController.text = "0";
+    _overtimeHoursController.text = "0";
+    _overtimeRateController.text = "0";
   }
 
   Future<bool> _onBackPressed() {
-    return showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text("Press Yes to go to the first page"),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text("No"),
-                  onPressed: () => Navigator.pop(context, false),
-                ),
-                FlatButton(
-                  child: Text("Yes"),
-                  onPressed: () => Navigator.pop(context, true),
-                ),
-              ],
-            ));
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => MyAppl()));
+    // return showDialog(
+    //     context: context,
+    //     builder: (context) => AlertDialog(
+    //           //  title: Text("Press Yes to go to the first page"),
+    //           actions: <Widget>[
+    //             // FlatButton(
+    //             //   child: Text("No"),
+    //             //   onPressed: () => Navigator.pop(context, false),
+    //             // ),
+    //             FlatButton(
+    //               // child: Text("Yes"),
+    //               onPressed: () => Navigator.pop(context, true),
+    //             ),
+    //           ],
+    //         ));
   }
 
   var items;
@@ -189,13 +186,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         decoration: BoxDecoration(
                             border:
                                 Border.all(color: Colors.black54, width: 0.5)),
+
                         margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
 
                         alignment: Alignment.topLeft,
 
                         child: DropdownButton<Employees>(
+                          underline: SizedBox(),
                           //hint: Text('Employee Name'),
                           // elevation: 5,
+
                           icon: Icon(Icons.arrow_drop_down),
                           iconSize: 30.0,
                           isExpanded: true,
@@ -271,11 +271,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     ),
                                     onTap: () {
                                       int currentValue =
-                                          int.parse(_controller.text);
+                                          int.parse(_hourlyRateController.text);
                                       setState(() {
                                         currentValue++;
-                                        _controller.text = (currentValue)
-                                            .toString(); // incrementing value
+                                        _hourlyRateController.text =
+                                            (currentValue)
+                                                .toString(); // incrementing value
                                       });
                                     },
                                   ),
@@ -287,11 +288,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   ),
                                   onTap: () {
                                     int currentValue =
-                                        int.parse(_controller.text);
+                                        int.parse(_hourlyRateController.text);
                                     setState(() {
                                       print("Setting state");
                                       currentValue--;
-                                      _controller.text =
+                                      _hourlyRateController.text =
                                           (currentValue > 0 ? currentValue : 0)
                                               .toString(); // decrementing value
                                     });
@@ -360,12 +361,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       size: 18.0,
                                     ),
                                     onTap: () {
-                                      int currentValue =
-                                          int.parse(_number.text);
+                                      int currentValue = int.parse(
+                                          _monthlyHoursController.text);
                                       setState(() {
                                         currentValue++;
-                                        _number.text = (currentValue)
-                                            .toString(); // incrementing value
+                                        _monthlyHoursController.text =
+                                            (currentValue)
+                                                .toString(); // incrementing value
                                       });
                                     },
                                   ),
@@ -376,11 +378,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     size: 20.0,
                                   ),
                                   onTap: () {
-                                    int currentValue = int.parse(_number.text);
+                                    int currentValue =
+                                        int.parse(_monthlyHoursController.text);
                                     setState(() {
                                       print("Setting state");
                                       currentValue--;
-                                      _number.text =
+                                      _monthlyHoursController.text =
                                           (currentValue > 0 ? currentValue : 0)
                                               .toString(); // decrementing value
                                     });
@@ -449,12 +452,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       size: 18.0,
                                     ),
                                     onTap: () {
-                                      int currentValue =
-                                          int.parse(_overHours.text);
+                                      int currentValue = int.parse(
+                                          _overtimeHoursController.text);
                                       setState(() {
                                         currentValue++;
-                                        _overHours.text = (currentValue)
-                                            .toString(); // incrementing value
+                                        _overtimeHoursController.text =
+                                            (currentValue)
+                                                .toString(); // incrementing value
                                       });
                                     },
                                   ),
@@ -465,12 +469,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     size: 20.0,
                                   ),
                                   onTap: () {
-                                    int currentValue =
-                                        int.parse(_overHours.text);
+                                    int currentValue = int.parse(
+                                        _overtimeHoursController.text);
                                     setState(() {
                                       print("Setting state");
                                       currentValue--;
-                                      _overHours.text =
+                                      _overtimeHoursController.text =
                                           (currentValue > 0 ? currentValue : 0)
                                               .toString(); // decrementing value
                                     });
@@ -539,12 +543,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       size: 18.0,
                                     ),
                                     onTap: () {
-                                      int currentValue =
-                                          int.parse(_overRate.text);
+                                      int currentValue = int.parse(
+                                          _overtimeRateController.text);
                                       setState(() {
                                         currentValue++;
-                                        _overRate.text = (currentValue)
-                                            .toString(); // incrementing value
+                                        _overtimeRateController.text =
+                                            (currentValue)
+                                                .toString(); // incrementing value
                                       });
                                     },
                                   ),
@@ -556,11 +561,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   ),
                                   onTap: () {
                                     int currentValue =
-                                        int.parse(_overHours.text);
+                                        int.parse(_overtimeRateController.text);
                                     setState(() {
                                       print("Setting state");
                                       currentValue--;
-                                      _overRate.text =
+                                      _overtimeRateController.text =
                                           (currentValue > 0 ? currentValue : 0)
                                               .toString(); // decrementing value
                                     });
