@@ -27,7 +27,7 @@ class Performance extends StatefulWidget {
 class _PerformanceState extends State<Performance> {
 
   List<Perform> projects = new List<Perform>();
-
+  Map<String,dynamic> detail;
 
   Future<String> fetchPerformanceAppraisals() async {
     SharedPreferences prefs =
@@ -36,24 +36,25 @@ class _PerformanceState extends State<Performance> {
     String stringValue = prefs.getString('token');
 
     final response = await http.get(
-        'https://app.idolconsulting.co.za/idols/performanceappraisals/all',
+        'https://app.idolconsulting.co.za/idols/performanceappraisals/1/10/ASC/id?keyword=',
 
         headers: {"Accept": "application/json",
           "X_TOKEN": "$stringValue",
         });
-    List data = json.decode(response.body);
+   // List data = json.decode(response.body);
 
     if (response.statusCode == 200) {
       setState(() {
 
         var data = json.decode((response.body));
-        print(response.body);
+        //print(response.body);
+        detail = json.decode((response.body));
         for (int x = 0; x < data.length; x++) {
           var project = new Perform(
-              data[x]['id'],
-              data[x]['status'],
-              data[x]['createdDate'],
-              data[x]['firstName']);
+              detail['id'].toString(),
+              detail['status'].toString(),
+              detail['createdDate'].toString(),
+              detail['firstName'].toString());
           projects.add(project);
         }
       });
@@ -61,8 +62,8 @@ class _PerformanceState extends State<Performance> {
     print(response.body);
 
   }
-  var tableInfo = TableData();
-  int rowPerPage = PaginatedDataTable.defaultRowsPerPage;
+//  var tableInfo = TableData();
+//  int rowPerPage = PaginatedDataTable.defaultRowsPerPage;
 
   @override
   void initState() {
@@ -87,94 +88,114 @@ class _PerformanceState extends State<Performance> {
               DropdownButton(),
             ]),
 
-        body:
-        Container(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.fromLTRB(8, 5, 0, 15),
-                  child: Text(
-                    "Performance Appraisals",
-                    style: TextStyle(
-                      fontSize: 25,
-                    ),
+        body: Column(
+          children: <Widget>[
+            Container(
+          padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+      Padding(
+      padding: EdgeInsets.fromLTRB(8, 5, 0, 15),
+      child: Text(
+        "Performance Appraisals",
+        style: TextStyle(
+          fontSize: 25,
+        ),
+      ),
+    ),
+    Padding(
+    padding: EdgeInsets.fromLTRB(8, 0, 0, 15),
+    child: Text(
+    "View and give feedback about an Idol Employee.",
+    style: TextStyle(
+    fontSize: 12,
+    ),
+    ),
+    ),
+            Container(
+              padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
+              child: RaisedButton.icon(
+                  elevation: 15,
+                  color: Colors.lightBlue,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => perfomanceDetails()),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.edit,
+                    color: Colors.white,
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(8, 0, 0, 15),
-                  child: Text(
-                    "View and give feedback about an Idol Employee.",
+                  label: Text(
+                    'Write a review',
                     style: TextStyle(
-                      fontSize: 12,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
                     ),
-                  ),
-                ),
+                  )),
+            ),
+           Card(
+              elevation:2,
+              child: Column(
+                children: [
 
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 2, 0, 0),
-                  child: RaisedButton.icon(
-                      elevation: 15,
-                      color: Colors.lightBlue,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => perfomanceDetails()),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                      ),
-                      label: Text(
-                        'Write a review',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18,
-                        ),
-                      )),
-                ),
-                PaginatedDataTable(
-                  header: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 10, 14, 10),
+                  Container(
+                    height: 54,
                     child: TextField(
-                      //readOnly: true,
-                      // controller: _endtController,
-                      decoration: new InputDecoration(
-                        hintText: "search",
-                        suffixIcon: Icon(
+                      decoration: InputDecoration(
+                        hintText: 'Search',
+                        prefixIcon: Icon(
                           Icons.search,
-                          color: Colors.blueGrey[800],
                         ),
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blueGrey[500])),
+                        border: OutlineInputBorder(),
                       ),
                       onTap: () {
-                        //getEndTime(context);
+                        //_selectDate(context);
                       },
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
+                      //keyboardType: TextInputType.multiline,
                     ),
                   ),
-                  columns: [
-                    DataColumn(label: Text("Date")),
-                    DataColumn(label: Text("Employee")),
-                    DataColumn(label: Text("Status")),
 
-                  ],
-                  source: tableInfo,
-                  onRowsPerPageChanged: (r) {
-                    setState(() {
-                      rowPerPage = r;
-                    });
-                  },
-                ),
-              ],
-            ),
+                  Container(
+                    height: 100,
+                    width: 500,
+                    child:SizedBox(
+                      child:  ListView.builder(
+                        itemCount: projects==null? 0: projects.length,
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context,int index) {
+
+                          return Container(
+                            child:DataTable(
+                              columns: [
+                                DataColumn(label: Text('Date')),
+                                DataColumn(label: Text('Employees')),
+                                DataColumn(label: Text('Status')),
+                                DataColumn(label: Text('Result')),
+                              ],
+                              rows: [
+                                DataRow(cells: [
+                                  DataCell(Text(detail['content'][0]['createDate'].toString())),
+                                  DataCell(Text(detail['content'][0]['user']['firstName'].toString())),
+                                  DataCell(Text(detail['content'][0]['status'].toString())),
+                                  DataCell(Text(detail['content'][0]['type'].toString())),
+                                ])],
+                            ),);
+                        },),
+                    ),),
+                ],
+              )
           ),
+    ]
+            )
+            )
+      ]
         )
+
     );
 
   }
@@ -188,13 +209,13 @@ class _PerformanceState extends State<Performance> {
           builder: (context) => perfomanceDetails(),
         ));
   }
-
-  AppraisalDetails() {}
-}
-
-class Employees {
-  Employees(String string, String string2);
-}
+//
+//  AppraisalDetails() {}
+//}
+//
+//class Employees {
+//  Employees(String string, String string2);
+//}
 
 //class TableData extends DataTableSource {
 //  @override
@@ -207,55 +228,56 @@ class Employees {
 //
 //    ]);
 
-class TableData extends DataTableSource {
-  @override
-  DataRow getRow(int index) {
-    // TODO: implement getRow
-    return DataRow.byIndex(index: index, cells: [
-      DataCell(Text("")),
-      DataCell(Text("")),
-      DataCell(Text("")),
-
-    ]);
+//class TableData extends DataTableSource {
+//  @override
+//  DataRow getRow(int index) {
+//    // TODO: implement getRow
+//    return DataRow.byIndex(index: index, cells: [
+//      DataCell(Text("ok")),
+//      DataCell(Text("ok")),
+//      DataCell(Text("ok")),
+//
+//    ]);
+//  }
+//
+//  @override
+//  // TODO: implement isRowCountApproximate
+//  bool get isRowCountApproximate => true;
+//
+//  @override
+//  // TODO: implement rowCount
+//  int get rowCount => 2;
+//
+//  @override
+//  // TODO: implement selectedRowCount
+//  int get selectedRowCount => 0;
+//}
+//enum MenuOption {Logout, Profile}
+//
+//class DropdownButton extends StatelessWidget {
+//  const DropdownButton( {Key key,  Image child}) : super(key: key);
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    return PopupMenuButton<MenuOption>(
+//        itemBuilder: (BuildContext context) {
+//          return <PopupMenuEntry<MenuOption>>[
+//            PopupMenuItem(
+//              //child: Text("Logout"),
+//              child: Icon(Icons.person, color: Colors.black, size: 28.0,),
+//              value: MenuOption.Logout,
+//            ),
+//            PopupMenuItem(
+//              //child: Text("Profile"),
+//
+//              child: Icon(Icons.exit_to_app, color: Colors.black, size: 28.0,),
+//              value: MenuOption.Profile,
+//            ),
+//
+//          ];
+//        }
+//    );
   }
-
-  @override
-  // TODO: implement isRowCountApproximate
-  bool get isRowCountApproximate => true;
-
-  @override
-  // TODO: implement rowCount
-  int get rowCount => 2;
-
-  @override
-  // TODO: implement selectedRowCount
-  int get selectedRowCount => 0;
-}
-enum MenuOption {Logout, Profile}
-
-class DropdownButton extends StatelessWidget {
-  const DropdownButton( {Key key,  Image child}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<MenuOption>(
-        itemBuilder: (BuildContext context) {
-          return <PopupMenuEntry<MenuOption>>[
-            PopupMenuItem(
-              //child: Text("Logout"),
-              child: Icon(Icons.person, color: Colors.black, size: 28.0,),
-              value: MenuOption.Logout,
-            ),
-            PopupMenuItem(
-              //child: Text("Profile"),
-
-              child: Icon(Icons.exit_to_app, color: Colors.black, size: 28.0,),
-              value: MenuOption.Profile,
-            ),
-
-          ];
-        }
-    );
-  }}
+//}
 
 

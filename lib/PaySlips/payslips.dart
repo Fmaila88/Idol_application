@@ -1,9 +1,10 @@
+import 'package:App_idolconsulting/HomePage/homescrean.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
-
+//import 'home';
 //import '../homescrean.dart';
 import 'DetailsScreen.dart';
 import 'ListEmp.dart';
@@ -36,7 +37,7 @@ class MyApplState extends State<MyAppl> {
         var data = json.decode((response.body));
         for (int x = 0; x < data.length; x++) {
           var listEmp = new ListEmp(
-              data[x]['user']['firstName'].toString(), data[x]['createDate']);
+              data[x]['firstName'].toString(), data[x]['createDate']);
 
           employee_Details.add(listEmp);
         }
@@ -57,21 +58,23 @@ class MyApplState extends State<MyAppl> {
   }
 
   Future<bool> _onBackPressed() {
-    return showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text("Do you really want to leave this page"),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text("No"),
-                  onPressed: () => Navigator.pop(context, false),
-                ),
-                FlatButton(
-                  child: Text("Yes"),
-                  onPressed: () => Navigator.pop(context, true),
-                ),
-              ],
-            ));
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => Home()));
+
+    // return showDialog(
+    //     context: context,
+    //     builder: (context) => AlertDialog(
+    //           title: Text("Do you really want to leave this page"),
+    //           actions: <Widget>[
+    //             FlatButton(
+    //               child: Text("No"),
+    //               onPressed: () => Navigator.pop(context, false),
+    //             ),
+    //             FlatButton(
+    //               child: Text("Yes"),
+    //               onPressed: () => Navigator.pop(context, true),
+    //             ),
+    //           ],
+    //         ));
   }
 
   //DateTime now = new DateTime.now();
@@ -141,7 +144,7 @@ class MyApplState extends State<MyAppl> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.fromLTRB(7, 0, 4, 0),
+                padding: EdgeInsets.fromLTRB(10, 5, 9, 4),
                 child: Card(
                   margin: const EdgeInsets.all(0.0),
                   elevation: 6,
@@ -162,7 +165,7 @@ class MyApplState extends State<MyAppl> {
                         ),
                       ),
                       Container(
-                        height: 350,
+                        height: 480,
                         //  width: 90,
                         child: SizedBox(
                           child: ListView.builder(
