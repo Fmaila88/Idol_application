@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"></uses-permission>
 
-    <application
+    <application/>
         android:name="io.flutter.app.FlutterApplication"
         android:label="App_idolconsulting"
         android:icon="@mipmap/ic_launcher">
