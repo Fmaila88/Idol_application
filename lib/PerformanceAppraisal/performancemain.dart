@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 //import 'data.dart';
 import 'performanceclass.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:date_format/date_format.dart';
 import 'performancedetails.dart';
 //import 'package:perfomance_appraisals/PerfomanceAppraisalsDetails.dart';
 
@@ -64,7 +65,10 @@ class _PerformanceState extends State<Performance> {
   }
 //  var tableInfo = TableData();
 //  int rowPerPage = PaginatedDataTable.defaultRowsPerPage;
-
+  convertDateFromString() {
+    DateTime todayDate = DateTime.parse(detail['content'][0]['createDate'].toString());
+    return formatDate(todayDate, [dd,' ',MM, ' ', yyyy]);
+  }
   @override
   void initState() {
     // TODO: implement initState
@@ -160,7 +164,7 @@ class _PerformanceState extends State<Performance> {
                   ),
 
                   Container(
-                    height: 100,
+                    height: 200,
                     width: 500,
                     child:SizedBox(
                       child:  ListView.builder(
@@ -179,7 +183,7 @@ class _PerformanceState extends State<Performance> {
                               ],
                               rows: [
                                 DataRow(cells: [
-                                  DataCell(Text(detail['content'][0]['createDate'].toString())),
+                                  DataCell(Text(convertDateFromString())),
                                   DataCell(Text(detail['content'][0]['user']['firstName'].toString())),
                                   DataCell(Text(detail['content'][0]['status'].toString())),
                                   DataCell(Text(detail['content'][0]['type'].toString())),
