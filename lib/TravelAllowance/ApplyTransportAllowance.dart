@@ -235,7 +235,7 @@ class _ApplyState extends State<Apply> {
                         // 'ratePerKm': _ratePerKm,
                         'travelDate': _travelDateController.text,
                         'comment': _commentController.text,
-                        //'attachment' 'name': _filePath, => Need to test if this functionality works. if attached file can save on the database
+                        'attachment' 'name': _filePath,
                       });
                       final response = await http.put(
                           'https://app.idolconsulting.co.za/idols/travel-allowance',

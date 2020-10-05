@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
 import 'package:App_idolconsulting/TravelAllowance/ApplyTransportAllowance.dart';
 
 import 'package:App_idolconsulting/HomePage/homescrean.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TravelAllowance extends StatefulWidget {
 
@@ -17,17 +19,28 @@ class TravelAllowance extends StatefulWidget {
 class _TravelAllowanceState extends State<TravelAllowance> {
 
   List<EmployeeData> employee_allowance = new List<EmployeeData>();
+  List<String> tempList = List<String>();
   final DateFormat dateformat = DateFormat('MM/YYYY');
 
   Future<EmployeeData> fetchEmployData() async{
+
+    SharedPreferences prefs =await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('token');
+    print(stringValue);
     final response = await http.get ('https://app.idolconsulting.co.za/idols/travel-allowance/all',
-        headers: {"Accept": "application/json"});
+        headers: {"content-type": "application/json",
+          "Accept": "application/json",
+          "X_TOKEN":"$stringValue",
+          HttpHeaders.authorizationHeader:"$stringValue",
+        }
+          );
+
     if(response.statusCode == 200){
       setState(() {
         var data = json.decode((response.body));
         for(int x = 0; x<data.length; x++){
           var bodyList = new EmployeeData(
-              data[x]['user'].toString(),
+              data[x]['user']['firstName'] + ' ' + data[x]['user']['lastName'].toString(),
               data[x]['startKm'].toString(),
               data[x]['endKm'].toString(),
               data[x]['travelDate'].toString());
@@ -127,14 +140,9 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                               ),
                               border: OutlineInputBorder(),
                             ),
-                            onChanged: (text) {
-                              text = text.toLowerCase();
-                              setState(() {
-                                employee_allowance = employee_allowance.where((text) {
-                                  return employee_allowance.contains(text);
-                                }).toList();
-                              });
-                            },
+                            // onChanged: (text){
+                            //   _filterDogList(text);
+                            // },
 
                           ),
                         ),
@@ -192,7 +200,13 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                             style: TextStyle(
                                               color: Colors.black,
                                               fontSize: 14,
-                                            ),)),
+                                            ),),
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => Apply()),
+                                              );
+                                            }),
                                             DataCell(Text(employee_allowance.elementAt(index).startKm,
                                               style: TextStyle(
                                                   color: Colors.black,
