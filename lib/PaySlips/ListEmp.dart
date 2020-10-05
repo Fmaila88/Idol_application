@@ -7,7 +7,9 @@ class ListEmp {
   String firstName;
 // String lastName;
   String createDate;
+
   ListEmp(this.firstName, this.createDate);
+
   String getFirstName() {
     return firstName;
   }

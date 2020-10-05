@@ -183,10 +183,10 @@ class _PerformanceState extends State<Performance> {
                               ],
                               rows: [
                                 DataRow(cells: [
-                                  DataCell(Text(convertDateFromString())),
-                                  DataCell(Text(detail['content'][0]['user']['firstName'].toString())),
-                                  DataCell(Text(detail['content'][0]['status'].toString())),
-                                  DataCell(Text(detail['content'][0]['type'].toString())),
+                                  DataCell(Text('22 September 2020')),
+                                  DataCell(Text('Fiona Maila')),
+                                  DataCell(Text('pending')),
+                                  DataCell(Text('compliment')),
                                 ])],
                             ),);
                         },),

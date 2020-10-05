@@ -130,22 +130,22 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                     elevation:40,
                     child: Column(
                       children: [
-                        Container(
-                          height: 54,
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Search',
-                              prefixIcon: Icon(
-                                Icons.search,
-                              ),
-                              border: OutlineInputBorder(),
-                            ),
-                            // onChanged: (text){
-                            //   _filterDogList(text);
-                            // },
-
-                          ),
-                        ),
+                        // Container(
+                        //   height: 54,
+                        //   child: TextField(
+                        //     decoration: InputDecoration(
+                        //       hintText: 'Search',
+                        //       prefixIcon: Icon(
+                        //         Icons.search,
+                        //       ),
+                        //       border: OutlineInputBorder(),
+                        //     ),
+                        //     // onChanged: (text){
+                        //     //   _filterDogList(text);
+                        //     // },
+                        //
+                        //   ),
+                        // ),
                         Container(
                           height: 600,
                           child:SizedBox(
