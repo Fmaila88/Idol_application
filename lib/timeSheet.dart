@@ -43,7 +43,11 @@ class _HomepageState extends State<Homepage> {
   SharedPreferences prefs;
   Future<Timesheet> timeData;
   Back back = Back();
-
+  List<Back> listOfTimesheet = List<Back>();
+  String hintValue;
+  String hintEndValue;
+  String comment;
+  String Starttimez = "";
   final DateFormat dateFormat = DateFormat('dd MMMM yyyy');
   var data;
   TimeOfDay time = TimeOfDay.now();
@@ -54,11 +58,13 @@ class _HomepageState extends State<Homepage> {
       context: context,
       initialTime: time,
     );
+
     if (timePicker != null && timePicker != time) {
       setState(() {
         time = timePicker;
-
         _startController.text = "${time.hour}:${time.minute}";
+
+        Starttimez = "${time.hour}:${time.minute}";
         print(_startController.text);
         startTimeDate =
             "${dateFormat.format(_controller.selectedDay)} ${time.hour}:${time.minute} ";
@@ -77,6 +83,7 @@ class _HomepageState extends State<Homepage> {
     if (timePicker != null && timePicker != endtime) {
       setState(() {
         endtime = timePicker;
+
         _endtController.text = "${endtime.hour}:${endtime.minute}";
         endTimeDate =
             "${dateFormat.format(_controller.selectedDay)} ${endtime.hour}:${endtime.minute} ";
@@ -134,6 +141,8 @@ class _HomepageState extends State<Homepage> {
                 setState(() {
                   _selectedEvents = event;
                   _showAddDialog();
+                  _startController.clear();
+                  // _endtController.clear();
 //                  if (_eventController.text == null) {
 //                    _startController.text = 'adsads';
 //                    _endtController.text = 'asdsa';
@@ -152,6 +161,14 @@ class _HomepageState extends State<Homepage> {
   }
 
   _showAddDialog() {
+    _startController.clear();
+    _endtController.clear();
+    _eventController.clear();
+    hintValue = showValues("please select startTime", back);
+    // hintEndValue = showendValues("please select startTime", back);
+    // hintEndValue = showendValues("please select endTime", back);
+
+    print("The hint " + hintValue);
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -161,203 +178,215 @@ class _HomepageState extends State<Homepage> {
                   borderRadius: BorderRadius.all(Radius.circular(20.0))),
               title: Center(
                   child: new Text(
-                "${dateFormat.format(_controller.selectedDay)}",
+                "${dateFormat.format(_controller.selectedDay)}" /*"${_controller.selectedDay}"*/,
                 style: TextStyle(color: Colors.blueGrey),
               )),
               content: SingleChildScrollView(
-                child: new Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.fromLTRB(0, 0, 50, 0),
-                      //padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                      child: new Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
-                            child: Text(
-                              "StartTime *",
-                              style: TextStyle(color: Colors.black),
+                child: Form(
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 50, 0),
+                        //padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: new Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+                              child: Text(
+                                "StartTime *",
+                                style: TextStyle(color: Colors.black),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    TextField(
-                      readOnly: true,
-                      onTap: () {
-                        setState(() {
-                          getTime(context);
-                        });
-                      },
-                      controller: _startController,
-                      decoration: new InputDecoration(
-                        hintText: "please select startTime",
-                        prefixIcon: Icon(
-                          Icons.query_builder,
-                          color: Colors.blueGrey[800],
+                          ],
                         ),
-                        border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.blueGrey[500])),
                       ),
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(0, 0, 50, 0),
-                      //padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                      child: new Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-                            child: Text(
-                              "EndTime *",
-                              style: TextStyle(color: Colors.black),
+                      TextField(
+                        readOnly: true,
+                        onTap: () {
+                          setState(() {
+                            getTime(context);
+                          });
+                        },
+                        controller: _startController,
+                        decoration: new InputDecoration(
+                          hintText: /*"please select startTime",*/ hintValue,
+                          prefixIcon: Icon(
+                            Icons.query_builder,
+                            color: Colors.blueGrey[800],
+                          ),
+                          border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.blueGrey[500])),
+                        ),
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 50, 0),
+                        //padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                        child: new Row(
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+                              child: Text(
+                                "EndTime *",
+                                style: TextStyle(color: Colors.black),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    TextField(
-                      readOnly: true,
-                      controller: _endtController,
-                      decoration: new InputDecoration(
-                        hintText: "please select EndTime",
-                        prefixIcon: Icon(
-                          Icons.query_builder,
-                          color: Colors.blueGrey[800],
+                          ],
                         ),
-                        border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.blueGrey[500])),
                       ),
-                      onTap: () {
-                        getEndTime(context);
-                      },
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-                      child: Text(
-                        "Total Hours:${endtime.hour - time.hour}",
-                        style: TextStyle(color: Colors.black),
+                      TextField(
+                        readOnly: true,
+                        controller: _endtController,
+                        decoration: new InputDecoration(
+                          hintText: hintEndValue,
+                          prefixIcon: Icon(
+                            Icons.query_builder,
+                            color: Colors.blueGrey[800],
+                          ),
+                          border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.blueGrey[500])),
+                        ),
+                        onTap: () {
+                          getEndTime(context);
+                        },
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 8, 0, 5),
-                      child: Text(
-                        "Comment *",
-                        style: TextStyle(color: Colors.black),
+                      SizedBox(
+                        height: 10,
                       ),
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    TextField(
-                      controller: _eventController,
-                      decoration: new InputDecoration(
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blueGrey)),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+                        child: Text(
+                          "Total Hours:${endtime.hour - time.hour}",
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Container(
-                      //padding: EdgeInsets.fromLTRB(0, 0, 143, 0),
-                      child: Row(
-                        children: <Widget>[
-                          RaisedButton(
-                            child: Text("Delete"),
-                            onPressed: () {},
-                            color: Colors.red,
-                          ),
-                          SizedBox(
-                            width: 10.0,
-                          ),
-                          RaisedButton(
-                            child: Text("close"),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          SizedBox(
-                            width: 7.0,
-                          ),
-                          RaisedButton(
-                            child: Text("save"),
-                            onPressed: () async {
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 8, 0, 5),
+                        child: Text(
+                          "Comment *",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      TextFormField(
+                        controller: _eventController,
+                        decoration: new InputDecoration(
+                          hintText: comment,
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blueGrey)),
+                        ),
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Container(
+                        //padding: EdgeInsets.fromLTRB(0, 0, 143, 0),
+                        child: Row(
+                          children: <Widget>[
+                            RaisedButton(
+                              child: Text("Delete"),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              color: Colors.red,
+                            ),
+                            SizedBox(
+                              width: 10.0,
+                            ),
+                            RaisedButton(
+                              child: Text("close"),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            SizedBox(
+                              width: 7.0,
+                            ),
+                            RaisedButton(
+                              child: Text("save"),
+                              onPressed: () async {
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
 
-                              String stringValue = prefs.getString('token');
-                              var response;
-                              Map<String, String> headers = {
-                                "Content-Type": "application/json",
-                                "Accept": "application/json",
-                                "X_TOKEN": "$stringValue",
-                              };
-                              final body = jsonEncode({
-                                "comment": _eventController.text,
-                                "end": "$endTimeDate",
-                                "endTime": _startController.text,
-                                "start": "$startTimeDate",
-                                "startTime": _startController.text,
-                              });
-                              print(body);
-                              response = await http.put(
-                                  'https://app.idolconsulting.co.za/idols/timesheetitems',
-                                  headers: headers,
-                                  body: body);
-                              setState(() {
-                                if (_events[_controller.selectedDay] != null ||
-                                    _eventController.text.isNotEmpty) {
-                                  _events[_controller.selectedDay] = [
-                                    "comment:${_eventController.text}",
-                                    "StartTime:${_startController.text}",
-                                    "EndTime:${_endtController.text}"
-                                  ];
-                                  if (_startController.text != null &&
-                                      _endtController.text != null) {
-                                    back = Back(
-                                        startDate: _startController.text,
-                                        endDate: _endtController.text);
+                                String stringValue = prefs.getString('token');
+                                var response;
+                                Map<String, String> headers = {
+                                  "Content-Type": "application/json",
+                                  "Accept": "application/json",
+                                  "X_TOKEN": "$stringValue",
+                                };
+                                final body = jsonEncode({
+                                  "comment": _eventController.text,
+                                  "end": "$endTimeDate",
+                                  "endTime": _startController.text,
+                                  "start": "$startTimeDate",
+                                  "startTime": _startController.text,
+                                });
+                                print(body);
+                                response = await http.put(
+                                    'https://app.idolconsulting.co.za/idols/timesheetitems',
+                                    headers: headers,
+                                    body: body);
+                                setState(() {
+                                  if (_events[_controller.selectedDay] !=
+                                          null ||
+                                      _eventController.text.isNotEmpty) {
+                                    _events[_controller.selectedDay] = [
+                                      "comment:${_eventController.text}",
+                                      "StartTime:${_startController.text}",
+                                      "EndTime:${_endtController.text}"
+                                    ];
+
+                                    _eventController.clear();
+                                    Navigator.pop(context);
                                   }
-                                  _eventController.clear();
-                                  Navigator.pop(context);
-//                                  _startController.text = " ";
-//                                  _endtController.text = " ";
-                                }
-                                prefs.setString(
-                                    "events", json.encode(encodeMap(_events)));
+                                  prefs.setString("events",
+                                      json.encode(encodeMap(_events)));
 
-                                if (response.statusCode == 200) {
-                                  print(response.body);
-                                  return Timesheet.fromJson(
-                                      json.decode(response.body));
-                                } else {
-                                  print(response.body);
-                                  print("Token: $stringValue");
+                                  if (response.statusCode == 200) {
+                                    print(response.body);
+                                    return Timesheet.fromJson(
+                                        json.decode(response.body));
+                                  } else {
+                                    print(response.body);
+                                    print("Token: $stringValue");
 
-                                  print(response.body);
-                                  throw Exception('Failed to load timesheet');
-                                }
-                              });
-                            },
-                            color: Colors.blue,
-                          )
-                        ],
+                                    print(response.body);
+                                    throw Exception('Failed to load timesheet');
+                                  }
+                                });
+
+                                back = Back(
+                                    startTime: "${time.hour}:${time.minute}",
+                                    endTime:
+                                        "${endtime.hour}:${endtime.minute}",
+                                    comments: "${_eventController.text}",
+                                    currentDate:
+                                        "${dateFormat.format(_controller.selectedDay)}");
+                                listOfTimesheet.add(back);
+
+                                _startController.clear();
+                                _endtController.clear();
+                                _eventController.clear();
+                              },
+                              color: Colors.blue,
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ));
@@ -375,6 +404,41 @@ class _HomepageState extends State<Homepage> {
     _selectedEvents = [];
     initPrefs();
   }
+
+  String showValues(String hintText, Back back) {
+    if (_events[_controller.selectedDay] != null ||
+        _eventController.text.isNotEmpty) {
+      for (int x = 0; x < listOfTimesheet.length; x++) {
+        if (listOfTimesheet[x].currentDate ==
+            "${dateFormat.format(_controller.selectedDay)}")
+          _events[_controller.selectedDay] = [
+            hintValue = listOfTimesheet[x].getStartTime(),
+            hintEndValue = listOfTimesheet[x].getendTime(),
+            comment = listOfTimesheet[x].getcomments()
+          ];
+      }
+    } else {
+      hintValue = hintText;
+      hintEndValue = "please select endtime";
+    }
+    return hintValue;
+  }
+
+//  String showendValues(String hintText, Back back) {
+//    if (_events[_controller.selectedDay] != null ||
+//        _eventController.text.isNotEmpty) {
+//      for (int x = 0; x < listOfTimesheet.length; x++) {
+//        if (listOfTimesheet[x].currentDate ==
+//            "${dateFormat.format(_controller.selectedDay)}")
+//          _events[_controller.selectedDay] = [
+//            hintEndValue = listOfTimesheet[x].getendTime(),
+//          ];
+//      }
+//    } else {
+//      hintEndValue = hintText;
+//    }
+//    return hintEndValue;
+//  }
 }
 
 class homeScreen extends StatefulWidget {

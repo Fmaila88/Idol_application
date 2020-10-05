@@ -19,6 +19,8 @@ class Project {
   Project(this.name, this.id,this.createDate, this.endDate,this.description, this.status,this.logo, this.createdBy,
       this.manager, this.observers,this.members,this.company, this.attachments,);
 
+
+
   getName(){
     return name;
   }

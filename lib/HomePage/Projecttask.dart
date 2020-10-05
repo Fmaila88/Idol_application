@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:App_idolconsulting/HomePage/homescrean.dart';
 import 'Project.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:date_format/date_format.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -136,6 +137,10 @@ class _ProjectTaskState extends State<ProjectTask> {
       });
     }
   }
+  convertDateFromString() {
+    DateTime todayDate = DateTime.parse(detail['createDate'].toString());
+    return formatDate(todayDate, [dd,' ',MM, ' ', yyyy]);
+  }
   @override
   void initState() {
     super.initState();
@@ -201,8 +206,8 @@ class _ProjectTaskState extends State<ProjectTask> {
                         Row(
                           children: <Widget>[
                             Text('Start Date:',style: TextStyle(fontSize: 17.0),),
-                            SizedBox(width: 70.0),
-                            Text(detail['createDate'].toString()),
+                            SizedBox(width: 90.0),
+                            Text( convertDateFromString()),
                           ],
                         ),
                         SizedBox(height: 20.0),
@@ -303,7 +308,7 @@ class _ProjectTaskState extends State<ProjectTask> {
                                         children: <Widget>[
                                           Text('Created:',style: TextStyle(fontSize: 15.0)),
                                           SizedBox(width: 10.0),
-                                          Text(detail['createDate'].toString()),
+                                          Text(convertDateFromString()),
                                         ],
                                       ),
                                       Row(
