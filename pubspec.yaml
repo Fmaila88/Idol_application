@@ -42,6 +42,9 @@ dependencies:
   date_format:
   file_picker: ^1.2.0
   responsive_table: ^0.1.1+8
+  flutter_downloader: ^1.4.4
+  permission_handler: ^5.0.1
+  path_provider: ^1.6.18
 
 dev_dependencies:
   flutter_test:
