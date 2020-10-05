@@ -27,8 +27,6 @@ class _Login extends State<LoginBody> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
-
-
         body: Builder(builder: (BuildContext context){
           return  Container(
             decoration: BoxDecoration(
