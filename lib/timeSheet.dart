@@ -415,7 +415,7 @@ class _HomepageState extends State<Homepage> {
       }
     } else {
       hintValue = hintText;
-      hintEndValue = "please select endTime";
+      hintEndValue = "please select endtime";
     }
     return hintValue;
   }
