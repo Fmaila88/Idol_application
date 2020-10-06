@@ -1,10 +1,13 @@
 import 'package:App_idolconsulting/HomePage/homescrean.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:convert';
-//import 'home';
+
 //import '../homescrean.dart';
 import 'DetailsScreen.dart';
 import 'ListEmp.dart';
@@ -50,6 +53,11 @@ class MyApplState extends State<MyAppl> {
   //   //return dateformat.DateFormat(dateTime);
   //   return '${dateTime.month}/${dateTime.year}';
   // }
+
+  void download() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await FlutterDownloader.initialize(debug: true);
+  }
 
   @override
   void initState() {
@@ -241,7 +249,29 @@ class MyApplState extends State<MyAppl> {
 
                                       DataCell(
                                         FlatButton.icon(
-                                          onPressed: () {},
+                                          onPressed: () async {
+                                            download();
+                                            final status = await Permission
+                                                .storage
+                                                .request();
+
+                                            if (status.isGranted) {
+                                              final externalDir =
+                                                  await getExternalStorageDirectory();
+
+                                              final id = await FlutterDownloader
+                                                  .enqueue(
+                                                url:
+                                                    "https://app.idolconsulting.co.za/idols/payslips/download/5ba3ac43c391b566c3c51e63",
+                                                savedDir: externalDir.path,
+                                                fileName: "payslip",
+                                                showNotification: true,
+                                                openFileFromNotification: true,
+                                              );
+                                            } else {
+                                              print("Permission denied");
+                                            }
+                                          },
                                           icon: Icon(
                                             Icons.arrow_downward,
                                             size: 15,

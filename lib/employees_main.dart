@@ -1,10 +1,9 @@
-import 'package:App_idolconsulting/employees/screens/add_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
-
+import 'employees/screens/add_data.dart';
 import 'employees/screens/details.dart';
 
 void main() {

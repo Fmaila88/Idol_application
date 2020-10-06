@@ -734,7 +734,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => new homeScreen()
+                                  builder: (context) => new Homepage()
                               ));
                         },
                       ),

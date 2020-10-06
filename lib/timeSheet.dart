@@ -295,7 +295,9 @@ class _HomepageState extends State<Homepage> {
                         children: <Widget>[
                           RaisedButton(
                             child: Text("Delete"),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
                             color: Colors.red,
                           ),
                           SizedBox(

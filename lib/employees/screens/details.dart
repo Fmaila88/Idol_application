@@ -1,9 +1,13 @@
+import 'package:App_idolconsulting/employees_main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'edit_data.dart';
 
 class Detail extends StatefulWidget {
-  List list;
-  int index;
+  final List list;
+  final int index;
   Detail({this.list, this.index});
 
   @override
@@ -11,6 +15,49 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
+  void deleteData() async {
+    var url = "https://app.idolconsulting.co.za/idols/users";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('userToken');
+    Map<String, String> headers = {
+      "content-type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN": "$stringValue",
+    };
+    http.delete(
+      url + "/${widget.list[widget.index]['id']}",
+      headers: headers,
+    );
+  }
+
+  void confirm() {
+    //do something
+    AlertDialog alertDialog = new AlertDialog(
+      content: new Text(
+          "Are your sure you want to Delete ${widget.list[widget.index]['firstName']}"),
+      actions: [
+        new RaisedButton(
+          child: new Text(
+            "OK DELETE!",
+            style: new TextStyle(color: Colors.black),
+          ),
+          color: Colors.redAccent,
+          onPressed: () {
+            deleteData();
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (BuildContext context) => new EmployeesHome()));
+          },
+        ),
+        new RaisedButton(
+            child:
+                new Text("CANCEL", style: new TextStyle(color: Colors.black)),
+            color: Colors.redAccent,
+            onPressed: () => Navigator.pop(context)),
+      ],
+    );
+    showDialog(context: context, child: alertDialog);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,13 +138,20 @@ class _DetailState extends State<Detail> {
                       new RaisedButton(
                         child: Text("EDIT"),
                         color: Colors.lightGreen,
-                        onPressed: () {},
+                        onPressed: () => Navigator.of(context).push(
+                          new MaterialPageRoute(
+                            builder: (BuildContext context) => new EditData(
+                              list: widget.list,
+                              index: widget.index,
+                            ),
+                          ),
+                        ),
                       ),
                       SizedBox(width: 20.0),
                       new RaisedButton(
                         child: Text("DELETE"),
                         color: Colors.redAccent,
-                        onPressed: () {},
+                        onPressed: () => confirm(),
                       ),
                     ],
                   ),
