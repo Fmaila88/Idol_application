@@ -26,7 +26,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   _displayDialog(BuildContext context) async {
     return showDialog(
         context: context,
@@ -34,42 +33,44 @@ class _HomeState extends State<Home> {
           return AlertDialog(
             backgroundColor: Colors.white,
 
-           // title: "LOGIN",
+            // title: "LOGIN",
             //title: Text('reason for tech decling'),
-                 content: Column(
-                   mainAxisSize: MainAxisSize.min,
-                   children: <Widget>[
-                     GestureDetector(
-                      child: TextField(
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(context, new MaterialPageRoute
-                            (builder: (context) => new Profile()));
-                        },
-                       decoration: InputDecoration(
-                         border: InputBorder.none,
-                         icon: Icon(Icons.person),
-                         labelText: 'Profile',
-                       ),
-                      readOnly: true,
-                     ),
-          ),
-                  TextField(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                GestureDetector(
+                  child: TextField(
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) => new Profile()));
+                    },
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      icon: Icon(Icons.person),
+                      labelText: 'Profile',
+                    ),
+                    readOnly: true,
+                  ),
+                ),
+                TextField(
 //                    onTap: () {
 //                      Navigator.pop(context);
 //                      Navigator.push(context, new MaterialPageRoute
 //                        (builder: (context) => new Logout()));
 //                    },
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      icon: Icon(Icons.launch),
-                      labelText: 'Logout',
-                    ),
-                    readOnly: true,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    icon: Icon(Icons.launch),
+                    labelText: 'Logout',
                   ),
-                ],
-               ),
+                  readOnly: true,
+                ),
+              ],
+            ),
 
             //title: Text('reason for tech decling'),
 //             content: DropdownButton(
@@ -113,39 +114,35 @@ class _HomeState extends State<Home> {
   }
 
   Map<String, dynamic> data4;
-  bool isLoading=true;
-  bool load=true;
-
+  bool isLoading = true;
+  bool load = true;
 
   Future<String> fetchDrawer() async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
         'http://app.idolconsulting.co.za/idols/users/profile',
-        headers: {"Accept": "application/json",
-          'X_TOKEN': stringValue});
+        headers: {"Accept": "application/json", 'X_TOKEN': stringValue});
 
-    if(response.statusCode ==200){
-      setState((){
-        data4=json.decode(response.body);
-
+    if (response.statusCode == 200) {
+      setState(() {
+        data4 = json.decode(response.body);
       });
     }
   }
 
   List<Tasks> task = new List<Tasks>();
-  Map<String,dynamic> data3;
+  Map<String, dynamic> data3;
 
   Future<String> fetchTask() async {
-    SharedPreferences prefs =
-    await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String stringValue = prefs.getString('userToken');
     final response = await http.get(
         'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate/5f3504f0c391b51061db90e3?keyword=',
-        headers: {"Accept": "application/json",
+        headers: {
+          "Accept": "application/json",
           "X_TOKEN": stringValue,
         });
 
@@ -169,18 +166,19 @@ class _HomeState extends State<Home> {
   }
 
   List<Project> projects = new List<Project>();
-  Map<String,dynamic> detail;
+  Map<String, dynamic> detail;
   Project project;
   Future<String> fetchProjects() async {
-  bool load=true;
+    bool load = true;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
-      //'https://app.idolconsulting.co.za/idols/projects/all',
+        //'https://app.idolconsulting.co.za/idols/projects/all',
         'https://app.idolconsulting.co.za/idols/projects/5f3504f0c391b51061db90e3',
-        headers: {"Accept": "application/json",
+        headers: {
+          "Accept": "application/json",
           "X_TOKEN": stringValue,
         });
 
@@ -197,7 +195,7 @@ class _HomeState extends State<Home> {
               detail['createDate'].toString(),
               detail['endDate'].toString(),
               detail['description'].toString(),
-            // data[x]['budget'],
+              // data[x]['budget'],
               detail['status'].toString(),
               detail['logo'].toString(),
               detail['createdBy'],
@@ -205,11 +203,9 @@ class _HomeState extends State<Home> {
               detail['observers'],
               detail['members'],
               detail['company'],
-              detail['attachments']
-          );
+              detail['attachments']);
           projects.add(project);
         }
-
       });
     }
   }
@@ -254,7 +250,8 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-  bool readOnly=true;
+
+  bool readOnly = true;
 
   @override
   void initState() {
@@ -264,12 +261,13 @@ class _HomeState extends State<Home> {
     _generateData();
     this.fetchProjects();
     // this.fetchTaskings();
-    this. fetchTask();
+    this.fetchTask();
     this.fetchDrawer();
   }
+
   convertDateFromString() {
     DateTime todayDate = DateTime.parse(detail['createDate'].toString());
-    return formatDate(todayDate, [dd,' ',MM, ' ', yyyy]);
+    return formatDate(todayDate, [dd, ' ', MM, ' ', yyyy]);
   }
 
   @override
@@ -301,109 +299,123 @@ class _HomeState extends State<Home> {
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
                 ),
-
                 GestureDetector(
                   onTap: () {
                     _displayDialog(context);
                   },
-                 // width: 55.0,
-                 // height: 60.0,
-                 // color: Colors.grey,
-                  child: load ? Center(child: CircularProgressIndicator()):
-                  CircleAvatar(
-                    radius:30,
-                    backgroundColor: Colors.blue,
-                    backgroundImage:NetworkImage(
-                        'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
-                    ),
-                  ),
+                  // width: 55.0,
+                  // height: 60.0,
+                  // color: Colors.grey,
+                  child: load
+                      ? Center(child: CircularProgressIndicator())
+                      : CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.blue,
+                          backgroundImage: NetworkImage(
+                              'http://app.idolconsulting.co.za/idols/file/' +
+                                  data4['profilePicture']['id']),
+                        ),
                 ),
               ]),
-
-          body:  load ? Center(child: CircularProgressIndicator()):
-          TabBarView(children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Container(
-                child: Center(
-                  child: Column(children: <Widget>[
-                    Text(
-                      'Project Status',
-                      style: TextStyle(
-                          fontSize: 24.0, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10.0),
-                    Expanded(
-                      child: charts.PieChart(_seriesData1,
-                          animate: true,
-                          animationDuration: Duration(seconds: 5),
-                          behaviors: [
-                            new charts.DatumLegend(
-                              outsideJustification:
-                              charts.OutsideJustification.endDrawArea,
-                              horizontalFirst: false,
-                              desiredMaxRows: 2,
-                              cellPadding:
-                              new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                              entryTextStyle: charts.TextStyleSpec(
-                                  color: charts
-                                      .MaterialPalette.purple.shadeDefault,
-                                  fontFamily: 'Geoegia',
-                                  fontSize: 11),
-                            ),
-                          ],
-                          defaultRenderer: new charts.ArcRendererConfig(
-                              arcWidth: 100,
-                              arcRendererDecorators: [
-                                new charts.ArcLabelDecorator(
-                                    labelPosition:
-                                    charts.ArcLabelPosition.inside)
-                              ])),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => new ProjectTask()));
-                      },
-
-                      child: Card(
-                        elevation: 2,
-                        child: Container(
-                          height: 100,
-                          width: 400,
-                          child: SizedBox(
-                            child:  Container(
-                              child: Column(
-                                children: <Widget>[
-                                  //SizedBox(height: 60.0),
-                                  Row(
-                                    children: <Widget>[
-                                      Text('Name',style: TextStyle(fontSize: 15.0),),
-                                      SizedBox(width: 40.0),
-                                      Text('End Date',style: TextStyle(fontSize: 15.0),),
-                                      SizedBox(width: 40.0),
-                                      Text('Status',style: TextStyle(fontSize: 15.0),),
-                                      SizedBox(width: 40.0),
-                                      Text('Manager',style: TextStyle(fontSize: 15.0),),
-                                    ],
-                                  ),
-                                  SizedBox(height: 30.0),
-                                  Row(
-                                    children: <Widget>[
-                                      Text(detail['name']==null ? 'Project Name not updated' : detail['name']),
-                                      SizedBox(width: 5.0),
-                                      Text(detail['endDate'].toString()),
-                                      SizedBox(width: 5.0 ),
-                                      Text(detail['status'].toString()),
-                                      SizedBox(width: 40.0),
-                                      Text(detail['manager']['firstName'].toString()),//createDate
-                                    ],
+          body: load
+              ? Center(child: CircularProgressIndicator())
+              : TabBarView(children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Container(
+                      child: Center(
+                        child: Column(children: <Widget>[
+                          Text(
+                            'Project Status',
+                            style: TextStyle(
+                                fontSize: 24.0, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 10.0),
+                          Expanded(
+                            child: charts.PieChart(_seriesData1,
+                                animate: true,
+                                animationDuration: Duration(seconds: 5),
+                                behaviors: [
+                                  new charts.DatumLegend(
+                                    outsideJustification:
+                                        charts.OutsideJustification.endDrawArea,
+                                    horizontalFirst: false,
+                                    desiredMaxRows: 2,
+                                    cellPadding: new EdgeInsets.only(
+                                        right: 4.0, bottom: 4.0),
+                                    entryTextStyle: charts.TextStyleSpec(
+                                        color: charts.MaterialPalette.purple
+                                            .shadeDefault,
+                                        fontFamily: 'Geoegia',
+                                        fontSize: 11),
                                   ),
                                 ],
-                              ),
+                                defaultRenderer: new charts.ArcRendererConfig(
+                                    arcWidth: 100,
+                                    arcRendererDecorators: [
+                                      new charts.ArcLabelDecorator(
+                                          labelPosition:
+                                              charts.ArcLabelPosition.inside)
+                                    ])),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                  context,
+                                  new MaterialPageRoute(
+                                      builder: (context) => new ProjectTask()));
+                            },
+                            child: Card(
+                              elevation: 2,
+                              child: Container(
+                                height: 100,
+                                width: 400,
+                                child: SizedBox(
+                                  child: Container(
+                                    child: Column(
+                                      children: <Widget>[
+                                        //SizedBox(height: 60.0),
+                                        Row(
+                                          children: <Widget>[
+                                            Text(
+                                              'Name',
+                                              style: TextStyle(fontSize: 15.0),
+                                            ),
+                                            SizedBox(width: 40.0),
+                                            Text(
+                                              'End Date',
+                                              style: TextStyle(fontSize: 15.0),
+                                            ),
+                                            SizedBox(width: 40.0),
+                                            Text(
+                                              'Status',
+                                              style: TextStyle(fontSize: 15.0),
+                                            ),
+                                            SizedBox(width: 40.0),
+                                            Text(
+                                              'Manager',
+                                              style: TextStyle(fontSize: 15.0),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 30.0),
+                                        Row(
+                                          children: <Widget>[
+                                            Text(detail['name'] == null
+                                                ? 'Project Name not updated'
+                                                : detail['name']),
+                                            SizedBox(width: 5.0),
+                                            Text(detail['endDate'].toString()),
+                                            SizedBox(width: 5.0),
+                                            Text(detail['status'].toString()),
+                                            SizedBox(width: 40.0),
+                                            Text(detail['manager']['firstName']
+                                                .toString()), //createDate
+                                          ],
+                                        ),
+                                      ],
+                                    ),
 
 //                                child: DataTable(
 //                                  columns: [
@@ -428,120 +440,134 @@ class _HomeState extends State<Home> {
 ////                                    ])
 //                                  ],
 //                                ),
-                            ),
+                                  ),
 //                            },
 //                          ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ]),
-                ),
-              ),
-            ),
-            Padding (
-              padding: EdgeInsets.all(8.0),
-              child: Container(
-                child: Center(
-                  child: Column(children: <Widget>[
-                    Text(
-                      'Task Status',
-                      style: TextStyle(
-                          fontSize: 24.0, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 10.0),
-                    Expanded(
-                      child: charts.PieChart(_seriesPieData,
-                          animate: true,
-                          animationDuration: Duration(seconds: 5),
-                          behaviors: [
-                            new charts.DatumLegend(
-                              outsideJustification:
-                              charts.OutsideJustification.endDrawArea,
-                              horizontalFirst: false,
-                              desiredMaxRows: 2,
-                              cellPadding:
-                              new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                              entryTextStyle: charts.TextStyleSpec(
-                                  color: charts
-                                      .MaterialPalette.purple.shadeDefault,
-                                  fontFamily: 'Geoegia',
-                                  fontSize: 11),
+                                ),
+                              ),
                             ),
-                          ],
-                          defaultRenderer: new charts.ArcRendererConfig(
-                              arcWidth: 100,
-                              arcRendererDecorators: [
-                                new charts.ArcLabelDecorator(
-                                    labelPosition:
-                                    charts.ArcLabelPosition.inside)
-                              ])),
+                          )
+                        ]),
+                      ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => new TaskDetails()));
-                      },
-                      child: Card(
-                        elevation: 5.0,
-                        child:
-                        Container(
-                          child: SizedBox(
-                            child: Container(
-                              //width: MediaQuery.of(context).size.width,
-                              child: Row(
-                                children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      Container(
-                                        width: 55.0,
-                                        height: 60.0,
-                                        color: Colors.white,
-                                        child: CircleAvatar(
-                                          radius:50,
-                                          backgroundColor: Colors.blue,
-                                          backgroundImage:NetworkImage(
-                                              'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
-                                                //  ==null ? 'https://www.w3schools.com/w3css/img_lights.jpg'
-                                                 // :'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
-                                          ),
-                                        ),
-                                      ),
-                                      Column(
-                                        children: <Widget>[
-                                          Text(data3['content'][0]['name'].toString()==null ? '' :data3['content'][0]['name'].toString()),
-                                          FlatButton(
-                                            onPressed: () {},
-                                            color: Colors.orange,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                BorderRadius.circular(
-                                                    20.0)),
-                                            child: Text(detail['status'].toString(),
-                                            ),
-                                          ),
-                                          SizedBox(height:15.0),
-                                          Row(
-                                            children: <Widget>[
-                                              Text('Created:',style: TextStyle(fontSize: 15.0)),
-                                              SizedBox(width: 10.0),
-                                              Text(convertDateFromString()),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: <Widget>[
-                                              Text('Due Date:',style: TextStyle(fontSize: 15.0)),
-                                              SizedBox(width: 10.0),
-                                              Text(detail['endDate'].toString()),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Container(
+                      child: Center(
+                        child: Column(children: <Widget>[
+                          Text(
+                            'Task Status',
+                            style: TextStyle(
+                                fontSize: 24.0, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 10.0),
+                          Expanded(
+                            child: charts.PieChart(_seriesPieData,
+                                animate: true,
+                                animationDuration: Duration(seconds: 5),
+                                behaviors: [
+                                  new charts.DatumLegend(
+                                    outsideJustification:
+                                        charts.OutsideJustification.endDrawArea,
+                                    horizontalFirst: false,
+                                    desiredMaxRows: 2,
+                                    cellPadding: new EdgeInsets.only(
+                                        right: 4.0, bottom: 4.0),
+                                    entryTextStyle: charts.TextStyleSpec(
+                                        color: charts.MaterialPalette.purple
+                                            .shadeDefault,
+                                        fontFamily: 'Geoegia',
+                                        fontSize: 11),
                                   ),
+                                ],
+                                defaultRenderer: new charts.ArcRendererConfig(
+                                    arcWidth: 100,
+                                    arcRendererDecorators: [
+                                      new charts.ArcLabelDecorator(
+                                          labelPosition:
+                                              charts.ArcLabelPosition.inside)
+                                    ])),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                  context,
+                                  new MaterialPageRoute(
+                                      builder: (context) => new TaskDetails()));
+                            },
+                            child: Card(
+                              elevation: 5.0,
+                              child: Container(
+                                child: SizedBox(
+                                  child: Container(
+                                    //width: MediaQuery.of(context).size.width,
+                                    child: Row(
+                                      children: <Widget>[
+                                        Row(
+                                          children: <Widget>[
+                                            Container(
+                                              width: 55.0,
+                                              height: 60.0,
+                                              color: Colors.white,
+                                              child: CircleAvatar(
+                                                radius: 50,
+                                                backgroundColor: Colors.blue,
+                                                backgroundImage: NetworkImage(
+                                                    'http://app.idolconsulting.co.za/idols/file/' +
+                                                        data4['profilePicture']
+                                                            ['id']
+                                                    //  ==null ? 'https://www.w3schools.com/w3css/img_lights.jpg'
+                                                    // :'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
+                                                    ),
+                                              ),
+                                            ),
+                                            Column(
+                                              children: <Widget>[
+                                                Text(data3['content'][0]['name']
+                                                            .toString() ==
+                                                        null
+                                                    ? ''
+                                                    : data3['content'][0]
+                                                            ['name']
+                                                        .toString()),
+                                                FlatButton(
+                                                  onPressed: () {},
+                                                  color: Colors.orange,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0)),
+                                                  child: Text(
+                                                    detail['status'].toString(),
+                                                  ),
+                                                ),
+                                                SizedBox(height: 15.0),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text('Created:',
+                                                        style: TextStyle(
+                                                            fontSize: 15.0)),
+                                                    SizedBox(width: 10.0),
+                                                    Text(
+                                                        convertDateFromString()),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Text('Due Date:',
+                                                        style: TextStyle(
+                                                            fontSize: 15.0)),
+                                                    SizedBox(width: 10.0),
+                                                    Text(detail['endDate']
+                                                        .toString()),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
 //                                        Container(
 //                                          alignment: Alignment.center,
 //                                          padding: EdgeInsets.symmetric(
@@ -558,30 +584,30 @@ class _HomeState extends State<Home> {
 //                                                .status),
 //                                          ),
 //                                      ),
-                                ],
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                //   },
+                                // ),
+                                //  ),
                               ),
                             ),
                           ),
-                          //   },
-                          // ),
-                          //  ),
-                        ),
+                        ]),
                       ),
                     ),
-                  ]),
-                ),
-              ),
-            ),
-          ]),
+                  ),
+                ]),
         ),
       ),
     );
-
   }
+
   @override
   void setState(fn) {
-    isLoading=false;
-    load=false;
+    isLoading = false;
+    load = false;
     super.setState(fn);
   }
 }
@@ -594,24 +620,20 @@ class DrawerCodeOnly extends StatefulWidget {
 }
 
 class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
-
   Map<String, dynamic> data3;
-  bool isLoading=true;
+  bool isLoading = true;
 
   Future<String> fetchDrawer() async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
         'http://app.idolconsulting.co.za/idols/users/profile',
-        headers: {"Accept": "application/json",
-          'X_TOKEN': stringValue});
+        headers: {"Accept": "application/json", 'X_TOKEN': stringValue});
 
-    if(response.statusCode ==200){
-      setState((){
-        data3=json.decode(response.body);
-
+    if (response.statusCode == 200) {
+      setState(() {
+        data3 = json.decode(response.body);
       });
     }
   }
@@ -625,53 +647,81 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child:Column(
+      child: Column(
         children: <Widget>[
           Container(
             height: 80,
             margin: EdgeInsets.only(top: 10),
             color: Colors.white,
-            child: Image(image: AssetImage('images/logo1.png'),),
+            child: Image(
+              image: AssetImage('images/logo1.png'),
+            ),
           ),
           Expanded(
             child: DrawerHeader(
-              child: isLoading ? Center(child: CircularProgressIndicator()):
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, new MaterialPageRoute
-                    (builder: (context) => new Profile()));
-                },
-                child: Container(
-                  child: Column(
-                    children:[
-                      Center(
-                        child:CircleAvatar(
-                          radius:50,
-                          backgroundColor: Colors.blue,
-                          backgroundImage:NetworkImage('http://app.idolconsulting.co.za/idols/file/' + data3['profilePicture']['id']),
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                                builder: (context) => new Profile()));
+                      },
+                      child: Container(
+                        child: Column(
+                          children: [
+                            Center(
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.blue,
+                                backgroundImage: NetworkImage(
+                                    'http://app.idolconsulting.co.za/idols/file/' +
+                                        data3['profilePicture']['id']),
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                data3['firstName'] == null
+                                    ? 'no name'
+                                    : data3['firstName'] +
+                                        '' +
+                                        data3['lastName'],
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Center(
+                                child: Text(
+                              data3['company'] == null
+                                  ? 'company found'
+                                  : data3['company']['name'],
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            )),
+                            Center(
+                                child: Text(
+                              data3['position'] == null
+                                  ? 'position not found'
+                                  : data3['position']['name'],
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            )),
+                          ],
                         ),
                       ),
-                      Center(
-                        child: Text(data3['firstName']==null? 'no name' :data3['firstName'] + '' + data3['lastName'],
-                          style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),),
-                      ),
-                      Center(
-                          child: Text(data3['company']==null? 'company found' :data3['company']['name'],
-                            style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),)
-                      ),
-                      Center(
-                          child: Text(data3['position']==null? 'position not found' : data3['position']['name'],
-                            style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),)
-                      ) ,
-                    ],
-                  ),
-                ),
-              ),
+                    ),
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: AssetImage('images/background.jpg'), fit: BoxFit.fill)
-              ),
+                      image: AssetImage('images/background.jpg'),
+                      fit: BoxFit.fill)),
             ),
           ),
           Container(
@@ -686,8 +736,10 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         title: new Text("Home"),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context,
-                              new MaterialPageRoute(builder: (context) => new Home()));
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => new Home()));
                         },
                       ),
                       new ListTile(
@@ -698,8 +750,8 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                // builder: (context) => new Services()
-                              ));
+                                  // builder: (context) => new Services()
+                                  ));
                         },
                       ),
                       new ListTile(
@@ -710,8 +762,8 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                //builder: (context) => new Teller()
-                              ));
+                                  //builder: (context) => new Teller()
+                                  ));
                         },
                       ),
                       new ListTile(
@@ -722,8 +774,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                builder: (context) => new EmployeesHome()
-                              ));
+                                  builder: (context) => new EmployeesHome()));
                         },
                       ),
                       new ListTile(
@@ -734,8 +785,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => new homeScreen()
-                              ));
+                                  builder: (context) => new homeScreen()));
                         },
                       ),
                       new ListTile(
@@ -746,8 +796,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                 builder: (context) => new Leaveday()
-                              ));
+                                  builder: (context) => new Leaveday()));
                         },
                       ),
                       new ListTile(
@@ -755,8 +804,10 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         title: new Text("PaySlips"),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context,
-                              new MaterialPageRoute(builder: (context) => new MyAppl()));
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => new MyAppl()));
                         },
                       ),
                       new ListTile(
@@ -767,8 +818,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => new Performance()
-                              ));
+                                  builder: (context) => new Performance()));
                         },
                       ),
                       new ListTile(
@@ -795,11 +845,10 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
 
   @override
   void setState(fn) {
-    isLoading=false;
+    isLoading = false;
     super.setState(fn);
   }
 }
-
 
 class Task {
   String task;

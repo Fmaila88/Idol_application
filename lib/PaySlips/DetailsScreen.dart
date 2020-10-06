@@ -677,6 +677,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         child: RaisedButton(
                           color: Colors.lightBlue,
                           onPressed: () async {
+                            saved(context);
                             SharedPreferences prefs =
                                 await SharedPreferences.getInstance();
                             String stringValue = prefs.getString('token');
@@ -688,7 +689,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             final body = jsonEncode({
                               'id': _employeeController.text,
                               'paymentDate': _paymentDateController.text,
-                              'mployeeName': names,
+                              'employeeName': names,
                               'hourlyRate': _hourlyRateController.text,
                               'monthlyHours': _monthlyHoursController.text,
                               'overtimeHours': _overtimeHoursController.text,
@@ -740,5 +741,18 @@ class _DetailsScreenState extends State<DetailsScreen> {
         ),
       ),
     );
+  }
+
+  void saved(BuildContext context) {
+    var alertDialog = AlertDialog(
+      title: Text("Saved"),
+      content: Text("Details Saved Successfully"),
+    );
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alertDialog;
+        });
   }
 }
