@@ -141,14 +141,38 @@ class _FormpageState extends State<Formpage> {
         child: SingleChildScrollView(
           child: Column(
               children: <Widget>[
-                Text(
+
+
+                Row(
+
+          children: <Widget>[
+
+              Expanded(
+
+              child:Container(
+               // margin: EdgeInsets.only(left:250),
+                  alignment:Alignment.topRight,
+                child: Text(
                   '*Required Fields',
                   style: TextStyle(
                     //color: '#013281'.toColor(),
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 10),
+                    color: Colors.black,
+                    fontWeight:FontWeight.bold,
+                    fontSize: 10,
+                  ),
                 ),
+
+              ),
+
+            )
+
+            ]
+                ),
+
+
+
+
+
 
                 Container(
                   padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
@@ -218,7 +242,7 @@ class _FormpageState extends State<Formpage> {
 
                       Container(
                         // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.black54)),
                         margin: const EdgeInsets.all(11.0),
@@ -361,7 +385,8 @@ class _FormpageState extends State<Formpage> {
 
                 Container(
                   alignment: Alignment.topLeft,
-                  padding: EdgeInsets.fromLTRB(0, 100,0 , 0),
+                  margin: EdgeInsets.only(top:20),
+
                   child:RaisedButton(
 
                       color: Colors.lightBlue[400],
@@ -383,7 +408,7 @@ class _FormpageState extends State<Formpage> {
                             '*Complete all required fields',
                             style: TextStyle(
                               //color: '#013281'.toColor(),
-                                color: Colors.grey,
+                                color: Colors.black,
                                 fontWeight: FontWeight.w500,
                                 fontSize: 10),
 
