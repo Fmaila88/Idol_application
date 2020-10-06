@@ -40,7 +40,7 @@ class MyApplState extends State<MyAppl> {
         var data = json.decode((response.body));
         for (int x = 0; x < data.length; x++) {
           var listEmp = new ListEmp(
-              data[x]['user']['firstName'].toString(), data[x]['createDate']);
+              data[x]['firstName'].toString(), data[x]['createDate']);
 
           employee_Details.add(listEmp);
         }

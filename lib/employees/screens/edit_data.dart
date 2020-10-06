@@ -1,16 +1,15 @@
+import "package:flutter/material.dart";
 import 'dart:convert';
-import 'package:App_idolconsulting/employees_main.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:App_idolconsulting/employees_main.dart';
 
-class AddData extends StatefulWidget {
+class EditData extends StatefulWidget {
   @override
-  _AddDataState createState() => _AddDataState();
+  _EditDataState createState() => _EditDataState();
 }
 
-class _AddDataState extends State<AddData> {
+class _EditDataState extends State<EditData> {
   TextEditingController controllerEmpNumber = new TextEditingController();
   TextEditingController controllerFirstName = new TextEditingController();
   TextEditingController controllerLastName = new TextEditingController();
@@ -29,7 +28,7 @@ class _AddDataState extends State<AddData> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: new AppBar(
-        title: new Text("Add Employee"),
+        title: new Text("EDIT EMPLOYEE DATA"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -106,7 +105,7 @@ class _AddDataState extends State<AddData> {
                 ),
                 Padding(padding: EdgeInsets.all(10.0)),
                 new RaisedButton(
-                  child: new Text("Add Employee"),
+                  child: new Text("EDIT EMPLOYEE"),
                   color: Colors.blue,
                   onPressed: () async {
                     SharedPreferences prefs =
