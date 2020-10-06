@@ -1,34 +1,115 @@
-import "package:flutter/material.dart";
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
 import 'package:App_idolconsulting/employees_main.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditData extends StatefulWidget {
+  final List list;
+  final int index;
+  EditData({this.list, this.index});
+
   @override
   _EditDataState createState() => _EditDataState();
 }
 
 class _EditDataState extends State<EditData> {
-  TextEditingController controllerEmpNumber = new TextEditingController();
-  TextEditingController controllerFirstName = new TextEditingController();
-  TextEditingController controllerLastName = new TextEditingController();
-  TextEditingController controllerCompany = new TextEditingController();
-  TextEditingController controllerPosition = new TextEditingController();
-  TextEditingController controllerRole = new TextEditingController();
-  TextEditingController controllerAnnLeaveDays = new TextEditingController();
-  TextEditingController controllerSickLeaveDays = new TextEditingController();
-  TextEditingController controllerFamilyResponsibility =
-      new TextEditingController();
-  TextEditingController controllerContactNumber = new TextEditingController();
-  TextEditingController controllerEmail = new TextEditingController();
-  TextEditingController controllerPassword = new TextEditingController();
+  TextEditingController controllerEmpNumber;
+  TextEditingController controllerFirstName;
+  TextEditingController controllerLastName;
+  TextEditingController controllerCompany;
+  TextEditingController controllerPosition;
+  TextEditingController controllerRole;
+  TextEditingController controllerAnnLeaveDays;
+  TextEditingController controllerSickLeaveDays;
+  TextEditingController controllerFamilyResponsibility;
+  TextEditingController controllerContactNumber;
+  TextEditingController controllerEmail;
+  TextEditingController controllerPassword;
+
+  void editEmployee() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('userToken');
+    Map<String, String> headers = {
+      "content-type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN": "$stringValue",
+    };
+
+    var url = "https://app.idolconsulting.co.za/idols/users";
+    final body = jsonEncode({
+      "id": widget.list[widget.index]['id'],
+      "employeeNumber": controllerEmpNumber.text,
+      "firstName": controllerFirstName.text,
+      "lastName": controllerLastName.text,
+      "company": {
+        "id": "5ba3acb0c391b566c3c51e66",
+        "name": "Idol Consulting",
+      },
+      "position": {
+        "id": "5f350574c391b51061db90e9",
+        "name": "App Developer",
+      },
+      "roles": [
+        controllerRole.text,
+      ],
+      "annualLeaveDays": int.parse(controllerAnnLeaveDays.text),
+      "sickLeaveDays": int.parse(controllerSickLeaveDays.text),
+      "familyResponsibility": int.parse(controllerFamilyResponsibility.text),
+      "contactNumber": controllerContactNumber.text,
+      "email": controllerEmail.text,
+      "password": controllerPassword.text,
+    });
+    final response = await http.put(url, headers: headers, body: body);
+
+    setState(() {
+      if (response.statusCode == 200) {
+        print(response.body);
+        print(jsonDecode(body));
+        //print(stringValue);
+      }
+    });
+    Navigator.pop(context);
+    Navigator.push(context,
+        new MaterialPageRoute(builder: (context) => new EmployeesHome()));
+  }
+
+  @override
+  void initState() {
+    controllerEmpNumber = new TextEditingController(
+        text: "${widget.list[widget.index]['employeeNumber']}");
+    controllerFirstName = new TextEditingController(
+        text: "${widget.list[widget.index]['firstName']}");
+    controllerLastName = new TextEditingController(
+        text: "${widget.list[widget.index]['lastName']}");
+    controllerCompany = new TextEditingController(
+        text: "${widget.list[widget.index]['company']['name']}");
+    controllerPosition = new TextEditingController(
+        text: "${widget.list[widget.index]['position']['name']}");
+    controllerRole = new TextEditingController(
+        text: "${widget.list[widget.index]['roles'][0]}");
+    controllerAnnLeaveDays = new TextEditingController(
+        text: "${widget.list[widget.index]['annualLeaveDays']}");
+    controllerSickLeaveDays = new TextEditingController(
+        text: "${widget.list[widget.index]['sickLeaveDays']}");
+    controllerFamilyResponsibility = new TextEditingController(
+        text: "${widget.list[widget.index]['familyResponsibility']}");
+    controllerContactNumber = new TextEditingController(
+        text: "${widget.list[widget.index]['contactNumber']}");
+    controllerEmail = new TextEditingController(
+        text: "${widget.list[widget.index]['email']}");
+    controllerPassword = new TextEditingController(
+        text: "${widget.list[widget.index]['password']}");
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: new AppBar(
-        title: new Text("EDIT EMPLOYEE DATA"),
+        title: new Text("Edit Employee Data"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -103,59 +184,16 @@ class _EditDataState extends State<EditData> {
                       hintText: "Password", labelText: "Password"),
                   controller: controllerPassword,
                 ),
-                Padding(padding: EdgeInsets.all(10.0)),
+                Padding(
+                  padding: EdgeInsets.all(10.0),
+                ),
                 new RaisedButton(
-                  child: new Text("EDIT EMPLOYEE"),
+                  child: new Text("Edit Employee"),
                   color: Colors.blue,
-                  onPressed: () async {
-                    SharedPreferences prefs =
-                        await SharedPreferences.getInstance();
-                    String stringValue = prefs.getString('userToken');
-                    Map<String, String> headers = {
-                      "content-type": "application/json",
-                      "Accept": "application/json",
-                      "X_TOKEN": "$stringValue",
-                    };
-
-                    var url = "https://app.idolconsulting.co.za/idols/users";
-                    final body = jsonEncode({
-                      "employeeNumber": controllerEmpNumber.text,
-                      "firstName": controllerFirstName.text,
-                      "lastName": controllerLastName.text,
-                      "company": {
-                        "id": "5ba3acb0c391b566c3c51e66",
-                        "name": "Idol Consulting",
-                      },
-                      "position": {
-                        "id": "5f350574c391b51061db90e9",
-                        "name": "App Developer",
-                      },
-                      "roles": [
-                        controllerRole.text,
-                      ],
-                      "annualLeaveDays": int.parse(controllerAnnLeaveDays.text),
-                      "sickLeaveDays": int.parse(controllerSickLeaveDays.text),
-                      "familyResponsibility":
-                          int.parse(controllerFamilyResponsibility.text),
-                      "contactNumber": controllerContactNumber.text,
-                      "email": controllerEmail.text,
-                      "password": controllerPassword.text,
-                    });
-                    final response =
-                        await http.put(url, headers: headers, body: body);
-
-                    setState(() {
-                      if (response.statusCode == 200) {
-                        print(response.body);
-                        print(jsonDecode(body));
-                        //print(stringValue);
-                      }
-                    });
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (context) => new EmployeesHome()));
+                  onPressed: () {
+                    editEmployee();
+                    Navigator.of(context).push(new MaterialPageRoute(
+                        builder: (BuildContext context) => EmployeesHome()));
                   },
                 )
               ],
