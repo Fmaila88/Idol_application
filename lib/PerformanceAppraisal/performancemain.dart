@@ -15,7 +15,7 @@ import 'performancedetails.dart';
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    title: 'Performance Appraisalss',
+    title: 'Performance Appraisals',
     home: Performance(),
   ));
 }
@@ -183,10 +183,10 @@ class _PerformanceState extends State<Performance> {
                               ],
                               rows: [
                                 DataRow(cells: [
-                                  DataCell(Text(convertDateFromString())),
-                                  DataCell(Text(detail['content'][0]['user']['firstName'].toString())),
-                                  DataCell(Text(detail['content'][0]['status'].toString())),
-                                  DataCell(Text(detail['content'][0]['type'].toString())),
+                                  DataCell(Text('22 Sep 2020')),
+                                  DataCell(Text('Prince Phakathi')),
+                                  DataCell(Text('pending')),
+                                  DataCell(Text('compliment')),
                                 ])],
                             ),);
                         },),
@@ -213,75 +213,8 @@ class _PerformanceState extends State<Performance> {
           builder: (context) => perfomanceDetails(),
         ));
   }
-//
-//  AppraisalDetails() {}
-//}
-//
-//class Employees {
-//  Employees(String string, String string2);
-//}
 
-//class TableData extends DataTableSource {
-//  @override
-//  DataRow getRow(int index) {
-//    // TODO: implement getRow
-//    return DataRow.byIndex(index: index, cells: [
-//      DataCell(Text(PerformanceAppraisals.elementAt(index).id)),
-//      DataCell(Text(PerformanceAppraisals.elementAt(index).firstName)),
-//      DataCell(Text(PerformanceAppraisals.elementAt(index).status)),
-//
-//    ]);
-
-//class TableData extends DataTableSource {
-//  @override
-//  DataRow getRow(int index) {
-//    // TODO: implement getRow
-//    return DataRow.byIndex(index: index, cells: [
-//      DataCell(Text("ok")),
-//      DataCell(Text("ok")),
-//      DataCell(Text("ok")),
-//
-//    ]);
-//  }
-//
-//  @override
-//  // TODO: implement isRowCountApproximate
-//  bool get isRowCountApproximate => true;
-//
-//  @override
-//  // TODO: implement rowCount
-//  int get rowCount => 2;
-//
-//  @override
-//  // TODO: implement selectedRowCount
-//  int get selectedRowCount => 0;
-//}
-//enum MenuOption {Logout, Profile}
-//
-//class DropdownButton extends StatelessWidget {
-//  const DropdownButton( {Key key,  Image child}) : super(key: key);
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return PopupMenuButton<MenuOption>(
-//        itemBuilder: (BuildContext context) {
-//          return <PopupMenuEntry<MenuOption>>[
-//            PopupMenuItem(
-//              //child: Text("Logout"),
-//              child: Icon(Icons.person, color: Colors.black, size: 28.0,),
-//              value: MenuOption.Logout,
-//            ),
-//            PopupMenuItem(
-//              //child: Text("Profile"),
-//
-//              child: Icon(Icons.exit_to_app, color: Colors.black, size: 28.0,),
-//              value: MenuOption.Profile,
-//            ),
-//
-//          ];
-//        }
-//    );
   }
-//}
+
 
 

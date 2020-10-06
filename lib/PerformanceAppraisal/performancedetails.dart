@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'employeesclass.dart';
+import 'performanceclass.dart';
+//import 'data.dart';
 
 
 //import 'package:flutter/cupertino.dart';
@@ -29,12 +31,12 @@ class perfomanceDetails extends StatefulWidget {
 //String title = 'DropDownButton';
 
 class perfomanceDetailsState extends State<perfomanceDetails> {
-  List<Employees> _employeeName = new List<Employees>();
+  List<Perform> _employeeName = new List<Perform>();
   String names;
 
 //   List _employeeName;
 
-  Future<Employees> fetchEmployees() async {
+  Future<Perform> fetchEmployees() async {
     final response = await http.get(
         'https://app.idolconsulting.co.za/idols/performanceappraisals/all',
         headers: {"Accept": "application/json"});
@@ -42,8 +44,11 @@ class perfomanceDetailsState extends State<perfomanceDetails> {
       setState(() {
         var data = json.decode((response.body));
         for (int x = 0; x < data.length; x++) {
-          var employees = new Employees(
-              data[x]['firstName'].toString(), data[x]['lastName'].toString());
+          var employees = new Perform(
+              data[x]['id'].toString(),
+              data[x]['date'].toString(),
+              data[x]['employee'].toString(),
+              data[x]['status'].toString());
 
           _employeeName.add(employees);
         }
@@ -138,7 +143,7 @@ class perfomanceDetailsState extends State<perfomanceDetails> {
                           alignment: Alignment.topLeft,
                           padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                           child: Text(
-                            'Employee *',
+                            'Employee name*',
                             style: TextStyle(
                                 color: Colors.black54,
                                 fontWeight: FontWeight.w600,
@@ -150,7 +155,7 @@ class perfomanceDetailsState extends State<perfomanceDetails> {
                           padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black54),
-                              borderRadius:BorderRadius.circular(15.0)
+                              borderRadius:BorderRadius.circular(5.0)
                           ),
                           // borderRadius: BorderRadius.circular(15.0),
                           margin: const EdgeInsets.all(11.0),
@@ -173,11 +178,23 @@ class perfomanceDetailsState extends State<perfomanceDetails> {
 
                         ),
                         Container(
+                          margin: const EdgeInsets.all(11.0),
+                          alignment: Alignment.topLeft,
+                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                          child: Text(
+                            'Status *',
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16),
+                          ),
+                        ),
+                        Container(
                           // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
                           padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black54),
-                              borderRadius:BorderRadius.circular(15.0)
+                              borderRadius:BorderRadius.circular(5.0)
                           ),
                           // borderRadius: BorderRadius.circular(15.0),
                           margin: const EdgeInsets.all(11.0),
@@ -200,11 +217,23 @@ class perfomanceDetailsState extends State<perfomanceDetails> {
 
                         ),
                         Container(
+                          margin: const EdgeInsets.all(11.0),
+                          alignment: Alignment.topLeft,
+                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                          child: Text(
+                            'Type *',
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16),
+                          ),
+                        ),
+                        Container(
                           // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
                           padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                           decoration: BoxDecoration(
                               border: Border.all(color: Colors.black54),
-                              borderRadius:BorderRadius.circular(15.0)
+                              borderRadius:BorderRadius.circular(5.0)
                           ),
                           // borderRadius: BorderRadius.circular(15.0),
                           margin: const EdgeInsets.all(11.0),
@@ -227,6 +256,26 @@ class perfomanceDetailsState extends State<perfomanceDetails> {
 
                         ),
 
+                        Container(
+                          margin: const EdgeInsets.all(11.0),
+                          alignment: Alignment.topLeft,
+                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                          child: Text(
+                            'Comments *',
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16),
+                          ),
+                        ),
+                        Container(
+                          padding:EdgeInsets.fromLTRB(10, 10, 10, 20),
+                          child:  TextFormField(
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder()),
+                          ),
+                        ),
+
                         Row(
                           children: <Widget> [
                             Container(
@@ -237,32 +286,35 @@ class perfomanceDetailsState extends State<perfomanceDetails> {
 
                               decoration: BoxDecoration(
                                   border: Border.all(color: Colors.black54),
-                                  borderRadius:BorderRadius.circular(15.0)
+                                  borderRadius:BorderRadius.circular(5.0)
                               ),
                               child: _filePath == null
                                   ? new Text('Attach')
                                   : new Text('Path' + _filePath),
                             ),
                             Container(
-                              padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
 //                                        decoration: BoxDecoration(
 //                                            border: Border.all(color: Colors.black54),
 //                                            borderRadius:BorderRadius.circular(15.0)
 //                                        ),
-                              child: RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(18.0),
-                                  //side: BorderSide(color: Colors.red)
-                                ),
-                                padding: EdgeInsets.symmetric(vertical: 14.0),
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(0, 1, 0, 10),
+                                child: RaisedButton(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                    //side: BorderSide(color: Colors.red)
+                                  ),
+                                  padding: EdgeInsets.symmetric(vertical: 14.0),
 
-                                onPressed: getFilePath,
-                                child: Text(
-                                  'Browse',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 17,
+                                  onPressed: getFilePath,
+                                  child: Text(
+                                    'Browse',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 17,
+                                    ),
                                   ),
                                 ),
                               ),
