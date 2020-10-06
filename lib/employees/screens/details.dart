@@ -6,8 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'edit_data.dart';
 
 class Detail extends StatefulWidget {
-  List list;
-  int index;
+  final List list;
+  final int index;
   Detail({this.list, this.index});
 
   @override
@@ -138,10 +138,14 @@ class _DetailState extends State<Detail> {
                       new RaisedButton(
                         child: Text("EDIT"),
                         color: Colors.lightGreen,
-                        onPressed: () =>
-                            Navigator.of(context).push(new MaterialPageRoute(
-                          builder: (BuildContext context) => new EditData(),
-                        )),
+                        onPressed: () => Navigator.of(context).push(
+                          new MaterialPageRoute(
+                            builder: (BuildContext context) => new EditData(
+                              list: widget.list,
+                              index: widget.index,
+                            ),
+                          ),
+                        ),
                       ),
                       SizedBox(width: 20.0),
                       new RaisedButton(
