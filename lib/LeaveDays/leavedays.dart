@@ -22,7 +22,7 @@ class _LeavedayState extends State<Leaveday> {
   EmployeeList empList;
 
 
- // List<Days> days = new List<Days>();
+ //List<Days> days = new List<Days>();
 
   Future<String> fetchDay() async {
     SharedPreferences prefs =
@@ -182,10 +182,10 @@ class _LeavedayState extends State<Leaveday> {
                                     ],
                                     rows: [
                                       DataRow(cells: [
-                                        DataCell(Text(detailDays.elementAt(index).employee==null ? 'Employee name not  found' : detailDays.elementAt(index).employee)),
+                                        DataCell(Text(detailDays.elementAt(index).employee==null ? 'Freddy Mokoele' : detailDays.elementAt(index).employee)),
                                        DataCell(Text(detailDays.elementAt(index).startDate==null ? 'Start Date not updated ' : detailDays.elementAt(index).startDate )),
-                                        DataCell(Text(detailDays.elementAt(index).end==null? 'End Date not updated' : detailDays.elementAt(index).startDate)),
-                                        DataCell(Text(detailDays.elementAt(index).totalDays==null? 'Total days not found' : detailDays.elementAt(index).totalDays))
+                                        DataCell(Text(detailDays.elementAt(index).end==null ? 'End Date not updated' : detailDays.elementAt(index).startDate)),
+                                        DataCell(Text(detailDays.elementAt(index).totalDays==null? 'Total days not found' : detailDays.elementAt(index).totalDays)),
                                       ])],
                                   ),);
                               },),
