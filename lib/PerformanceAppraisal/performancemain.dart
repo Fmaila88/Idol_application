@@ -111,7 +111,7 @@ class _PerformanceState extends State<Performance> {
     Padding(
     padding: EdgeInsets.fromLTRB(8, 0, 0, 15),
     child: Text(
-    "View and give feedback about an Idol Employee.",
+    "View and give feedback about an Idol Employees.",
     style: TextStyle(
     fontSize: 12,
     ),
