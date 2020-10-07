@@ -74,7 +74,7 @@ class _HomepageState extends State<Homepage> {
   }
 
   String endTimeDate = " ";
-
+  String saveEvent='';
   Future<Null> getEndTime(BuildContext context) async {
     TimeOfDay timePicker = await showTimePicker(
       context: context,
@@ -140,6 +140,7 @@ class _HomepageState extends State<Homepage> {
               onDaySelected: (date, event) {
                 setState(() {
                   _selectedEvents = event;
+                  saveEvent='';
                   _showAddDialog();
                   _startController.clear();
                   // _endtController.clear();
@@ -154,6 +155,7 @@ class _HomepageState extends State<Homepage> {
             ..._selectedEvents.map((event) => ListTile(
                   title: Text(event),
                 )),
+            Text(saveEvent==null ? '' :saveEvent),
           ],
         ),
       ),
@@ -345,7 +347,10 @@ class _HomepageState extends State<Homepage> {
                                     "StartTime:${_startController.text}",
                                     "EndTime:${_endtController.text}"
                                   ];
-
+                                  saveEvent='commnet: ${_eventController.text}' +
+                                      "\n\n\n" +
+                                      'Start Time: ${_startController.text}' +
+                                      "\n\n\n" + 'End Time: ${_endtController.text}';
                                   _eventController.clear();
                                   Navigator.pop(context);
 //                                  _startController.text = " ";
