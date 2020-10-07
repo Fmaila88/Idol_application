@@ -6,6 +6,8 @@ import 'package:date_format/date_format.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'userprofile.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 class ProjectTask extends StatefulWidget {
 
@@ -59,10 +61,10 @@ class _ProjectTaskState extends State<ProjectTask> {
   }
 
 
-  Map<String, dynamic> data4;
+  UserProfile profile;
   bool isLoading=true;
 
-  Future<String> fetchDrawer() async {
+  Future<String> fetchProfileDetails() async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('userToken');
@@ -74,7 +76,8 @@ class _ProjectTaskState extends State<ProjectTask> {
 
     if(response.statusCode ==200){
       setState((){
-        data4=json.decode(response.body);
+        var data=json.decode(response.body);
+        profile=UserProfile.fromJson(data);
 
       });
     }
@@ -145,7 +148,7 @@ class _ProjectTaskState extends State<ProjectTask> {
   void initState() {
     super.initState();
     this.fetchProjects();
-    this.fetchDrawer();
+    this.fetchProfileDetails();
     this.fetchTask();
   }
   @override
@@ -202,7 +205,28 @@ class _ProjectTaskState extends State<ProjectTask> {
                           child: Text(detail['company']['name'].toString(),
                             textAlign: TextAlign.center, style: TextStyle(fontSize: 15.0),),
                         ),
-                        SizedBox(height: 60.0),
+                        SizedBox(height: 20.0),
+                        Center(
+                          child: Column(
+                            children: <Widget>[
+                              //Padding(
+                               // padding: EdgeInsets.all(15.0),
+                              LinearPercentIndicator(
+                                width: MediaQuery.of(context).size.width - 50,
+                                animation: true,
+                                lineHeight: 20.0,
+                                animationDuration: 2000,
+                                percent: 0.9,
+                                center: Text("90.0%"),
+                                linearStrokeCap: LinearStrokeCap.roundAll,
+                                progressColor: Colors.yellow,
+                              ),
+                            ],
+                          ),
+//                          child: Text('prograss',
+//                            textAlign: TextAlign.center, style: TextStyle(fontSize: 15.0),),
+                        ),
+                        SizedBox(height: 20.0),
                         Row(
                           children: <Widget>[
                             Text('Start Date:',style: TextStyle(fontSize: 17.0),),
@@ -287,7 +311,7 @@ class _ProjectTaskState extends State<ProjectTask> {
                                     CircleAvatar(
                                       radius:50,
                                       backgroundColor: Colors.blue,
-                                      backgroundImage:NetworkImage('http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']),
+                                      backgroundImage:NetworkImage('http://app.idolconsulting.co.za/idols/file/' + profile.id),
                                     ),
                                   ),
                                   Column(

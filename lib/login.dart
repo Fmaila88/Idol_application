@@ -98,11 +98,12 @@ class _Login extends State<LoginBody> {
                           height: 50,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              gradient: LinearGradient(colors: [
-                                Color.fromRGBO(143, 148, 251, 1),
-                                Color.fromRGBO(143, 148, 251, 6),
-                              ])),
-                          child: RaisedButton(
+//                              gradient: LinearGradient(colors: [
+//                                Color.fromRGBO(143, 148, 251, 1),
+//                                Color.fromRGBO(143, 148, 251, 6),
+//                              ]
+                              )),
+                           RaisedButton(
                             textColor: Colors.white,
                             color: Colors.lightBlue[900],
                             child: Text('Login'),
@@ -166,7 +167,7 @@ class _Login extends State<LoginBody> {
                               }
                             },
                           ),
-                        ),
+                       // ),
 
                       ],
                     ),
