@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:App_idolconsulting/HomePage/homescrean.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
 
@@ -35,19 +38,36 @@ class MyApplState extends State<MyAppl> {
   final DateFormat dateformat = DateFormat('MM/YYYY');
 
   Future<ListEmp> fetchListEmp() async {
-    final response = await http.get(
-        'http://app.idolconsulting.co.za/idols/payslips/all',
-        headers: {"Accept": "application/json"});
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('token');
+    print(stringValue);
+    final response = await http
+        .get('https://app.idolconsulting.co.za/idols/payslips/all', headers: {
+      "content-type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN": "$stringValue",
+      HttpHeaders.authorizationHeader: "$stringValue",
+    });
+
     if (response.statusCode == 200) {
       setState(() {
         var data = json.decode((response.body));
-        for (int x = 0; x < data.length; x++) {
-          var listEmp = new ListEmp(
-              data[x]['firstName'].toString(), data[x]['createDate']);
+        print(data.length);
+        print(response.body);
 
-          employee_Details.add(listEmp);
+        for (int x = 0; x < data.length; x++) {
+          if (data[x]['user'] != null) {
+            var listEmp = new ListEmp(
+                data[x]['user']['firstName'] +
+                    ' ' +
+                    data[x]['user']['lastName'].toString(),
+                data[x]['createDate']);
+
+            employee_Details.add(listEmp);
+          }
         }
         print(employee_Details.length);
+        print(employee_Details.toString());
       });
     }
   }
@@ -64,7 +84,7 @@ class MyApplState extends State<MyAppl> {
 
   @override
   void initState() {
-    fetchListEmp();
+    this.fetchListEmp();
     super.initState();
   }
 
@@ -176,122 +196,122 @@ class MyApplState extends State<MyAppl> {
                         ),
                       ),
                       Container(
-                        height: 480,
+                        height: 500,
                         //  width: 90,
                         child: SizedBox(
                           child: ListView.builder(
                             itemCount: 1,
-                            // employee_Details == null
-                            //     ? 0
-                            //     : employee_Details.length,
-                            scrollDirection: Axis.vertical,
-
-                            shrinkWrap: true,
-                            //crossAxisCount: 2,
+                            // scrollDirection: Axis.vertical,
+                            // shrinkWrap: true,
                             itemBuilder: (BuildContext context, int index) {
                               return Container(
-                                child: DataTable(
-                                  columnSpacing: 10,
-                                  dataRowHeight: 60,
-                                  headingRowHeight: 60,
-                                  columns: [
-                                    DataColumn(
-                                        label: Text(
-                                      'Date',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 17),
-                                    )),
-                                    DataColumn(
-                                        label: Text(
-                                      'Employee',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 17),
-                                    )),
-                                    DataColumn(label: Text('')),
-                                    DataColumn(label: Text('')),
-                                  ],
-                                  rows: List.generate(
-                                    employee_Details.length,
-                                    (index) => DataRow(cells: [
-                                      DataCell(Text((employee_Details
-                                              .elementAt(index)
-                                              .convertDateFromString()) ??
-                                          employee_Details)),
-                                      DataCell(Text(employee_Details
-                                          .elementAt(index)
-                                          .firstName)),
-                                      // DataCell(Text(employee_Details
-                                      //     .elementAt(index)
-                                      //     .lastName)),
-
-                                      DataCell(
-                                        FlatButton.icon(
-                                          onPressed: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        DetailsScreen()));
-                                          },
-                                          icon: Icon(
-                                            Icons.remove_red_eye,
-                                            size: 15,
-                                            color: Colors.white,
-                                          ),
-                                          color: Colors.green,
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: DataTable(
+                                    columnSpacing: 10,
+                                    dataRowHeight: 60,
+                                    headingRowHeight: 60,
+                                    columns: [
+                                      DataColumn(
                                           label: Text(
-                                            'View',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 14),
+                                        'Date',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 17),
+                                      )),
+                                      DataColumn(
+                                          label: Text(
+                                        'Employee',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 17),
+                                      )),
+                                      DataColumn(label: Text('')),
+                                      DataColumn(label: Text('')),
+                                    ],
+                                    rows: List.generate(
+                                      employee_Details.length,
+                                      (index) => DataRow(cells: [
+                                        DataCell(Text((employee_Details
+                                                .elementAt(index)
+                                                .convertDateFromString()) ??
+                                            employee_Details)),
+                                        DataCell(Text(employee_Details
+                                            .elementAt(index)
+                                            .user)),
+                                        // DataCell(Text(employee_Details
+                                        //     .elementAt(index)
+                                        //     .lastName)),
+
+                                        DataCell(
+                                          FlatButton.icon(
+                                            onPressed: () {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          DetailsScreen()));
+                                            },
+                                            icon: Icon(
+                                              Icons.remove_red_eye,
+                                              size: 15,
+                                              color: Colors.white,
+                                            ),
+                                            color: Colors.green,
+                                            label: Text(
+                                              'View',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 14),
+                                            ),
                                           ),
                                         ),
-                                      ),
 
-                                      DataCell(
-                                        FlatButton.icon(
-                                          onPressed: () async {
-                                            download();
-                                            final status = await Permission
-                                                .storage
-                                                .request();
+                                        DataCell(
+                                          FlatButton.icon(
+                                            onPressed: () async {
+                                              download();
+                                              final status = await Permission
+                                                  .storage
+                                                  .request();
 
-                                            if (status.isGranted) {
-                                              final externalDir =
-                                                  await getExternalStorageDirectory();
+                                              if (status.isGranted) {
+                                                final externalDir =
+                                                    await getExternalStorageDirectory();
 
-                                              final id = await FlutterDownloader
-                                                  .enqueue(
-                                                url:
-                                                    "https://app.idolconsulting.co.za/idols/payslips/download/5f7c38d0c391b506a26b74a1",
-                                                savedDir: externalDir.path,
-                                                fileName: "payslip",
-                                                showNotification: true,
-                                                openFileFromNotification: true,
-                                              );
-                                            } else {
-                                              print("Permission denied");
-                                            }
-                                          },
-                                          icon: Icon(
-                                            Icons.arrow_downward,
-                                            size: 15,
-                                            color: Colors.white,
-                                          ),
-                                          color: Colors.orange,
-                                          label: Text(
-                                            'Download',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 14),
+                                                final id =
+                                                    await FlutterDownloader
+                                                        .enqueue(
+                                                  url:
+                                                      "https://app.idolconsulting.co.za/idols/payslips/download/5f7c38d0c391b506a26b74a1",
+                                                  savedDir: externalDir.path,
+                                                  fileName: "payslip",
+                                                  showNotification: true,
+                                                  openFileFromNotification:
+                                                      true,
+                                                );
+                                              } else {
+                                                print("Permission denied");
+                                              }
+                                            },
+                                            icon: Icon(
+                                              Icons.arrow_downward,
+                                              size: 15,
+                                              color: Colors.white,
+                                            ),
+                                            color: Colors.orange,
+                                            label: Text(
+                                              'Download',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 14),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ]),
-                                    // ],
+                                      ]),
+                                      // ],
+                                    ),
                                   ),
                                 ),
                               );
