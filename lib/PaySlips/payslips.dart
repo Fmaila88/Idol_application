@@ -1,17 +1,14 @@
 import 'package:App_idolconsulting/HomePage/homescrean.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+
 
 import 'dart:convert';
 
 //import '../homescrean.dart';
-
 import 'DetailsScreen.dart';
 import 'ListEmp.dart';
 import 'main.dart';
@@ -221,7 +218,7 @@ class MyApplState extends State<MyAppl> {
                                           employee_Details)),
                                       DataCell(Text(employee_Details
                                           .elementAt(index)
-                                          .firstName)),
+                                          .user)),
                                       // DataCell(Text(employee_Details
                                       //     .elementAt(index)
                                       //     .lastName)),
@@ -252,29 +249,30 @@ class MyApplState extends State<MyAppl> {
 
                                       DataCell(
                                         FlatButton.icon(
-                                          onPressed: () async {
-                                            //download();
-                                            final status = await Permission
-                                                .storage
-                                                .request();
+//                                          onPressed: (){}, async {
+//                                            download();
+//                                            final status = await Permission
+//                                                .storage
+//                                                .request();
+//
+//                                            if (status.isGranted) {
+//                                              final externalDir =
+//                                                  await getExternalStorageDirectory();
+//
+//                                              final id = await FlutterDownloader
+//                                                  .enqueue(
+//                                                url:
+//                                                    "https://app.idolconsulting.co.za/idols/payslips/download/5ba3ac43c391b566c3c51e63",
+//                                                savedDir: externalDir.path,
+//                                                fileName: "payslip",
+//                                                showNotification: true,
+//                                                openFileFromNotification: true,
+//                                              );
+//                                            } else {
+//                                              print("Permission denied");
+//                                            }
+//                                          },
 
-                                            if (status.isGranted) {
-                                              final externalDir =
-                                                  await getExternalStorageDirectory();
-
-                                              final id = await FlutterDownloader
-                                                  .enqueue(
-                                                url:
-                                                    "https://app.idolconsulting.co.za/idols/payslips/download/5f7c38d0c391b506a26b74a1",
-                                                savedDir: externalDir.path,
-                                                fileName: "payslip",
-                                                showNotification: true,
-                                                openFileFromNotification: true,
-                                              );
-                                            } else {
-                                              print("Permission denied");
-                                            }
-                                          },
                                           icon: Icon(
                                             Icons.arrow_downward,
                                             size: 15,

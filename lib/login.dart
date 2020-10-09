@@ -31,14 +31,14 @@ class _Login extends State<LoginBody> {
           return  Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('images/backend.jpg'), fit: BoxFit.fill)),
+                    image: AssetImage('images/two.jpg'), fit: BoxFit.fill)),
             child: ListView(
               children: <Widget>[
                 Container(
                   height: 200,
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: AssetImage('images/logo1.png'),
+                          image: AssetImage('images/logo2.png'),
                           fit: BoxFit.cover)),
                 ),
                 Form(
@@ -98,11 +98,12 @@ class _Login extends State<LoginBody> {
                           height: 50,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              gradient: LinearGradient(colors: [
-                                Color.fromRGBO(143, 148, 251, 1),
-                                Color.fromRGBO(143, 148, 251, 6),
-                              ])),
-                          child: RaisedButton(
+//                              gradient: LinearGradient(colors: [
+//                                Color.fromRGBO(143, 148, 251, 1),
+//                                Color.fromRGBO(143, 148, 251, 6),
+//                              ]
+                              )),
+                           RaisedButton(
                             textColor: Colors.white,
                             color: Colors.lightBlue[900],
                             child: Text('Login'),
@@ -166,7 +167,7 @@ class _Login extends State<LoginBody> {
                               }
                             },
                           ),
-                        ),
+                       // ),
 
                       ],
                     ),

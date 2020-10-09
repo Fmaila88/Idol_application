@@ -17,6 +17,11 @@ import 'package:App_idolconsulting/PerformanceAppraisal/performancemain.dart';
 import 'package:date_format/date_format.dart';
 import 'package:App_idolconsulting/employees_main.dart';
 import 'package:App_idolconsulting/logout.dart';
+import 'userprofile.dart';
+import 'package:percent_indicator/percent_indicator.dart';
+import 'drawer.dart';
+import 'reports.dart';
+
 
 class Home extends StatefulWidget {
   final Widget child;
@@ -70,55 +75,44 @@ class _HomeState extends State<Home> {
                   ),
                 ],
                ),
-
-            //title: Text('reason for tech decling'),
-//             content: DropdownButton(
-//               items: _dropdownValue
-//                   .map((value) => DropdownMenuItem(
-//                         child: Text(value),
-//                         value: value,
-//                       ))
-//                   .toList(),
-//               onChanged: (String value) {},
-//               isExpanded: false,
-//               hint: Text('Select Reason'),
-//             ),
-
-//            actions: <Widget>[
-//              new RaisedButton.icon(
-//                onPressed: () {
-//                  Navigator.pop(context);
-//                  Navigator.push(context, new MaterialPageRoute
-//                    (builder: (context) => new Profile()));
-//                },
-//                icon: Icon(
-//                  Icons.person,
-//                  color: Colors.lightBlue,
-//                ),
-//                label: Text('Profile',style: TextStyle(
-//                  color: Colors.black)),
-//              ),
-//
-//              new FlatButton(
-//                child: new Text('Logout',style: TextStyle(
-//                    color: Colors.lightBlue[900])),
-//                onPressed: () {
-//                  // _navigateToClient(context);
-//                },
-//              ),
-//            ],
-//          ),
           );
         });
   }
 
-  Map<String, dynamic> data4;
+  Indicator persentage;
+  //String bar;
+  Future<String> fetchProgressBar() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('userToken');
+
+    final response = await http.get(
+        'https://app.idolconsulting.co.za/idols/projects/status/5f3504f0c391b51061db90e3',
+        headers: {"Accept": "application/json",
+          'X_TOKEN': stringValue});
+
+    if(response.statusCode ==200){
+      setState((){
+         var bar=json.decode(response.body);
+        // persentage=Indicator.fromJson(bar);
+        //persentage=reports.fromJson(bar);
+        // persentage = json.decode(bar);
+print(response.body);
+      });
+    }
+  }
+
+  var PictureID="https://eitrawmaterials.eu/wp-content/uploads/2016/09/person-icon.png";
+  //Map<String, dynamic> data4;
+var shared;
   bool isLoading=true;
-  bool load=true;
 
+  //bool pictureLoad=true;
 
-  Future<String> fetchDrawer() async {
+  //Map<String, dynamic> pic;
+  UserProfile profile;
 
+  Future<String> fetchProfileDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('userToken');
 
@@ -127,11 +121,20 @@ class _HomeState extends State<Home> {
         headers: {"Accept": "application/json",
           'X_TOKEN': stringValue});
 
-    if(response.statusCode ==200){
-      setState((){
-        data4=json.decode(response.body);
+    if (response.statusCode == 200) {
+      setState(() {
+        var data = json.decode(response.body);
+        String pictureId=data['profilePicture']['id'];
+        prefs.setString("picId", pictureId);
 
+
+        //profile=UserProfile.fromJson(data);
       });
+      shared=prefs.getString("picId");
+      PictureID='https://app.idolconsulting.co.za/idols/file/'+shared;
+//      if(PictureID==null){
+//        PictureID='5f3a589dc391b506469af55d';
+//      }
     }
   }
 
@@ -171,6 +174,7 @@ class _HomeState extends State<Home> {
   List<Project> projects = new List<Project>();
   Map<String,dynamic> detail;
   Project project;
+  var name="Project Name not updated";
   Future<String> fetchProjects() async {
   bool load=true;
 
@@ -256,6 +260,8 @@ class _HomeState extends State<Home> {
   }
   bool readOnly=true;
 
+
+
   @override
   void initState() {
     super.initState();
@@ -263,9 +269,10 @@ class _HomeState extends State<Home> {
     _seriesPieData = List<charts.Series<Task, String>>();
     _generateData();
     this.fetchProjects();
+    //this.fetchProgressBar();
     // this.fetchTaskings();
     this. fetchTask();
-    this.fetchDrawer();
+    this.fetchProfileDetails();
   }
   convertDateFromString() {
     DateTime todayDate = DateTime.parse(detail['createDate'].toString());
@@ -309,18 +316,19 @@ class _HomeState extends State<Home> {
                  // width: 55.0,
                  // height: 60.0,
                  // color: Colors.grey,
-                  child: load ? Center(child: CircularProgressIndicator()):
+                  child:
                   CircleAvatar(
                     radius:30,
                     backgroundColor: Colors.blue,
                     backgroundImage:NetworkImage(
-                        'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
+                        //'http://app.idolconsulting.co.za/idols/file/' + pic['profilePicture']['id']),
+                        PictureID),
                     ),
                   ),
-                ),
+              //  ),
               ]),
 
-          body:  load ? Center(child: CircularProgressIndicator()):
+          body:
           TabBarView(children: <Widget>[
             Padding(
               padding: EdgeInsets.all(8.0),
@@ -371,70 +379,87 @@ class _HomeState extends State<Home> {
 
                       child: Card(
                         elevation: 2,
-                        child: Container(
+                        child: Column(
+                          children: [
+                          Container(
+                          height: 54,
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                            child: TextField(
+                              //readOnly: true,
+                              // controller: _endtController,
+                              decoration: new InputDecoration(
+                                hintText: "search for project",
+                                suffixIcon: Icon(
+                                  Icons.search,
+                                  color: Colors.blueGrey[800],
+                                ),
+                                border: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.blueGrey[500])),
+                              ),
+                              onTap: () {
+                                //getEndTime(context);
+                              },
+                              maxLines: null,
+                              keyboardType: TextInputType.multiline,
+                            ),
+                        ),
+                        Container(
                           height: 100,
                           width: 400,
                           child: SizedBox(
-                            child:  Container(
-                              child: Column(
-                                children: <Widget>[
-                                  //SizedBox(height: 60.0),
-                                  Row(
-                                    children: <Widget>[
-                                      Text('Name',style: TextStyle(fontSize: 15.0),),
-                                      SizedBox(width: 40.0),
-                                      Text('End Date',style: TextStyle(fontSize: 15.0),),
-                                      SizedBox(width: 40.0),
-                                      Text('Status',style: TextStyle(fontSize: 15.0),),
-                                      SizedBox(width: 40.0),
-                                      Text('Manager',style: TextStyle(fontSize: 15.0),),
-                                    ],
-                                  ),
-                                  SizedBox(height: 30.0),
-                                  Row(
-                                    children: <Widget>[
-                                      Text(detail['name']==null ? 'Project Name not updated' : detail['name']),
-                                      SizedBox(width: 5.0),
-                                      Text(detail['endDate'].toString()),
-                                      SizedBox(width: 5.0 ),
-                                      Text(detail['status'].toString()),
-                                      SizedBox(width: 40.0),
-                                      Text(detail['manager']['firstName'].toString()),//createDate
-                                    ],
-                                  ),
-                                ],
-                              ),
-
-//                                child: DataTable(
-//                                  columns: [
-//                                    DataColumn(label: Text('Name')),
-//                                    DataColumn(label: Text('End Date')),
-//                                    DataColumn(label: Text('Status')),
-//                                    DataColumn(label: Text('Manager')),
-//                                  ],
-//                                  rows: [
-//                                    DataRow(cells: [
-//                                      DataCell(Text(detail['name'].toString())),
-//                                      DataCell(Text(detail['endDate'].toString())),
-//                                      DataCell(Text(detail['status'].toString())),
-//                                      DataCell(Text(detail['manager']['status'].toString())),
-//                                    ])
-////                                    DataRow(cells: [
-////                                      DataCell(
-////                                          Text(data2['name']==null ? 'No name found ':data2['name'])),
-////                                      DataCell(Text(data2['endDate']==null ? 'No date found ':data2['endDate'])),
-////                                      DataCell(Text(data2['status']==null ? 'No status found ':data2['status'])),
-////                                      DataCell(Text("Andile Zulu"))
-////                                    ])
-//                                  ],
-//                                ),
-                            ),
-//                            },
-//                          ),
+    child:  ListView(
+      children: <Widget>[
+        Container(
+        child: Column(
+          children: <Widget>[
+            //SizedBox(height: 60.0),
+            Row(
+              children: <Widget>[
+                Text('Name', style: TextStyle(fontSize: 15.0),),
+                SizedBox(width: 40.0),
+                Text('End Date', style: TextStyle(fontSize: 15.0),),
+                SizedBox(width: 40.0),
+                Text('Status', style: TextStyle(fontSize: 15.0),),
+                SizedBox(width: 40.0),
+                Text('Manager', style: TextStyle(fontSize: 15.0),),
+              ],
+            ),
+            SizedBox(height: 30.0),
+            Row(
+              children: <Widget>[
+                Text(detail['name'] == null
+                    ? 'Project Name not updated'
+                    : detail['name']),
+                SizedBox(width: 5.0),
+                Text(detail['endDate'].toString()),
+                SizedBox(width: 5.0),
+                //Text(detail['status'].toString()),
+                LinearPercentIndicator(
+                  width: MediaQuery.of(context).size.width - 270,
+                  animation: true,
+                  lineHeight: 20.0,
+                  animationDuration: 2000,
+                  percent: 0.9,
+                  center: Text("90.0%"),
+                  linearStrokeCap: LinearStrokeCap.roundAll,
+                  progressColor: Colors.orange,
+                ),
+                SizedBox(width: 10.0),
+                Text(detail['manager']['firstName'].toString()), //createDate
+              ],
+            ),
+          ],
+        ),
+      ),
+    ]
+    //}
+                          ),
                           ),
                         ),
+                        ]
                       ),
                     )
+                )
                   ]),
                 ),
               ),
@@ -487,10 +512,35 @@ class _HomeState extends State<Home> {
                       },
                       child: Card(
                         elevation: 5.0,
-                        child:
+                        child: Column(
+                          children: [
+                          Container(
+                          height: 54,
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                          child: TextField(
+                            //readOnly: true,
+                            // controller: _endtController,
+                            decoration: new InputDecoration(
+                              hintText: "search for task",
+                              suffixIcon: Icon(
+                                Icons.search,
+                                color: Colors.blueGrey[800],
+                              ),
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.blueGrey[500])),
+                            ),
+                            onTap: () {
+                              //getEndTime(context);
+                            },
+                            maxLines: null,
+                            keyboardType: TextInputType.multiline,
+                          ),
+                        ),
                         Container(
                           child: SizedBox(
                             child: Container(
+                              //child:  ListView(
+                                //children: <Widget>[
                               //width: MediaQuery.of(context).size.width,
                               child: Row(
                                 children: <Widget>[
@@ -504,7 +554,8 @@ class _HomeState extends State<Home> {
                                           radius:50,
                                           backgroundColor: Colors.blue,
                                           backgroundImage:NetworkImage(
-                                              'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
+                                              PictureID
+                                             // 'https://app.idolconsulting.co.za/idols/file/5f3a589dc391b506469af55d'
                                                 //  ==null ? 'https://www.w3schools.com/w3css/img_lights.jpg'
                                                  // :'http://app.idolconsulting.co.za/idols/file/' + data4['profilePicture']['id']
                                           ),
@@ -560,13 +611,15 @@ class _HomeState extends State<Home> {
 //                                      ),
                                 ],
                               ),
-                            ),
+                          //]
+                            //),
                           ),
                           //   },
                           // ),
-                          //  ),
+                            ),
                         ),
-                      ),
+                      ]),
+                    )
                     ),
                   ]),
                 ),
@@ -581,224 +634,13 @@ class _HomeState extends State<Home> {
   @override
   void setState(fn) {
     isLoading=false;
-    load=false;
     super.setState(fn);
   }
 }
 
-class DrawerCodeOnly extends StatefulWidget {
-  final Widget child;
-  DrawerCodeOnly({Key key, this.child}) : super(key: key);
 
-  _DrawerCodeOnlyState createState() => _DrawerCodeOnlyState();
-}
 
-class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
 
-  Map<String, dynamic> data3;
-  bool isLoading=true;
-
-  Future<String> fetchDrawer() async {
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String stringValue = prefs.getString('userToken');
-
-    final response = await http.get(
-        'http://app.idolconsulting.co.za/idols/users/profile',
-        headers: {"Accept": "application/json",
-          'X_TOKEN': stringValue});
-
-    if(response.statusCode ==200){
-      setState((){
-        data3=json.decode(response.body);
-
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    this.fetchDrawer();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child:Column(
-        children: <Widget>[
-          Container(
-            height: 40,
-            margin: EdgeInsets.only(top: 10),
-            color: Colors.white,
-            child: Image(image: AssetImage('images/logo1.png'),),
-          ),
-          Expanded(
-            child: DrawerHeader(
-              child: isLoading ? Center(child: CircularProgressIndicator()):
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, new MaterialPageRoute
-                    (builder: (context) => new Profile()));
-                },
-                child: Container(
-                  child: Column(
-                    children:[
-                      Center(
-                        child:CircleAvatar(
-                          radius:50,
-                          backgroundColor: Colors.blue,
-                          backgroundImage:NetworkImage('http://app.idolconsulting.co.za/idols/file/' + data3['profilePicture']['id']),
-                        ),
-                      ),
-                      Center(
-                        child: Text(data3['firstName']==null? 'no name' :data3['firstName'] + '' + data3['lastName'],
-                          style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),),
-                      ),
-                      Center(
-                          child: Text(data3['company']==null? 'company found' :data3['company']['name'],
-                            style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),)
-                      ),
-                      Center(
-                          child: Text(data3['position']==null? 'position not found' : data3['position']['name'],
-                            style: TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),)
-                      ) ,
-                    ],
-                  ),
-                ),
-              ),
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage('images/background.jpg'), fit: BoxFit.fill)
-              ),
-            ),
-          ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 400,
-                  child: ListView(
-                    children: <Widget>[
-                      ListTile(
-                        leading: Icon(Icons.home, size: 30.0),
-                        title: new Text("Home"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(context,
-                              new MaterialPageRoute(builder: (context) => new Home()));
-                        },
-                      ),
-                      new ListTile(
-                        leading: Icon(Icons.card_travel, size: 30.0),
-                        title: new Text("Companies"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                // builder: (context) => new Services()
-                              ));
-                        },
-                      ),
-                      new ListTile(
-                        leading: Icon(Icons.timelapse, size: 30.0),
-                        title: new Text("Project"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                //builder: (context) => new Teller()
-                              ));
-                        },
-                      ),
-                      new ListTile(
-                        leading: Icon(Icons.group, size: 30.0),
-                        title: new Text("Employees"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                builder: (context) => new EmployeesHome()
-                              ));
-                        },
-                      ),
-                      new ListTile(
-                        leading: Icon(Icons.calendar_today, size: 30.0),
-                        title: new Text("Timesheets"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (context) => new Homepage()
-                              ));
-                        },
-                      ),
-                      new ListTile(
-                        leading: Icon(Icons.rate_review, size: 30.0),
-                        title: new Text("Leave Days"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                 builder: (context) => new Leaveday()
-                              ));
-                        },
-                      ),
-                      new ListTile(
-                        leading: Icon(Icons.assessment, size: 30.0),
-                        title: new Text("PaySlips"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(context,
-                              new MaterialPageRoute(builder: (context) => new MyAppl()));
-                        },
-                      ),
-                      new ListTile(
-                        leading: Icon(Icons.forum, size: 30.0),
-                        title: new Text("Performance"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (context) => new Performance()
-                              ));
-                        },
-                      ),
-                      new ListTile(
-                        leading: Icon(Icons.card_travel, size: 30.0),
-                        title: new Text("Travel Allowance"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (context) => new TravelAllowance()));
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  void setState(fn) {
-    isLoading=false;
-    super.setState(fn);
-  }
-}
 
 
 class Task {
