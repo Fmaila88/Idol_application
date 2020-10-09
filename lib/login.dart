@@ -31,14 +31,14 @@ class _Login extends State<LoginBody> {
           return  Container(
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: AssetImage('images/backend.jpg'), fit: BoxFit.fill)),
+                    image: AssetImage('images/two.jpg'), fit: BoxFit.fill)),
             child: ListView(
               children: <Widget>[
                 Container(
                   height: 200,
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: AssetImage('images/logo1.png'),
+                          image: AssetImage('images/logo2.png'),
                           fit: BoxFit.cover)),
                 ),
                 Form(

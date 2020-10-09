@@ -5,9 +5,7 @@ class Chart {
   String panding;
   String done;
 
-
   Chart(this.created, this.panding,this.done,);
-
 
 //  factory Chart.fromJson(Map<String,dynamic> json){
 //    return Chart(
@@ -26,5 +24,29 @@ class Chart {
   @override
   String toString() {
     return '{ ${this.created}, ${this.panding} }' '{ ${this.done}, ';
+  }
+}
+
+
+class Indicator {
+  String percent;
+
+  Indicator(this.percent,);
+
+//  factory Indicator.fromJson(Map<String,dynamic> json){
+//    return Indicator(
+//
+//      percent: json['percent'] as String,
+//
+//    );
+//  }
+
+//  getName(){
+//    return percent;
+//  }
+
+  @override
+  String toString() {
+    return '{ ${this.percent}, ';
   }
 }

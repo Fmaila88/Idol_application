@@ -218,7 +218,7 @@ class MyApplState extends State<MyAppl> {
                                           employee_Details)),
                                       DataCell(Text(employee_Details
                                           .elementAt(index)
-                                          .firstName)),
+                                          .user)),
                                       // DataCell(Text(employee_Details
                                       //     .elementAt(index)
                                       //     .lastName)),

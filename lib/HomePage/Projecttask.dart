@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'userprofile.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'drawer.dart';
 
 class ProjectTask extends StatefulWidget {
 
@@ -61,11 +62,17 @@ class _ProjectTaskState extends State<ProjectTask> {
   }
 
 
-  UserProfile profile;
+  var PictureID="https://eitrawmaterials.eu/wp-content/uploads/2016/09/person-icon.png";
+  //Map<String, dynamic> data4;
+  var shared;
   bool isLoading=true;
+//  bool load=true;
+//  bool pictureLoad=true;
+
+  //Map<String, dynamic> pic;
+  //UserProfile profile;
 
   Future<String> fetchProfileDetails() async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('userToken');
 
@@ -74,12 +81,20 @@ class _ProjectTaskState extends State<ProjectTask> {
         headers: {"Accept": "application/json",
           'X_TOKEN': stringValue});
 
-    if(response.statusCode ==200){
-      setState((){
-        var data=json.decode(response.body);
-        profile=UserProfile.fromJson(data);
+    if (response.statusCode == 200) {
+      setState(() {
+        var data = json.decode(response.body);
+        String pictureId=data['profilePicture']['id'];
+        prefs.setString("picId", pictureId);
 
+
+        //profile=UserProfile.fromJson(data);
       });
+      shared=prefs.getString("picId");
+      PictureID='https://app.idolconsulting.co.za/idols/file/'+shared;
+//      if(PictureID==null){
+//        PictureID='5f3a589dc391b506469af55d';
+//      }
     }
   }
 
@@ -219,7 +234,7 @@ class _ProjectTaskState extends State<ProjectTask> {
                                 percent: 0.9,
                                 center: Text("90.0%"),
                                 linearStrokeCap: LinearStrokeCap.roundAll,
-                                progressColor: Colors.yellow,
+                                progressColor: Colors.orange,
                               ),
                             ],
                           ),
@@ -311,7 +326,7 @@ class _ProjectTaskState extends State<ProjectTask> {
                                     CircleAvatar(
                                       radius:50,
                                       backgroundColor: Colors.blue,
-                                      backgroundImage:NetworkImage('http://app.idolconsulting.co.za/idols/file/' + profile.id),
+                                      backgroundImage:NetworkImage(PictureID),
                                     ),
                                   ),
                                   Column(
