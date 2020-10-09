@@ -54,7 +54,7 @@ class _HomeState extends State<Home> {
                        decoration: InputDecoration(
                          border: InputBorder.none,
                          icon: Icon(Icons.person),
-                         labelText: 'Profiles',
+                         labelText: 'Profile',
                        ),
                       readOnly: true,
                      ),
