@@ -10,6 +10,8 @@ import 'package:App_idolconsulting/TravelAllowance/ApplyTransportAllowance.dart'
 import 'package:App_idolconsulting/HomePage/homescrean.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'Edit_TravelAllowance.dart';
+
 class TravelAllowance extends StatefulWidget {
 
   @override
@@ -18,12 +20,9 @@ class TravelAllowance extends StatefulWidget {
 
 class _TravelAllowanceState extends State<TravelAllowance> {
 
-  List<EmployeeData> employee_allowance = new List<EmployeeData>();
-  List<String> tempList = List<String>();
-  final DateFormat dateformat = DateFormat('MM/YYYY');
+  List<dynamic> employee_allowance = new List<EmployeeData>();
 
   Future<EmployeeData> fetchEmployData() async{
-
     SharedPreferences prefs =await SharedPreferences.getInstance();
     String stringValue = prefs.getString('token');
     print(stringValue);
@@ -31,7 +30,6 @@ class _TravelAllowanceState extends State<TravelAllowance> {
         headers: {"content-type": "application/json",
           "Accept": "application/json",
           "X_TOKEN":"$stringValue",
-          HttpHeaders.authorizationHeader:"$stringValue",
         }
           );
 
@@ -40,6 +38,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
         var data = json.decode((response.body));
         for(int x = 0; x<data.length; x++){
           var bodyList = new EmployeeData(
+              data[x]['id'],
               data[x]['user']['firstName'] + ' ' + data[x]['user']['lastName'].toString(),
               data[x]['startKm'].toString(),
               data[x]['endKm'].toString(),
@@ -116,7 +115,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                       color: Colors.white,
                     ),
                     label: Text(
-                      'Create',
+                      'Apply',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -130,22 +129,22 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                     elevation:40,
                     child: Column(
                       children: [
-                        // Container(
-                        //   height: 54,
-                        //   child: TextField(
-                        //     decoration: InputDecoration(
-                        //       hintText: 'Search',
-                        //       prefixIcon: Icon(
-                        //         Icons.search,
-                        //       ),
-                        //       border: OutlineInputBorder(),
-                        //     ),
-                        //     // onChanged: (text){
-                        //     //   _filterDogList(text);
-                        //     // },
-                        //
-                        //   ),
-                        // ),
+                        Container(
+                          height: 54,
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Search',
+                              prefixIcon: Icon(
+                                Icons.search,
+                              ),
+                              border: OutlineInputBorder(),
+                            ),
+                            // onChanged: (text){
+                            //   _filterDogList(text);
+                            // },
+
+                          ),
+                        ),
                         Container(
                           height: 600,
                           child:SizedBox(
@@ -204,7 +203,10 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                             onTap: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => Apply()),
+                                                MaterialPageRoute(builder: (context) => Edit_Allowance(
+                                                  list: employee_allowance,
+                                                  index: index,
+                                                )),
                                               );
                                             }),
                                             DataCell(Text(employee_allowance.elementAt(index).startKm,
@@ -217,13 +219,18 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                                   color: Colors.black,
                                                   fontSize: 14
                                               ),)),
-                                            DataCell(Text((employee_allowance.elementAt(index)
-                                                .convertDateFromString()) ??
-                                                employee_allowance,
+                                            DataCell(Text(employee_allowance.elementAt(index).travelDate,
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 14
                                               ),)),
+                                            // DataCell(Text((employee_allowance.elementAt(index)
+                                            //     .convertDateFromString()) ??
+                                            //     employee_allowance,
+                                            //   style: TextStyle(
+                                            //       color: Colors.black,
+                                            //       fontSize: 14
+                                            //   ),)),
                                             // DataCell(
                                             //     Container(
                                             //         child: Row(
