@@ -57,10 +57,10 @@ class MyApplState extends State<MyAppl> {
   //   return '${dateTime.month}/${dateTime.year}';
   // }
 
-  void download() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await FlutterDownloader.initialize(debug: true);
-  }
+//  void download() async {
+//    WidgetsFlutterBinding.ensureInitialized();
+//    await FlutterDownloader.initialize(debug: true);
+//  }
 
   @override
   void initState() {
@@ -253,7 +253,7 @@ class MyApplState extends State<MyAppl> {
                                       DataCell(
                                         FlatButton.icon(
                                           onPressed: () async {
-                                            download();
+                                            //download();
                                             final status = await Permission
                                                 .storage
                                                 .request();

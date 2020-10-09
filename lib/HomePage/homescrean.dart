@@ -628,7 +628,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
       child:Column(
         children: <Widget>[
           Container(
-            height: 80,
+            height: 40,
             margin: EdgeInsets.only(top: 10),
             color: Colors.white,
             child: Image(image: AssetImage('images/logo1.png'),),
