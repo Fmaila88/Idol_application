@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:App_idolconsulting/PaySlips/Employees.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'EmployeeList.dart';
 
@@ -29,6 +30,17 @@ class _FormpageState extends State<Formpage> {
   List empList;
   var items;
   List<Employees> _employeeName = new List<Employees>();
+
+  String startD,endD;
+String leaveType;
+
+
+
+
+
+
+
+
 
 
   Future<String> fetchEmployees() async {
@@ -91,7 +103,7 @@ class _FormpageState extends State<Formpage> {
       setState(() {
         _date = datepicker;
         startDate.text= dateFormat.format(_date);
-
+        startD=startDate.text;
       });
     }
   }
@@ -107,16 +119,64 @@ class _FormpageState extends State<Formpage> {
       setState(() {
         _dateend = datepicker;
         endDate.text= dateFormat.format(_dateend);
-        // print(_date.toString());
+               // print(_date.toString());
+        endD=endDate.text;
+
       });
     }
   }
+
+  Future<String> applyLeave() async {
+    SharedPreferences prefs= await SharedPreferences.getInstance();
+
+    String token=prefs.getString('userToken');
+
+    final response = await http.put(
+
+      'https://app.idolconsulting.co.za/idols/leaves',
+      headers: {"Accept": "application/json",
+            "content-type": "application/json","X_TOKEN": token},
+
+        body:jsonEncode({
+          'end': endD,
+          'start': startD,
+          'comment': comment.text,
+          'type':leaveType,
+          'attachment':_filePath,
+        })
+    );
+
+
+    if (response.statusCode == 200) {
+      setState(() {
+
+       // print('Data sentzzzzzzzzzzzzzzzzzzzzzzzzzzzz');
+
+        print(response.body);
+      });
+    }else{
+
+      print(response.body);
+
+    }
+  }
+
+TextEditingController comment;
+  int selectedRadioTile;
+  int selectedRadio;
   @override
   void initState(){
     startDate=TextEditingController();
     endDate=TextEditingController();
+    comment=TextEditingController() ;
     this.fetchEmployees();
+    //this.applyLeave();
     super.initState();
+  }
+  setSelectedRadioTile(int val) {
+    setState(() {
+      selectedRadioTile = val;
+    });
   }
 
 
@@ -168,70 +228,79 @@ class _FormpageState extends State<Formpage> {
 
             ]
                 ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: RadioListTile(
+                        value: 4,
+                        groupValue: selectedRadioTile,
+                        title: Text("Annual"),
+                        onChanged: (val) {
+                          setSelectedRadioTile(val);
+                          leaveType= "Annual";
 
+                        },
+                        activeColor: Colors.red,
+                        selected: false,
 
-
-
-
-
-                Container(
-                  padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-
-                  child:Row(
-                    children: <Widget>[
-                      // Padding(padding: EdgeInsets.fromLTRB(50, 0, 200, 0)),
-                      Padding(padding: EdgeInsets.symmetric(
-                          horizontal: 0.0, vertical:0)),
-                      Expanded(
-                        child: Container(
-                          child: FlatButton(
-                            onPressed: () {},
-                            color: Colors.blueGrey,
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                BorderRadius.circular(20.0)),
-                            child: Text('Annual'),
-                          ),
-                        ),
                       ),
-                      Expanded(
-                        child: FlatButton(
-                          onPressed: () {},
-                          color: Colors.blueGrey,
-                          shape: RoundedRectangleBorder(
-                              borderRadius:
-                              BorderRadius.circular(20.0)),
-                          child: Text('Sick'),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          child: FlatButton(
-                            onPressed: () {},
-                            color: Colors.blueGrey,
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                BorderRadius.circular(20.0)),
-                            child: Text('Family '),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          child: FlatButton(
-                            onPressed: () {},
-                            color: Colors.blueGrey,
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                BorderRadius.circular(20.0)),
-                            child: Text('Study Leave'),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
 
+                    Expanded(
+                      child: RadioListTile(
+                        value: 3,
+                        groupValue: selectedRadioTile,
+                        title: Text("family"),
+                        onChanged: (val) {
+
+                          setSelectedRadioTile(val);
+                          leaveType= "family";
+                        },
+                        activeColor: Colors.red,
+                        selected: false,
+                      ),
+                    ),
+                  ],
                 ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: RadioListTile(
+                        value: 2,
+                        groupValue: selectedRadioTile,
+                        title: Text("Sick"),
+                        onChanged: (val) {
+
+                          setSelectedRadioTile(val);
+                          leaveType= "Sick";
+                        },
+                        activeColor: Colors.red,
+                        selected: false,
+                      ),
+                    ),
+
+                    Expanded(
+                      child: RadioListTile(
+                        value: 1,
+                        groupValue: selectedRadioTile,
+
+                        title: Text("Study Leave"),
+                        onChanged: (val) {
+
+                          setSelectedRadioTile(val);
+                          leaveType= "Study Leave";
+
+                        },
+                        activeColor: Colors.red,
+                        selected: false,
+                      ),
+                    ),
+                  ],
+                ),
+
+
+
+
 
 
                 Container(
@@ -240,33 +309,33 @@ class _FormpageState extends State<Formpage> {
 
                     children: <Widget>[
 
-                      Container(
-                        // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
-                        padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black54)),
-                        margin: const EdgeInsets.all(11.0),
-                        alignment: Alignment.topCenter,
-
-                        child: DropdownButton<Employees>(
-                          hint: Text('Employee Names'),
-                          elevation: 5,
-                          icon: Icon(Icons.arrow_drop_down),
-                          iconSize: 40.0,
-                          items: _employeeName.map((Employees names) {
-                            return DropdownMenuItem<Employees>(
-                              value: names,
-                              child: Text("$names"),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              this.items = value;
-                            });
-                          },
-                          value: items,
-                        ),
-                      ),
+//                      Container(
+//                        // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
+//                        padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+//                        decoration: BoxDecoration(
+//                            border: Border.all(color: Colors.black54)),
+//                        margin: const EdgeInsets.all(11.0),
+//                        alignment: Alignment.topCenter,
+//
+//                        child: DropdownButton<Employees>(
+//                          hint: Text('Employee Names'),
+//                          elevation: 5,
+//                          icon: Icon(Icons.arrow_drop_down),
+//                          iconSize: 40.0,
+//                          items: _employeeName.map((Employees names) {
+//                            return DropdownMenuItem<Employees>(
+//                              value: names,
+//                              child: Text("$names"),
+//                            );
+//                          }).toList(),
+//                          onChanged: (value) {
+//                            setState(() {
+//                              this.items = value;
+//                            });
+//                          },
+//                          value: items,
+//                        ),
+//                     ),
 
                       Container(
                         margin: EdgeInsets.fromLTRB(0, 0, 200, 0),
@@ -341,6 +410,7 @@ class _FormpageState extends State<Formpage> {
                   padding:EdgeInsets.fromLTRB(10, 10, 10, 5),
 
                   child:  TextFormField(
+                    controller:comment ,
                     validator: (value)  => value.isEmpty
                         ? 'User name is required' : null,//validateEmail(value.trim()),
                     onChanged: (value){
@@ -392,8 +462,9 @@ class _FormpageState extends State<Formpage> {
                       color: Colors.lightBlue[400],
                       child: Text("Apply"),
                       onPressed: (){
+                        saved(context);
                         setState(() {
-
+                          applyLeave();
                         });
                       }
                   ),
@@ -423,7 +494,20 @@ class _FormpageState extends State<Formpage> {
       ),
     );
   }
+  void saved(BuildContext context) {
+    var alertDialog = AlertDialog(
+      title: Text("Saved"),
+      content: Text("Detailed saved Successfully"),
+    );
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alertDialog;
+        });
+  }
 }
+
 //RaisedButton(
 //child: Text("save"),
 //onPressed: () async {

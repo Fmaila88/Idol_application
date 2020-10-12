@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -10,9 +11,10 @@ import 'package:file_picker/file_picker.dart';
 import 'TravellingAllowance.dart';
 
 class Edit_Allowance extends StatefulWidget {
-  List list;
-  int index;
-  Edit_Allowance({this.list, this.index});
+  // final EmployeeData data;
+  Map<String,dynamic> list;
+  // int index;
+  Edit_Allowance(this.list);
   @override
   _Edit_AllowanceState createState() => _Edit_AllowanceState();
 }
@@ -61,15 +63,15 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
     // TODO: implement initState
     super.initState();
     _startKmController = new TextEditingController(
-        text: "${widget.list[widget.index]}");
+        text: "${widget.list['content']['startKm']}");
     _endKmController = new TextEditingController(
-        text: "${widget.list[widget.index]}");
+        text: "${widget.list['content']['endKm']}");
     _ratePerKm = new TextEditingController(
-        text: "${widget.list[widget.index]}");
+        text: "${widget.list['content']['ratePerKm']}");
     _travelDateController = new TextEditingController(
-        text: "${widget.list[widget.index]}");
+        text: "${widget.list['content']['travelDate']}");
     _commentController = new TextEditingController(
-        text: "${widget.list[widget.index]}");
+        text: "${widget.list['content']['comment']}");
   }
 
   @override

@@ -7,7 +7,8 @@ class EmployeeData {
   String travelDate;
   String comment;
   String status;
+  String ratePerKm;
   // final DateFormat dateformat = DateFormat('dd MMMM YYYY');
 
-  EmployeeData(this.Id, this.user, this.startKm, this.endKm, this.status, this.travelDate);
+  EmployeeData(this.Id, this.user, this.startKm, this.endKm, this.status, this.ratePerKm, this.travelDate, this.comment);
 }

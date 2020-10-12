@@ -16,12 +16,12 @@ class Leaveday extends StatefulWidget {
 class _LeavedayState extends State<Leaveday> {
 
  // Map<String,dynamic> detail;
-  var detailList;
+  //var detailList;
+
   List<Days> detailDays=new List<Days>();
-  var days;
+  Map<String,dynamic> detailList;
+  //var days;
   EmployeeList empList;
-
-
  //List<Days> days = new List<Days>();
 
   Future<String> fetchDay() async {
@@ -31,8 +31,8 @@ class _LeavedayState extends State<Leaveday> {
     String stringValue = prefs.getString('token');
 
     final response = await http.get(
-      // 'https://app.idolconsulting.co.za/idols/leaves/1/10/ASC/id?keyword=',
-        'https://app.idolconsulting.co.za/idols/leaves/all',
+        'https://app.idolconsulting.co.za/idols/leaves/1/10/ASC/id?keyword=',
+       // 'https://app.idolconsulting.co.za/idols/leaves/all',
         headers: {"Accept": "application/json",
           "X_TOKEN": stringValue,
         });
@@ -40,29 +40,20 @@ class _LeavedayState extends State<Leaveday> {
     if (response.statusCode == 200) {
       setState(() {
 
-        //var data = json.decode((response.body));
-       var detailList = json.decode((response.body));
+       var data = json.decode((response.body));
+       detailList = json.decode((response.body));
 
-
-        for (int x = 0; x < detailList.length; x++) {
+       for (int x = 0; x < data.length; x++) {
         var days = new Days(
+              detailList['id'].toString(),
+              detailList['firstName'].toString(),
+              detailList['start'].toString(),
+              detailList['end'].toString(),
+              detailList['days'].toString());
 
-              detailList[x]['id'],
-              detailList[x]['firstName'],
-              detailList[x]['start'],
-              detailList[x]['end'],
-              detailList[x]['days'].toString());
-
-          print(detailList[x]['firstName']);
-
-
-
+         // print(response.body);
         detailDays.add(days);
         }
-
-
-
-
       });
     }
   }
@@ -163,30 +154,40 @@ class _LeavedayState extends State<Leaveday> {
                           ),
                         ),
                         Container(
-                          height: 100,
+                          height: 600,
                           width: 500,
                           child:SizedBox(
                             child:  ListView.builder(
-                              itemCount: detailDays==null? 0: detailDays.length,
-                              scrollDirection: Axis.horizontal,
+                              itemCount: detailDays.length,
+                              scrollDirection: Axis.vertical,
                               shrinkWrap: true,
                               itemBuilder: (BuildContext context,int index) {
 
+                                //var detailDays;
                                 return Container(
-                                  child:DataTable(
+                                    child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: DataTable (
+                                    columnSpacing: 10,
+                                    dataRowHeight: 50,
+                                    headingRowHeight: 60,
+                                  //child:DataTable(
                                     columns: [
                                       DataColumn(label: Text('Employee')),
                                       DataColumn(label: Text('Start Date')),
                                       DataColumn(label: Text('End Date')),
                                       DataColumn(label: Text('Total Days')),
                                     ],
-                                    rows: [
+                                    rows: List.generate(
+                                        detailDays.length, (index) =>
                                       DataRow(cells: [
-                                        DataCell(Text(detailDays.elementAt(index).employee==null ? 'Freddy Mokoele' : detailDays.elementAt(index).employee)),
-                                       DataCell(Text(detailDays.elementAt(index).startDate==null ? 'Start Date not updated ' : detailDays.elementAt(index).startDate )),
-                                        DataCell(Text(detailDays.elementAt(index).end==null ? 'End Date not updated' : detailDays.elementAt(index).startDate)),
-                                        DataCell(Text(detailDays.elementAt(index).totalDays==null? 'Total days not found' : detailDays.elementAt(index).totalDays)),
-                                      ])],
+                                        DataCell(Text(detailList['content'][index]['user']['firstName'].toString())),
+                                        DataCell(Text(detailList['content'][index]['start'].toString())),
+                                        DataCell(Text(detailList['content'][index]['end'].toString())),
+                                        DataCell(Text(detailList['content'][index]['days'].toString())),
+                                      ])
+                                    )
+                                    )
                                   ),);
                               },),
                           ),),
