@@ -11,10 +11,9 @@ import 'package:file_picker/file_picker.dart';
 import 'TravellingAllowance.dart';
 
 class Edit_Allowance extends StatefulWidget {
-  // final EmployeeData data;
   Map<String,dynamic> list;
-  // int index;
-  Edit_Allowance(this.list);
+  int index;
+  Edit_Allowance(this.list, this.index);
   @override
   _Edit_AllowanceState createState() => _Edit_AllowanceState();
 }
@@ -22,7 +21,7 @@ class Edit_Allowance extends StatefulWidget {
 class _Edit_AllowanceState extends State<Edit_Allowance> {
 
   String _filePath;
-
+  //int index = 2;
   TextEditingController _startKmController;
   TextEditingController _endKmController;
   TextEditingController _travelDateController;
@@ -48,6 +47,21 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
     }
   }
 
+  void deleteData() async {
+    var url = "https://app.idolconsulting.co.za/idols/travel-allowance";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('userToken');
+    Map<String, String> headers = {
+      "content-type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN": "$token",
+    };
+    http.delete(
+      url + "/${widget.list['content'][widget.index]['id']}",
+      headers: headers,
+    );
+  }
+
   void getFilePath() async {
     String filePath = await FilePicker.getFilePath(type: FileType.any);
     if (filePath == '') {
@@ -63,15 +77,16 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
     // TODO: implement initState
     super.initState();
     _startKmController = new TextEditingController(
-        text: "${widget.list['content']['startKm']}");
+        text: "${widget.list['content'][widget.index]['startKm'].toString()}");
     _endKmController = new TextEditingController(
-        text: "${widget.list['content']['endKm']}");
+        text: "${widget.list['content'][widget.index]['endKm'].toString()}");
     _ratePerKm = new TextEditingController(
-        text: "${widget.list['content']['ratePerKm']}");
+        text: "${widget.list['content'][widget.index]['ratePerKm'].toString()}");
     _travelDateController = new TextEditingController(
-        text: "${widget.list['content']['travelDate']}");
+        text: "${widget.list['content'][widget.index]['travelDate'].toString()}");
     _commentController = new TextEditingController(
-        text: "${widget.list['content']['comment']}");
+        text: "${widget.list['content'][widget.index]['comment'].toString()}");
+    print('Id = '+ widget.list['content'][widget.index]['id']);
   }
 
   @override
@@ -263,9 +278,10 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                                 "X_TOKEN":"$stringValue",
                               };
                               final body = jsonEncode({
+                                "id": widget.list['content'][widget.index]['id'],
                                 'startKm': _startKmController.text,
                                 'endKm': _endKmController.text,
-                                // 'ratePerKm': _ratePerKm,
+                                'ratePerKm': _ratePerKm.text,
                                 'travelDate': _travelDateController.text,
                                 'comment': _commentController.text,
                                 'attachment' 'name': _filePath,
@@ -277,9 +293,8 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                               );
                               setState(() {
                                 if(response.statusCode == 200) {
-                                  print(response.body);
+                                  //print(response.body);
                                   print(jsonDecode(body));
-                                  //print(stringValue);
                                 }
                               });
                               Navigator.pop(context);
@@ -341,6 +356,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
 }
 
 class AllowanceDelete extends StatelessWidget {
+  _Edit_AllowanceState obj = new _Edit_AllowanceState();
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -358,13 +374,16 @@ class AllowanceDelete extends StatelessWidget {
         FlatButton(
           child: Text('Yes'),
           onPressed: () {
-            Navigator.of(context).pop(true);
+            obj.deleteData();
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (BuildContext context) => new TravelAllowance()));
           },
         ),
         FlatButton(
           child: Text('No'),
           onPressed: () {
-            Navigator.of(context).pop(false);
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (BuildContext context) => new TravelAllowance()));
           },
         )
       ],

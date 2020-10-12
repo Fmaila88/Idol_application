@@ -1,3 +1,4 @@
+import 'package:App_idolconsulting/TravelAllowance/Admin.dart';
 import 'package:flutter/material.dart';
 import 'package:App_idolconsulting/LeaveDays/leavedays.dart';
 import 'package:App_idolconsulting/PaySlips/DetailsScreen.dart';
@@ -34,7 +35,7 @@ class DrawerCodeOnly extends StatefulWidget {
 class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
 
   Map<String, dynamic> data3;
-  //UserProfile profile;
+  Map<String,dynamic> users;
   bool isLoading = true;
 
   Future<String> fetchDrawer() async {
@@ -232,12 +233,27 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                       new ListTile(
                         leading: Icon(Ionicons.globe_outline, size: 30.0),
                         title: new Text("Travel Allowance"),
-                        onTap: () {
+                        onTap: () async {
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          String token = prefs.getString('userToken');
+
+                          final response = await http.get(
+                              'http://app.idolconsulting.co.za/idols/users/profile',
+                              headers: {"Accept": "application/json",
+                                'X_TOKEN': '$token'});
+                          var data = json.decode((response.body));
+                          users = json.decode((response.body));
+                          if(response.statusCode == 200) {
+                            users['id'].toString();
+                            print(users['roles'].toString());
+                          }
+
                           Navigator.pop(context);
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => new TravelAllowance()));
+                                  builder: (context) => users['roles'].toString() == '[Employee]' ? TravelAllowance()
+                              : Admin()));
                         },
                       ),
                     ],

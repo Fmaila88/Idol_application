@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:App_idolconsulting/HomePage/drawer.dart';
+import 'package:App_idolconsulting/TravelAllowance/Admin.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
@@ -7,7 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
 import 'package:App_idolconsulting/TravelAllowance/ApplyTransportAllowance.dart';
 
-import 'package:App_idolconsulting/HomePage/homescrean.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Edit_TravelAllowance.dart';
@@ -28,7 +29,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
     String stringValue = prefs.getString('token');
     print(stringValue);
     //https://app.idolconsulting.co.za/idols/travel-allowance/1/10/DESC/createDate
-    final response = await http.get ('https://app.idolconsulting.co.za/idols/travel-allowance/1/10/ASC/createDate',
+    final response = await http.get ('https://app.idolconsulting.co.za/idols/travel-allowance/1/10/ASC/CreatedDate',
         headers: {"content-type": "application/json",
           "Accept": "application/json",
           "X_TOKEN":"$stringValue",
@@ -41,7 +42,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
         for(int x = 0; x<data.length; x++){
           EmployeeData bodyList = new EmployeeData(
             list['id'].toString(),
-            list['firstName'].toString(),
+            list['user'].toString(),
             list['startKm'].toString(),
             list['endKm'].toString(),
             list['ratePerKm'].toString(),
@@ -68,7 +69,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.lightGreen[10],
-        // drawer: DrawerCodeOnly(),
+        drawer: DrawerCodeOnly(),
         appBar: AppBar(
           title: Text(
             'Travel Allowance',
@@ -154,7 +155,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                         Container(
                           height: 540,
                           child:SizedBox(
-                            child:  ListView.builder(
+                            child: ListView.builder(
                               itemCount: 1,
                               itemBuilder: (BuildContext context,int i) {
 
@@ -162,7 +163,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                     child: SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
                                       child: DataTable (
-                                        columnSpacing: 10,
+                                        columnSpacing: 20,
                                         dataRowHeight: 50,
                                         headingRowHeight: 60,
                                         columns: [
@@ -173,20 +174,20 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                                 fontWeight: FontWeight.w800
                                             ),),
                                           ),
-                                          DataColumn(label: Text('Start Km',
+                                          DataColumn(label: Text('Total Km',
                                             style: TextStyle(
                                                 color: Colors.black54,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w800
                                             ),),
                                           ),
-                                          DataColumn(label: Text('End Km',
-                                            style: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w800
-                                            ),),
-                                          ),
+                                          // DataColumn(label: Text('End Km',
+                                          //   style: TextStyle(
+                                          //       color: Colors.black54,
+                                          //       fontSize: 16,
+                                          //       fontWeight: FontWeight.w800
+                                          //   ),),
+                                          // ),
                                           DataColumn(label: Text('Status',
                                             style: TextStyle(
                                                 color: Colors.black54,
@@ -213,7 +214,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                           // ),
                                         ],
                                         rows: List.generate(
-                                            employee_allowance.length, (index) =>
+                                            employee_allowance.length , (index) =>
                                           DataRow(cells: <DataCell> [
                                             DataCell(Text(list['content'][index]['user']['firstName'] + ' ' +
                                                 list['content'][index]['user']['lastName'].toString(),
@@ -225,15 +226,15 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(builder: (context) => Edit_Allowance(
-                                                 list
+                                                 list, index
                                                 )),
                                               );
                                             }),
-                                            DataCell(Text(list['content'][index]['startKm'].toString(),
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 14
-                                              ),)),
+                                            // DataCell(Text(list['content'][index]['startKm'].toString(),
+                                            //   style: TextStyle(
+                                            //       color: Colors.black,
+                                            //       fontSize: 14
+                                            //   ),)),
                                             DataCell(Text(list['content'][index]['endKm'].toString(),
                                               style: TextStyle(
                                                   color: Colors.black,
