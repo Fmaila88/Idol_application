@@ -21,7 +21,8 @@ import 'userprofile.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'drawer.dart';
 import 'reports.dart';
-
+import 'projectservices.dart';
+import 'projectlist.dart';
 
 class Home extends StatefulWidget {
   final Widget child;
@@ -260,11 +261,21 @@ var shared;
   }
   bool readOnly=true;
 
-
+//List<ProjectList> perproject = List();
+//List<ProjectList> filteredProject = List();
 
   @override
   void initState() {
     super.initState();
+//    CompanyServices.getCompanies().then((projectsFromServer){
+//      setState(() {
+//        perproject = projectsFromServer;
+//        filteredProject = perproject;
+//      });
+//      });
+   // }
+
+
     _seriesData1 = List<charts.Series<Pollution, String>>();
     _seriesPieData = List<charts.Series<Task, String>>();
     _generateData();
@@ -396,6 +407,12 @@ var shared;
                                 border: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.blueGrey[500])),
                               ),
+//                              onChanged: (string){
+//                                setState(() {
+//                                  filteredProject = perproject.where((c) => c.name
+//                                      .toLowerCase().contains(string.toLowerCase())).toList();
+//                                });
+//                              },
                               onTap: () {
                                 //getEndTime(context);
                               },
