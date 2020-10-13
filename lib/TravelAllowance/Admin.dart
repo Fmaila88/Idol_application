@@ -1,12 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:App_idolconsulting/HomePage/drawer.dart';
-import 'package:intl/intl.dart';
+import 'package:App_idolconsulting/TravelAllowance/AdminApply.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
-import 'package:App_idolconsulting/TravelAllowance/ApplyTransportAllowance.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -113,7 +111,7 @@ class _AdminState extends State<Admin> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Apply()),
+                        MaterialPageRoute(builder: (context) => AdminApply()),
                       );
                     },
                     icon: Icon(
@@ -243,30 +241,30 @@ class _AdminState extends State<Admin> {
                                                     Container(
                                                         child: Row(
                                                           children: [
-                                                            FlatButton.icon(
-                                                              onPressed: () async {
-                                                                // final result = await showDialog(
-                                                                //     context: context, builder: (_) => Approve());
-                                                              },
-                                                              icon: Icon(
-                                                                Icons.arrow_downward,
-                                                                size: 15,
-                                                                color: Colors.white,
-                                                              ),
-                                                              color: Colors.orange,
-                                                              label: Text(
-                                                                'Download',
-                                                                style: TextStyle(
-                                                                    color: Colors.white,
-                                                                    fontWeight: FontWeight.w400,
-                                                                    fontSize: 17),
-                                                              ),
-                                                            ),
-                                                            SizedBox(width: 2),
+                                                            // FlatButton.icon(
+                                                            //   onPressed: () async {
+                                                            //     // final result = await showDialog(
+                                                            //     //     context: context, builder: (_) => Approve());
+                                                            //   },
+                                                            //   icon: Icon(
+                                                            //     Icons.arrow_downward,
+                                                            //     size: 15,
+                                                            //     color: Colors.white,
+                                                            //   ),
+                                                            //   color: Colors.orange,
+                                                            //   label: Text(
+                                                            //     'Download',
+                                                            //     style: TextStyle(
+                                                            //         color: Colors.white,
+                                                            //         fontWeight: FontWeight.w400,
+                                                            //         fontSize: 17),
+                                                            //   ),
+                                                            // ),
+                                                            // SizedBox(width: 2),
                                                             FlatButton.icon(
                                                               onPressed: () async {
                                                                 final result = await showDialog(
-                                                                    context: context, builder: (_) => Approve());
+                                                                    context: context, builder: (_) => Approve(list, index));
                                                               },
                                                               icon: Icon(
                                                                 Icons.thumb_up,
@@ -341,9 +339,7 @@ class Decline extends StatelessWidget {
       actions: <Widget>[
         FlatButton(
           child: Text('Yes'),
-          onPressed: () {
-            Navigator.of(context).pop(true);
-          },
+
         ),
         FlatButton(
           child: Text('No'),
@@ -356,7 +352,30 @@ class Decline extends StatelessWidget {
   }
 }
 
-class Approve extends StatelessWidget {
+class Approve extends StatefulWidget {
+  Map<String,dynamic> list;
+  int index;
+  Approve(this.list, this.index);
+  @override
+  _ApproveState createState() => _ApproveState();
+}
+
+class _ApproveState extends State<Approve> {
+
+  void deleteItem() async {
+    var url = "https://app.idolconsulting.co.za/idols/travel-allowance/approve";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('userToken');
+    Map<String, String> headers = {
+      "content-type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN": "$token",
+    };
+    http.delete(
+      url + "/${widget.list['content'][widget.index]['id']}",
+      headers: headers,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -375,13 +394,15 @@ class Approve extends StatelessWidget {
         FlatButton(
           child: Text('Yes'),
           onPressed: () {
-            Navigator.of(context).pop(true);
+            deleteItem();
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (BuildContext context) => new Admin()));
           },
         ),
         FlatButton(
           child: Text('No'),
           onPressed: () {
-            Navigator.of(context).pop(false);
+             Navigator.of(context).pop(false);
           },
         ),
       ],

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -9,28 +8,40 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'Admin.dart';
-import 'TravellingAllowance.dart';
 
-class Edit_Allowance extends StatefulWidget {
-  Map<String,dynamic> list;
-  int index;
-  Edit_Allowance(this.list, this.index);
+class AdminApply extends StatefulWidget {
   @override
-  _Edit_AllowanceState createState() => _Edit_AllowanceState();
+  _AdminApplyState createState() => _AdminApplyState();
 }
 
-class _Edit_AllowanceState extends State<Edit_Allowance> {
+class _AdminApplyState extends State<AdminApply> {
 
+  String _mySelection;
   String _filePath;
-  Map<String,dynamic> users;
-  TextEditingController _startKmController;
-  TextEditingController _endKmController;
+   var team;
+   final String url = "http://app.idolconsulting.co.za/idols/users/all";
+   List data = List();
+
+  TextEditingController _startKmController = TextEditingController();
+  TextEditingController _endKmController = TextEditingController();
   TextEditingController _travelDateController;
-  TextEditingController _commentController;
-  TextEditingController _ratePerKm;
+  TextEditingController _commentController = TextEditingController();
+  TextEditingController _ratePerKm = TextEditingController();
+
 
   final DateFormat dateFormat=DateFormat('dd MMMM yyyy');
   DateTime _date = DateTime.now();
+
+  Future<String> getEmployees () async {
+    var res = await http.get(Uri.encodeFull(url), headers: {"Accept": "application/json"});
+    var resBody = json.decode(res.body);
+
+    setState(() {
+      data = resBody;
+    });
+    print(resBody);
+    return 'success';
+  }
 
   Future<Null> _selectdateTime(BuildContext context) async {
     DateTime datepicker = await showDatePicker(
@@ -48,21 +59,6 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
     }
   }
 
-  void deleteData() async {
-    var url = "https://app.idolconsulting.co.za/idols/travel-allowance";
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('userToken');
-    Map<String, String> headers = {
-      "content-type": "application/json",
-      "Accept": "application/json",
-      "X_TOKEN": "$token",
-    };
-    http.delete(
-      url + "/${widget.list['content'][widget.index]['id']}",
-      headers: headers,
-    );
-  }
-
   void getFilePath() async {
     String filePath = await FilePicker.getFilePath(type: FileType.any);
     if (filePath == '') {
@@ -77,17 +73,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _startKmController = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['startKm'].toString()}");
-    _endKmController = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['endKm'].toString()}");
-    _ratePerKm = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['ratePerKm'].toString()}");
-    _travelDateController = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['travelDate'].toString()}");
-    _commentController = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['comment'].toString()}");
-    print('Id = '+ widget.list['content'][widget.index]['id']);
+    _travelDateController = TextEditingController();
   }
 
   @override
@@ -96,7 +82,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
         backgroundColor: Colors.lightGreen[10],
         appBar: AppBar(
           title: Text(
-            'Edit Travel Allowance',
+            'Travel Allowance',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: Colors.white,
@@ -125,6 +111,42 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                       ),
                     ),
 
+                    Container(
+                      margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
+                      child: Text(
+                        'Employee Name*',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
+                      child: Container(
+                        padding: EdgeInsets.only(left: 16, right: 16),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black54, width: 0.5)),
+                        margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
+                        alignment: Alignment.topLeft,
+                        child:new DropdownButton(
+                          items: data.map((team) {
+                            return new DropdownMenuItem(
+                                child: Text(
+                                  team['firstName'] + ' ' + team['lastName']),
+                              value: team['id'].toString(),
+                            );
+                          }).toList(),
+                          onChanged: (newVal) {
+                            setState(() {
+                              _mySelection = newVal;
+                            });
+                          },
+                          value: _mySelection,
+                        ),
+                      ),
+
+                    ),
                     Container(
                       margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
                       child: Text(
@@ -199,14 +221,17 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                       padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
                       height: 34,
                       child: TextField(
-                        readOnly: true,
                         controller: _travelDateController,
+                        readOnly: true,
+                        //controller: _textEditingController,
                         decoration: InputDecoration(
                           //hintText: 'Please select date',
                           border: OutlineInputBorder(),
                         ),
-                        onTap: () {
-                          _selectdateTime(context);
+                        onTap: (){
+                          setState(() {
+                            _selectdateTime(context);
+                          });
                         },
                         keyboardType: TextInputType.multiline,
                       ),
@@ -265,92 +290,52 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                       ),
                     ),
                     SizedBox(height: 20),
-                    Row(
-                      children: <Widget> [
-                        Container(
-                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: RaisedButton(
-                            color: Colors.lightBlue,
-                            onPressed: () async {
-                              SharedPreferences prefs =await SharedPreferences.getInstance();
-                              String stringValue = prefs.getString('token');
-                              Map<String, String> headers = {"content-type": "application/json",
-                                "Accept": "application/json",
-                                "X_TOKEN":"$stringValue",
-                              };
-                              final body = jsonEncode({
-                                "id": widget.list['content'][widget.index]['id'],
-                                'startKm': _startKmController.text,
-                                'endKm': _endKmController.text,
-                                'ratePerKm': _ratePerKm.text,
-                                'travelDate': _travelDateController.text,
-                                'comment': _commentController.text,
-                                'attachment' 'name': _filePath,
-                              });
-                              final response = await http.put(
-                                  'https://app.idolconsulting.co.za/idols/travel-allowance',
-                                  headers: headers,
-                                  body: body
-                              );
-                              setState(() {
-                                if(response.statusCode == 200) {
-                                  //print(response.body);
-                                  print(jsonDecode(body));
-                                }
-                              });
-                              Navigator.pop(context);
-                              Navigator.push(
-                                  context,
-                                  new MaterialPageRoute(
-                                      builder: (context) => new TravelAllowance()));
-                            },
-                            child: Text(
-                              'Update',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                              ),
-                            ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: RaisedButton(
+                        color: Colors.lightBlue,
+                        onPressed: () async {
+                          SharedPreferences prefs =await SharedPreferences.getInstance();
+                          String stringValue = prefs.getString('token');
+                          Map<String, String> headers = {"content-type": "application/json",
+                            "Accept": "application/json",
+                            "X_TOKEN":"$stringValue",
+                          };
+                          final body = jsonEncode({
+                            'startKm': _startKmController.text,
+                            'endKm': _endKmController.text,
+                            'ratePerKm': _ratePerKm.text,
+                            'travelDate': _travelDateController.text,
+                            'comment': _commentController.text,
+                            'attachment' 'name': _filePath,
+                          });
+                          final response = await http.put(
+                              'https://app.idolconsulting.co.za/idols/travel-allowance',
+                              headers: headers,
+                              body: body
+                          );
+                          setState(() {
+                            if(response.statusCode == 200) {
+                              print(response.body);
+                              print(jsonDecode(body));
+                              //print(stringValue);
+                            }
+                          });
+                          Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => new Admin()));
+                        },
+                        child: Text(
+                          'Apply',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18,
                           ),
                         ),
-                        Container(
-                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: RaisedButton(
-                            color: Colors.redAccent,
-                            onPressed: () async {
-                              SharedPreferences prefs = await SharedPreferences.getInstance();
-                              String token = prefs.getString('userToken');
-
-                              final response = await http.get(
-                                  'http://app.idolconsulting.co.za/idols/users/profile',
-                                  headers: {"Accept": "application/json",
-                                    'X_TOKEN': '$token'});
-                              //var data = json.decode((response.body));
-                              users = json.decode((response.body));
-                              if(response.statusCode == 200) {
-                                users['id'].toString();
-                                print(users['roles'].toString());
-                              }
-
-                              Navigator.pop(context);
-                              Navigator.push(
-                                  context,
-                                  new MaterialPageRoute(
-                                      builder: (context) => users['roles'].toString() == '[Employee]' ? TravelAllowance()
-                                          : Admin()));
-                            },
-                            child: Text(
-                              'Delete',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                     Container(
                       padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
@@ -372,38 +357,8 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
   }
 }
 
-class AllowanceDelete extends StatelessWidget {
-  _Edit_AllowanceState obj = new _Edit_AllowanceState();
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Warning',
-        style: TextStyle(
-            color: Colors.red,
-            fontWeight: FontWeight.bold,
-            fontSize: 25
-        ),),
-      content: Text('Are you sure you want to delete this item?',
-        style: TextStyle(
-            fontSize: 16
-        ),),
-      actions: [
-        FlatButton(
-          child: Text('Yes'),
-          onPressed: () {
-            obj.deleteData();
-            Navigator.of(context).push(new MaterialPageRoute(
-                builder: (BuildContext context) => new TravelAllowance()));
-          },
-        ),
-        FlatButton(
-          child: Text('No'),
-          onPressed: () {
-            Navigator.of(context).push(new MaterialPageRoute(
-                builder: (BuildContext context) => new TravelAllowance()));
-          },
-        )
-      ],
-    );
-  }
+class UsersDetails{
+  String firstName;
+  String lastName;
+  UsersDetails(this.firstName, this.lastName);
 }
