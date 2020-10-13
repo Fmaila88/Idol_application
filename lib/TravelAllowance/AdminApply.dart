@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:App_idolconsulting/PaySlips/Employees.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -16,11 +17,14 @@ class AdminApply extends StatefulWidget {
 
 class _AdminApplyState extends State<AdminApply> {
 
-  String _mySelection;
   String _filePath;
-   var team;
-   final String url = "http://app.idolconsulting.co.za/idols/users/all";
-   List data = List();
+  String _mySelection;
+  var team;
+  final String url = "http://app.idolconsulting.co.za/idols/users/all";
+  List<Employees> _employeeName = new List<Employees>();
+  String names;
+
+  List data = List(); //edited line
 
   TextEditingController _startKmController = TextEditingController();
   TextEditingController _endKmController = TextEditingController();
@@ -31,17 +35,6 @@ class _AdminApplyState extends State<AdminApply> {
 
   final DateFormat dateFormat=DateFormat('dd MMMM yyyy');
   DateTime _date = DateTime.now();
-
-  Future<String> getEmployees () async {
-    var res = await http.get(Uri.encodeFull(url), headers: {"Accept": "application/json"});
-    var resBody = json.decode(res.body);
-
-    setState(() {
-      data = resBody;
-    });
-    print(resBody);
-    return 'success';
-  }
 
   Future<Null> _selectdateTime(BuildContext context) async {
     DateTime datepicker = await showDatePicker(
@@ -55,6 +48,23 @@ class _AdminApplyState extends State<AdminApply> {
         _date = datepicker;
         _travelDateController.text= dateFormat.format(_date);
 
+      });
+    }
+  }
+
+  Future<Employees> fetchEmployees() async {
+    final response = await http.get(
+        'http://app.idolconsulting.co.za/idols/users/all',
+        headers: {"Accept": "application/json"});
+    if (response.statusCode == 200) {
+      setState(() {
+        var data = json.decode((response.body));
+        for (int x = 0; x < data.length; x++) {
+          var employees = new Employees(
+              data['firstName'].toString(), data['lastName'].toString());
+
+          _employeeName.add(employees);
+        }
       });
     }
   }
@@ -110,11 +120,10 @@ class _AdminApplyState extends State<AdminApply> {
                         ),
                       ),
                     ),
-
                     Container(
                       margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
                       child: Text(
-                        'Employee Name*',
+                        'Employees*',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 14,
@@ -122,30 +131,35 @@ class _AdminApplyState extends State<AdminApply> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
-                      child: Container(
-                        padding: EdgeInsets.only(left: 16, right: 16),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black54, width: 0.5)),
-                        margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
-                        alignment: Alignment.topLeft,
-                        child:new DropdownButton(
-                          items: data.map((team) {
-                            return new DropdownMenuItem(
-                                child: Text(
-                                  team['firstName'] + ' ' + team['lastName']),
-                              value: team['id'].toString(),
-                            );
-                          }).toList(),
-                          onChanged: (newVal) {
-                            setState(() {
-                              _mySelection = newVal;
-                            });
-                          },
-                          value: _mySelection,
-                        ),
-                      ),
+                      //margin: const EdgeInsets.all(16.0),
+                      // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
+                      padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                      // padding: const EdgeInsets.fromLTRB(130, 0, 0, 0),
 
+                      decoration: BoxDecoration(
+                          border:
+                          Border.all(color: Colors.black54, width: 0.5)),
+
+                      margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
+
+                      alignment: Alignment.topLeft,
+                      child: new DropdownButton(
+                        items: data.map((data) {
+                          return new DropdownMenuItem(
+                            child: new Text(
+                                team['content']['firstName'] + ' ' + team['content']['lastName']),
+                            value: team['id'].toString(),
+                            //
+                          );
+                        }).toList(),
+
+                        onChanged: (newVal) {
+                          setState(() {
+                            _mySelection = newVal;
+                          });
+                        },
+                        value: _mySelection,
+                      ),
                     ),
                     Container(
                       margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
