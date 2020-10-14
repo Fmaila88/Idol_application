@@ -1,17 +1,23 @@
+import 'dart:core';
+
+import 'dart:io';
+
 import 'package:App_idolconsulting/HomePage/homescrean.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
 
-//import '../homescrean.dart';
 import 'DetailsScreen.dart';
 import 'ListEmp.dart';
-import 'main.dart';
 
 class MyAppl extends StatefulWidget {
   @override
@@ -21,71 +27,77 @@ class MyAppl extends StatefulWidget {
 }
 
 class MyApplState extends State<MyAppl> {
-  get searchController => null;
+  // get searchController => null;
   //Future future;
 //Future<bool>
   List<ListEmp> employee_Details = new List<ListEmp>();
   String names;
+
+  TextEditingController searchController = new TextEditingController();
 
   DateTime now = new DateTime.now();
 
   final DateFormat dateformat = DateFormat('MM/YYYY');
 
   Future<ListEmp> fetchListEmp() async {
-    final response = await http.get(
-        'http://app.idolconsulting.co.za/idols/payslips/all',
-        headers: {"Accept": "application/json"});
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('token');
+    print(stringValue);
+    final response = await http
+        .get('https://app.idolconsulting.co.za/idols/payslips/all', headers: {
+      "content-type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN": "$stringValue",
+      HttpHeaders.authorizationHeader: "$stringValue",
+    });
+
     if (response.statusCode == 200) {
       setState(() {
         var data = json.decode((response.body));
-        for (int x = 0; x < data.length; x++) {
-          var listEmp = new ListEmp(
-              data[x]['firstName'].toString(), data[x]['createDate']);
+        print(data.length);
+        // print(response.body);
 
-          employee_Details.add(listEmp);
+        for (int x = 0; x < data.length; x++) {
+          if (data[x]['user'] != null) {
+            var listEmp = new ListEmp(
+                data[x]['user']['firstName'] +
+                    ' ' +
+                    data[x]['user']['lastName'].toString(),
+                data[x]['createDate']);
+
+            employee_Details.add(listEmp);
+          }
         }
         print(employee_Details.length);
+        // print(employee_Details.toString());
       });
     }
   }
 
-  // String formatDateTime(DateTime dateTime) {
-  //   //return dateformat.DateFormat(dateTime);
-  //   return '${dateTime.month}/${dateTime.year}';
-  // }
-
-//  void download() async {
-//    WidgetsFlutterBinding.ensureInitialized();
-//    await FlutterDownloader.initialize(debug: true);
-//  }
+  void deletePyslip() async {
+    var url = "https://app.idolconsulting.co.za/idols/payslips/";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('userToken');
+    Map<String, String> headers = {
+      "content-type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN": "$stringValue",
+    };
+    // http.delete(
+    //   url + "/${[index]['id']}",
+    //   headers: headers,
+    // );
+  }
 
   @override
   void initState() {
-    fetchListEmp();
     super.initState();
+    this.fetchListEmp();
   }
 
   Future<bool> _onBackPressed() {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => Home()));
-
-    // return showDialog(
-    //     context: context,
-    //     builder: (context) => AlertDialog(
-    //           title: Text("Do you really want to leave this page"),
-    //           actions: <Widget>[
-    //             FlatButton(
-    //               child: Text("No"),
-    //               onPressed: () => Navigator.pop(context, false),
-    //             ),
-    //             FlatButton(
-    //               child: Text("Yes"),
-    //               onPressed: () => Navigator.pop(context, true),
-    //             ),
-    //           ],
-    //         ));
   }
-
-  //DateTime now = new DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -173,123 +185,128 @@ class MyApplState extends State<MyAppl> {
                         ),
                       ),
                       Container(
-                        height: 480,
+                        height: 500,
                         //  width: 90,
                         child: SizedBox(
                           child: ListView.builder(
                             itemCount: 1,
-                            // employee_Details == null
-                            //     ? 0
-                            //     : employee_Details.length,
-                            scrollDirection: Axis.vertical,
 
-                            shrinkWrap: true,
-                            //crossAxisCount: 2,
+                            // scrollDirection: Axis.vertical,
+                            // shrinkWrap: true,
                             itemBuilder: (BuildContext context, int index) {
                               return Container(
-                                child: DataTable(
-                                  columnSpacing: 10,
-                                  dataRowHeight: 60,
-                                  headingRowHeight: 60,
-                                  columns: [
-                                    DataColumn(
-                                        label: Text(
-                                      'Date',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 17),
-                                    )),
-                                    DataColumn(
-                                        label: Text(
-                                      'Employee',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: 17),
-                                    )),
-                                    DataColumn(label: Text('')),
-                                    DataColumn(label: Text('')),
-                                  ],
-                                  rows: List.generate(
-                                    employee_Details.length,
-                                    (index) => DataRow(cells: [
-                                      DataCell(Text((employee_Details
-                                              .elementAt(index)
-                                              .convertDateFromString()) ??
-                                          employee_Details)),
-                                      DataCell(Text(employee_Details
-                                          .elementAt(index)
-                                          .user)),
-                                      // DataCell(Text(employee_Details
-                                      //     .elementAt(index)
-                                      //     .lastName)),
-
-                                      DataCell(
-                                        FlatButton.icon(
-                                          onPressed: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        DetailsScreen()));
-                                          },
-                                          icon: Icon(
-                                            Icons.remove_red_eye,
-                                            size: 15,
-                                            color: Colors.white,
-                                          ),
-                                          color: Colors.green,
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: DataTable(
+                                    columnSpacing: 10,
+                                    dataRowHeight: 60,
+                                    headingRowHeight: 60,
+                                    columns: [
+                                      DataColumn(
                                           label: Text(
-                                            'View',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 14),
+                                        'Date',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 17),
+                                      )),
+                                      DataColumn(
+                                          label: Text(
+                                        'Employee',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 17),
+                                      )),
+                                      DataColumn(label: Text('')),
+                                      DataColumn(label: Text('')),
+                                      DataColumn(label: Text('')),
+                                    ],
+                                    rows: List.generate(
+                                      employee_Details.length,
+                                      (index) => DataRow(cells: [
+                                        DataCell(
+                                            Text((employee_Details
+                                                    .elementAt(index)
+                                                    .convertDateFromString()) ??
+                                                employee_Details), onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailsScreen()),
+                                          );
+                                        }),
+                                        DataCell(Text(employee_Details
+                                            .elementAt(index)
+                                            .user)),
+                                        // DataCell(Text(employee_Details
+                                        //     .elementAt(index)
+                                        //     .lastName)),
+
+                                        DataCell(
+                                          FlatButton.icon(
+                                            onPressed: () {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          DetailsScreen()));
+                                            },
+                                            icon: Icon(
+                                              Icons.remove_red_eye,
+                                              size: 15,
+                                              color: Colors.white,
+                                            ),
+                                            color: Colors.green,
+                                            label: Text(
+                                              'View',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 14),
+                                            ),
                                           ),
                                         ),
-                                      ),
 
-                                      DataCell(
-                                        FlatButton.icon(
-//                                          onPressed: (){}, async {
-//                                            download();
-//                                            final status = await Permission
-//                                                .storage
-//                                                .request();
-//
-//                                            if (status.isGranted) {
-//                                              final externalDir =
-//                                                  await getExternalStorageDirectory();
-//
-//                                              final id = await FlutterDownloader
-//                                                  .enqueue(
-//                                                url:
-//                                                    "https://app.idolconsulting.co.za/idols/payslips/download/5ba3ac43c391b566c3c51e63",
-//                                                savedDir: externalDir.path,
-//                                                fileName: "payslip",
-//                                                showNotification: true,
-//                                                openFileFromNotification: true,
-//                                              );
-//                                            } else {
-//                                              print("Permission denied");
-//                                            }
-//                                          },
-
-                                          icon: Icon(
-                                            Icons.arrow_downward,
-                                            size: 15,
-                                            color: Colors.white,
-                                          ),
-                                          color: Colors.orange,
-                                          label: Text(
-                                            'Download',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: 14),
+                                        DataCell(
+                                          FlatButton.icon(
+                                            onPressed: () {},
+                                            icon: Icon(
+                                              Icons.arrow_downward,
+                                              size: 15,
+                                              color: Colors.white,
+                                            ),
+                                            color: Colors.orange,
+                                            label: Text(
+                                              'Download',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 14),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ]),
-                                    // ],
+                                        DataCell(
+                                          FlatButton.icon(
+                                            onPressed: () {
+                                              _delete();
+                                            },
+                                            icon: Icon(
+                                              Icons.delete,
+                                              size: 15,
+                                              color: Colors.white,
+                                            ),
+                                            color: Colors.redAccent,
+                                            label: Text(
+                                              'Delete',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 14),
+                                            ),
+                                          ),
+                                        ),
+                                      ]),
+                                      // ],
+                                    ),
                                   ),
                                 ),
                               );
@@ -306,5 +323,31 @@ class MyApplState extends State<MyAppl> {
         )),
       ),
     );
+  }
+
+  Future<bool> _delete() {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("Do you really want to delete this payslip"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text(
+                    "No",
+                    style: new TextStyle(color: Colors.green),
+                  ),
+                  onPressed: () => Navigator.pop(context, false),
+                ),
+                FlatButton(
+                    child: Text(
+                      "Yes",
+                      style: new TextStyle(color: Colors.redAccent),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                      deletePyslip();
+                    }),
+              ],
+            ));
   }
 }

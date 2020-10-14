@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:App_idolconsulting/TravelAllowance/User.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'TravellingAllowance.dart';
@@ -18,14 +17,31 @@ class Apply extends StatefulWidget {
 class _ApplyState extends State<Apply> {
 
   String _filePath;
-  DateTime _selectedDate;
-  TextEditingController _textEditingController = TextEditingController();
 
   TextEditingController _startKmController = TextEditingController();
   TextEditingController _endKmController = TextEditingController();
-  TextEditingController _travelDateController = TextEditingController();
+  TextEditingController _travelDateController;
   TextEditingController _commentController = TextEditingController();
   TextEditingController _ratePerKm = TextEditingController();
+
+  final DateFormat dateFormat=DateFormat('dd MMMM yyyy');
+  DateTime _date = DateTime.now();
+
+  Future<Null> _selectdateTime(BuildContext context) async {
+    DateTime datepicker = await showDatePicker(
+        context: context,
+        initialDate: _date,
+        firstDate: DateTime(1600),
+        lastDate: DateTime(3000));
+
+    if (datepicker != null && datepicker != _date) {
+      setState(() {
+        _date = datepicker;
+        _travelDateController.text= dateFormat.format(_date);
+
+      });
+    }
+  }
 
   void getFilePath() async {
     String filePath = await FilePicker.getFilePath(type: FileType.any);
@@ -41,6 +57,7 @@ class _ApplyState extends State<Apply> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _travelDateController = TextEditingController();
     }
 
   @override
@@ -152,14 +169,17 @@ class _ApplyState extends State<Apply> {
                   padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
                   height: 34,
                   child: TextField(
+                    controller: _travelDateController,
                     readOnly: true,
-                    controller: _textEditingController,
+                    //controller: _textEditingController,
                     decoration: InputDecoration(
                       //hintText: 'Please select date',
                       border: OutlineInputBorder(),
                     ),
-                    onTap: () {
-                      _selectDate(context);
+                    onTap: (){
+                      setState(() {
+                        _selectdateTime(context);
+                      });
                     },
                     keyboardType: TextInputType.multiline,
                   ),
@@ -232,7 +252,7 @@ class _ApplyState extends State<Apply> {
                       final body = jsonEncode({
                         'startKm': _startKmController.text,
                         'endKm': _endKmController.text,
-                        // 'ratePerKm': _ratePerKm,
+                        'ratePerKm': _ratePerKm.text,
                         'travelDate': _travelDateController.text,
                         'comment': _commentController.text,
                         'attachment' 'name': _filePath,
@@ -283,22 +303,4 @@ class _ApplyState extends State<Apply> {
       )
     );
   }
-
-  _selectDate(BuildContext context) async {
-    DateTime newSelectedDate = await showDatePicker(
-        context: context,
-        initialDate: _selectedDate != null ? _selectedDate : DateTime.now(),
-        firstDate: DateTime(2000),
-        lastDate: DateTime(2040),
-        );
-
-    if (newSelectedDate != null) {
-      _selectedDate = newSelectedDate;
-      _textEditingController
-        ..text = DateFormat.yMMMMd().format(_selectedDate)
-        ..selection = TextSelection.fromPosition(TextPosition(
-            offset: _textEditingController.text.length,
-            affinity: TextAffinity.upstream));
-    }
-  }
-}
+ }

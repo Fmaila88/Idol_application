@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:App_idolconsulting/HomePage/drawer.dart';
+import 'package:App_idolconsulting/TravelAllowance/Admin.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
@@ -7,8 +9,9 @@ import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
 import 'package:App_idolconsulting/TravelAllowance/ApplyTransportAllowance.dart';
 
-import 'package:App_idolconsulting/HomePage/homescrean.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'Edit_TravelAllowance.dart';
 
 class TravelAllowance extends StatefulWidget {
 
@@ -18,35 +21,38 @@ class TravelAllowance extends StatefulWidget {
 
 class _TravelAllowanceState extends State<TravelAllowance> {
 
-  List<EmployeeData> employee_allowance = new List<EmployeeData>();
-  List<String> tempList = List<String>();
-  final DateFormat dateformat = DateFormat('MM/YYYY');
+  List<EmployeeData> employee_allowance = [];
+  Map<String,dynamic> list;
 
   Future<EmployeeData> fetchEmployData() async{
-
     SharedPreferences prefs =await SharedPreferences.getInstance();
     String stringValue = prefs.getString('token');
     print(stringValue);
-    final response = await http.get ('https://app.idolconsulting.co.za/idols/travel-allowance/all',
+    //https://app.idolconsulting.co.za/idols/travel-allowance/1/10/DESC/createDate
+    final response = await http.get ('https://app.idolconsulting.co.za/idols/travel-allowance/1/10/ASC/CreatedDate',
         headers: {"content-type": "application/json",
           "Accept": "application/json",
           "X_TOKEN":"$stringValue",
-          HttpHeaders.authorizationHeader:"$stringValue",
         }
           );
-
     if(response.statusCode == 200){
       setState(() {
         var data = json.decode((response.body));
+        list = json.decode((response.body));
         for(int x = 0; x<data.length; x++){
-          var bodyList = new EmployeeData(
-              data[x]['user']['firstName'] + ' ' + data[x]['user']['lastName'].toString(),
-              data[x]['startKm'].toString(),
-              data[x]['endKm'].toString(),
-              data[x]['travelDate'].toString());
+          EmployeeData bodyList = new EmployeeData(
+            list['id'].toString(),
+            list['user'].toString(),
+            list['startKm'].toString(),
+            list['endKm'].toString(),
+            list['ratePerKm'].toString(),
+            list['status'].toString(),
+            list['travelDate'].toString(),
+            list['comment'].toString(),);
           employee_allowance.add(bodyList);
         }
         print(data.length);
+        //print('total km ' + list['endkm'] + list['startKm']);
         //print(jsonDecode(response.body));
       });
     }
@@ -63,7 +69,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.lightGreen[10],
-        // drawer: DrawerCodeOnly(),
+        drawer: DrawerCodeOnly(),
         appBar: AppBar(
           title: Text(
             'Travel Allowance',
@@ -116,7 +122,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                       color: Colors.white,
                     ),
                     label: Text(
-                      'Create',
+                      'Apply',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -130,34 +136,34 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                     elevation:40,
                     child: Column(
                       children: [
-                        // Container(
-                        //   height: 54,
-                        //   child: TextField(
-                        //     decoration: InputDecoration(
-                        //       hintText: 'Search',
-                        //       prefixIcon: Icon(
-                        //         Icons.search,
-                        //       ),
-                        //       border: OutlineInputBorder(),
-                        //     ),
-                        //     // onChanged: (text){
-                        //     //   _filterDogList(text);
-                        //     // },
-                        //
-                        //   ),
-                        // ),
                         Container(
-                          height: 600,
+                          height: 54,
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Search',
+                              prefixIcon: Icon(
+                                Icons.search,
+                              ),
+                              border: OutlineInputBorder(),
+                            ),
+                            // onChanged: (text){
+                            //   _filterDogList(text);
+                            // },
+
+                          ),
+                        ),
+                        Container(
+                          height: 540,
                           child:SizedBox(
-                            child:  ListView.builder(
+                            child: ListView.builder(
                               itemCount: 1,
-                              itemBuilder: (BuildContext context,int index) {
+                              itemBuilder: (BuildContext context,int i) {
 
                                 return Container(
                                     child: SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
                                       child: DataTable (
-                                        columnSpacing: 10,
+                                        columnSpacing: 20,
                                         dataRowHeight: 50,
                                         headingRowHeight: 60,
                                         columns: [
@@ -168,14 +174,21 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                                 fontWeight: FontWeight.w800
                                             ),),
                                           ),
-                                          DataColumn(label: Text('Start Km',
+                                          DataColumn(label: Text('Total Km',
                                             style: TextStyle(
                                                 color: Colors.black54,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w800
                                             ),),
                                           ),
-                                          DataColumn(label: Text('End Km',
+                                          // DataColumn(label: Text('End Km',
+                                          //   style: TextStyle(
+                                          //       color: Colors.black54,
+                                          //       fontSize: 16,
+                                          //       fontWeight: FontWeight.w800
+                                          //   ),),
+                                          // ),
+                                          DataColumn(label: Text('Status',
                                             style: TextStyle(
                                                 color: Colors.black54,
                                                 fontSize: 16,
@@ -189,14 +202,22 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                                 fontWeight: FontWeight.w800
                                             ),),
                                           ),
+                                          // DataColumn(label: Text('',
+                                          //   style: TextStyle(
+                                          //       color: Colors.black54,
+                                          //       fontSize: 16,
+                                          //       fontWeight: FontWeight.w800
+                                          //   ),),
+                                          // ),
                                           // DataColumn(label: Text(''),
                                           //   numeric: false,
                                           // ),
                                         ],
                                         rows: List.generate(
-                                            employee_allowance.length, (index) =>
+                                            employee_allowance.length , (index) =>
                                           DataRow(cells: <DataCell> [
-                                            DataCell(Text(employee_allowance.elementAt(index).user,
+                                            DataCell(Text(list['content'][index]['user']['firstName'] + ' ' +
+                                                list['content'][index]['user']['lastName'].toString(),
                                             style: TextStyle(
                                               color: Colors.black,
                                               fontSize: 14,
@@ -204,22 +225,27 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                             onTap: () {
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(builder: (context) => Apply()),
+                                                MaterialPageRoute(builder: (context) => Edit_Allowance(
+                                                 list, index
+                                                )),
                                               );
                                             }),
-                                            DataCell(Text(employee_allowance.elementAt(index).startKm,
+                                            // DataCell(Text(list['content'][index]['startKm'].toString(),
+                                            //   style: TextStyle(
+                                            //       color: Colors.black,
+                                            //       fontSize: 14
+                                            //   ),)),
+                                            DataCell(Text(list['content'][index]['endKm'].toString(),
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 14
                                               ),)),
-                                            DataCell(Text(employee_allowance.elementAt(index).endKm,
+                                            DataCell(Text(list['content'][index]['status'].toString(),
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 14
                                               ),)),
-                                            DataCell(Text((employee_allowance.elementAt(index)
-                                                .convertDateFromString()) ??
-                                                employee_allowance,
+                                            DataCell(Text(list['content'][index]['travelDate'].toString(),
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 14

@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'View.dart';
 import 'Employees.dart';
 
 class DetailsScreen extends StatefulWidget {
@@ -16,42 +16,82 @@ class DetailsScreen extends StatefulWidget {
   _DetailsScreenState createState() => new _DetailsScreenState();
 }
 
-String title = 'DropDownButton';
+//String title = 'DropDownButton';
 
 class _DetailsScreenState extends State<DetailsScreen> {
+  String _mySelection;
+  var team;
+  final String url = "http://app.idolconsulting.co.za/idols/users/all";
+
+  List data = List(); //edited line
+
+  Future<String> getSWData() async {
+    var res = await http
+        .get(Uri.encodeFull(url), headers: {"Accept": "application/json"});
+    var resBody = json.decode(res.body);
+
+    setState(() {
+      data = resBody;
+    });
+
+    print(resBody);
+
+    return "Sucess";
+  }
+
+  // get searchController => null;
+
   DateTime datePicker;
   TextEditingController _textEditingController = TextEditingController();
 
-  _selectDate(BuildContext context) async {
-    DateTime newSelectedDate = await showDatePicker(
-      context: context,
-      initialDate: datePicker != null ? datePicker : DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2040),
-    );
-
-    if (newSelectedDate != null) {
-      datePicker = newSelectedDate;
-      _textEditingController
-        ..text = DateFormat.yMMMMd().format(datePicker)
-        ..selection = TextSelection.fromPosition(TextPosition(
-            offset: _textEditingController.text.length,
-            affinity: TextAffinity.upstream));
-    }
-  }
+  // _selectDate(BuildContext context) async {
+  //   DateTime newSelectedDate = await showDatePicker(
+  //     context: context,
+  //     initialDate: datePicker != null ? datePicker : DateTime.now(),
+  //     firstDate: DateTime(2000),
+  //     lastDate: DateTime(2040),
+  //   );
+  //
+  //   if (newSelectedDate != null) {
+  //     datePicker = newSelectedDate;
+  //     _textEditingController
+  //       ..text = DateFormat.yMMMMd().format(datePicker)
+  //       ..selection = TextSelection.fromPosition(TextPosition(
+  //           offset: _textEditingController.text.length,
+  //           affinity: TextAffinity.upstream));
+  //   }
+  // }
 
   List<Employees> _employeeName = new List<Employees>();
   String names;
 
   TextEditingController _employeeController = TextEditingController();
 
-  TextEditingController _paymentDateController = TextEditingController();
+  TextEditingController _paymentDateController;
   TextEditingController _hourlyRateController = TextEditingController();
   TextEditingController _monthlyHoursController = TextEditingController();
   TextEditingController _overtimeHoursController = TextEditingController();
   TextEditingController _overtimeRateController = TextEditingController();
   TextEditingController _taxNumberController = TextEditingController();
   TextEditingController _bonusController = TextEditingController();
+
+  final DateFormat dateFormat = DateFormat('dd MMMM yyyy');
+  DateTime _date = DateTime.now();
+
+  Future<Null> _selectdateTime(BuildContext context) async {
+    DateTime datepicker = await showDatePicker(
+        context: context,
+        initialDate: _date,
+        firstDate: DateTime(1600),
+        lastDate: DateTime(3000));
+
+    if (datepicker != null && datepicker != _date) {
+      setState(() {
+        _date = datepicker;
+        _paymentDateController.text = dateFormat.format(_date);
+      });
+    }
+  }
 
   Future<Employees> fetchEmployees() async {
     final response = await http.get(
@@ -73,31 +113,19 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   void initState() {
     fetchEmployees();
+    this.getSWData();
     //savePay();
     super.initState();
     _hourlyRateController.text = "0";
     _monthlyHoursController.text = "0";
     _overtimeHoursController.text = "0";
     _overtimeRateController.text = "0";
+
+    _paymentDateController = TextEditingController();
   }
 
   Future<bool> _onBackPressed() {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => MyAppl()));
-    // return showDialog(
-    //     context: context,
-    //     builder: (context) => AlertDialog(
-    //           //  title: Text("Press Yes to go to the first page"),
-    //           actions: <Widget>[
-    //             // FlatButton(
-    //             //   child: Text("No"),
-    //             //   onPressed: () => Navigator.pop(context, false),
-    //             // ),
-    //             FlatButton(
-    //               // child: Text("Yes"),
-    //               onPressed: () => Navigator.pop(context, true),
-    //             ),
-    //           ],
-    //         ));
   }
 
   var items;
@@ -133,7 +161,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               fontSize: 15),
                         ),
                       ),
-
                       Container(
                         alignment: Alignment.topLeft,
                         padding: EdgeInsets.fromLTRB(10, 10, 10, 5),
@@ -151,7 +178,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         height: 48,
                         child: TextField(
                           readOnly: true,
-                          controller: _textEditingController,
+                          controller: _paymentDateController,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                                 borderRadius:
@@ -159,12 +186,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             //  margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
                           ),
                           onTap: () {
-                            _selectDate(context);
+                            setState(() {
+                              _selectdateTime(context);
+                            });
                           },
                           keyboardType: TextInputType.multiline,
                         ),
                       ),
-
                       Container(
                         // margin: const EdgeInsets.all(11.0),
                         alignment: Alignment.topLeft,
@@ -183,6 +211,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
                         padding: EdgeInsets.only(left: 16.0, right: 16.0),
                         // padding: const EdgeInsets.fromLTRB(130, 0, 0, 0),
+
                         decoration: BoxDecoration(
                             border:
                                 Border.all(color: Colors.black54, width: 0.5)),
@@ -190,27 +219,21 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
 
                         alignment: Alignment.topLeft,
-
-                        child: DropdownButton<Employees>(
-                          underline: SizedBox(),
-                          //hint: Text('Employee Name'),
-                          // elevation: 5,
-
-                          icon: Icon(Icons.arrow_drop_down),
-                          iconSize: 30.0,
-                          isExpanded: true,
-                          items: _employeeName.map((Employees names) {
-                            return DropdownMenuItem<Employees>(
-                              value: names,
-                              child: Text("$names"),
+                        child: new DropdownButton(
+                          items: data.map((team) {
+                            return new DropdownMenuItem(
+                              child: new Text(
+                                  team['firstName'] + ' ' + team['lastName']),
+                              value: team['id'].toString(),
+                              //
                             );
                           }).toList(),
-                          onChanged: (value) {
+                          onChanged: (newVal) {
                             setState(() {
-                              this.items = value;
+                              _mySelection = newVal;
                             });
                           },
-                          value: items,
+                          value: _mySelection,
                         ),
                       ),
                       Container(
@@ -226,7 +249,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                       ),
-
                       Row(
                         children: <Widget>[
                           Expanded(
@@ -303,7 +325,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ],
                       ),
-
                       Container(
                         // margin: const EdgeInsets.all(11.0),
                         alignment: Alignment.topLeft,
@@ -317,7 +338,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                       ),
-
                       Row(
                         children: <Widget>[
                           Expanded(
@@ -394,7 +414,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ],
                       ),
-
                       Container(
                         // margin: const EdgeInsets.all(11.0),
                         alignment: Alignment.topLeft,
@@ -408,7 +427,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                       ),
-
                       Row(
                         children: <Widget>[
                           Expanded(
@@ -485,7 +503,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ],
                       ),
-
                       Container(
                         // margin: const EdgeInsets.all(11.0),
                         alignment: Alignment.topLeft,
@@ -499,7 +516,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                       ),
-
                       Row(
                         children: <Widget>[
                           Expanded(
@@ -576,7 +592,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ],
                       ),
-
                       Container(
                         // margin: const EdgeInsets.all(11.0),
                         alignment: Alignment.topLeft,
@@ -590,7 +605,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                       ),
-
                       Container(
                         padding: EdgeInsets.fromLTRB(2, 0, 20, 0),
                         height: 48,
@@ -604,7 +618,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                       ),
-
                       Container(
                         // margin: const EdgeInsets.all(11.0),
                         alignment: Alignment.topLeft,
@@ -618,7 +631,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                       ),
-
                       Container(
                         padding: EdgeInsets.fromLTRB(2, 0, 20, 0),
                         height: 48,
@@ -632,44 +644,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                       ),
-
-                      // Row(
-                      //   children: <Widget>[
-                      //     Container(
-                      //       padding: EdgeInsets.fromLTRB(100, 19, 80, 12),
-                      //       margin: const EdgeInsets.fromLTRB(11, 0, 0, 0),
-                      //       // margin: const EdgeInsets.all(11.0),
-                      //       alignment: Alignment.center,
-                      //       decoration: BoxDecoration(
-                      //           border: Border.all(color: Colors.black54)),
-                      //       // padding: const EdgeInsets.only(
-                      //       //left: 16.0, bottom: 15.0, top: 15.0, right: 16.0),
-                      //       child: _filePath == null
-                      //           ? new Text('Attach PaySlip')
-                      //           : new Text('Path' + _filePath),
-                      //
-                      //       //padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      //     ),
-                      //
-                      //     Container(
-                      //       padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
-                      //
-                      //       child: RaisedButton(
-                      //         padding: EdgeInsets.symmetric(vertical: 14.0),
-                      //         onPressed: getFilePath,
-                      //         // label: 'Select file',
-                      //         child: Text(
-                      //           'Browse',
-                      //           style: TextStyle(
-                      //             color: Colors.black,
-                      //             fontWeight: FontWeight.w400,
-                      //             fontSize: 17,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
                       Container(
                         margin: const EdgeInsets.all(11.0),
                         alignment: Alignment.topLeft,
@@ -677,19 +651,19 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         child: RaisedButton(
                           color: Colors.lightBlue,
                           onPressed: () async {
-                            saved(context);
+                            // saved(context);
                             SharedPreferences prefs =
                                 await SharedPreferences.getInstance();
                             String stringValue = prefs.getString('token');
                             Map<String, String> headers = {
                               "content-type": "application/json",
                               "Accept": "application/json",
-                              "X_TOKEN": "$stringValue",
                             };
                             final body = jsonEncode({
-                              'id': _employeeController.text,
+                              // 'id': team['id'].toString,
+                              'id': team,
                               'paymentDate': _paymentDateController.text,
-                              'employeeName': names,
+                              'employeeName': team,
                               'hourlyRate': _hourlyRateController.text,
                               'monthlyHours': _monthlyHoursController.text,
                               'overtimeHours': _overtimeHoursController.text,
@@ -707,6 +681,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 print(json.decode(response.body));
                               }
                             });
+
+                            Navigator.pop(context);
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => new MyAppl()));
+
                             print("$stringValue");
                             print(json.decode(response.body));
                           },
