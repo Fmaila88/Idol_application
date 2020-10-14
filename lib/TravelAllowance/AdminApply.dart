@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:file_picker/file_picker.dart';
@@ -18,13 +19,25 @@ class AdminApply extends StatefulWidget {
 class _AdminApplyState extends State<AdminApply> {
 
   String _filePath;
-  String _mySelection;
-  var team;
-  final String url = "http://app.idolconsulting.co.za/idols/users/all";
-  List<Employees> _employeeName = new List<Employees>();
-  String names;
 
+  String _mySelection;
+  final String url = "https://app.idolconsulting.co.za/idols/users/all";
   List data = List(); //edited line
+
+  Future<String> getSWData() async {
+    var res = await http
+        .get(Uri.encodeFull(url), headers: {"Accept": "application/json"});
+    var resBody = json.decode(res.body);
+
+    setState(() {
+      data = resBody;
+    });
+
+    print(resBody);
+
+    return "Sucess";
+  }
+
 
   TextEditingController _startKmController = TextEditingController();
   TextEditingController _endKmController = TextEditingController();
@@ -52,23 +65,6 @@ class _AdminApplyState extends State<AdminApply> {
     }
   }
 
-  Future<Employees> fetchEmployees() async {
-    final response = await http.get(
-        'http://app.idolconsulting.co.za/idols/users/all',
-        headers: {"Accept": "application/json"});
-    if (response.statusCode == 200) {
-      setState(() {
-        var data = json.decode((response.body));
-        for (int x = 0; x < data.length; x++) {
-          var employees = new Employees(
-              data['firstName'].toString(), data['lastName'].toString());
-
-          _employeeName.add(employees);
-        }
-      });
-    }
-  }
-
   void getFilePath() async {
     String filePath = await FilePicker.getFilePath(type: FileType.any);
     if (filePath == '') {
@@ -84,6 +80,7 @@ class _AdminApplyState extends State<AdminApply> {
     // TODO: implement initState
     super.initState();
     _travelDateController = TextEditingController();
+    this.getSWData();
   }
 
   @override
@@ -131,34 +128,36 @@ class _AdminApplyState extends State<AdminApply> {
                       ),
                     ),
                     Container(
-                      //margin: const EdgeInsets.all(16.0),
-                      // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
-                      padding: EdgeInsets.only(left: 16.0, right: 16.0),
-                      // padding: const EdgeInsets.fromLTRB(130, 0, 0, 0),
+                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
+                      height: 50,
+                      child: Container(
+                        //margin: const EdgeInsets.all(16.0),
+                        // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
+                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                        // padding: const EdgeInsets.fromLTRB(130, 0, 0, 0),
 
-                      decoration: BoxDecoration(
-                          border:
-                          Border.all(color: Colors.black54, width: 0.5)),
+                        decoration: BoxDecoration(
+                            border:
+                            Border.all(color: Colors.black54, width: 0.5)),
 
-                      margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
+                        margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
 
-                      alignment: Alignment.topLeft,
-                      child: new DropdownButton(
-                        items: data.map((data) {
-                          return new DropdownMenuItem(
-                            child: new Text(
-                                team['content']['firstName'] + ' ' + team['content']['lastName']),
-                            value: team['id'].toString(),
-                            //
-                          );
-                        }).toList(),
-
-                        onChanged: (newVal) {
-                          setState(() {
-                            _mySelection = newVal;
-                          });
-                        },
-                        value: _mySelection,
+                        alignment: Alignment.topLeft,
+                        child:  new DropdownButton(
+                          items: data.map((item) {
+                            return new DropdownMenuItem(
+                              child: new Text(item['firstName'] + ' ' + item['lastName']),
+                              value: item['id'].toString(),
+                            );
+                          }).toList(),
+                          onChanged: (newVal) {
+                            setState(() {
+                              _mySelection = newVal;
+                              print(_mySelection);
+                            });
+                          },
+                          value: _mySelection,
+                        ),
                       ),
                     ),
                     Container(
@@ -316,6 +315,7 @@ class _AdminApplyState extends State<AdminApply> {
                             "X_TOKEN":"$stringValue",
                           };
                           final body = jsonEncode({
+                            'user''id': _mySelection,
                             'startKm': _startKmController.text,
                             'endKm': _endKmController.text,
                             'ratePerKm': _ratePerKm.text,
