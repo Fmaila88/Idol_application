@@ -146,8 +146,8 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                       ),
 
                       new ListTile(
-                        //leading: Icon(Ionicons.briefcase_sharp, size: 30.0),
-                        leading: FaIcon(FontAwesomeIcons.home),
+                        leading: Icon(Ionicons.briefcase_sharp, size: 30.0),
+                        //leading: FaIcon(FontAwesomeIcons.home),
                         title: new Text("Companies"),
                         onTap: () {
                           Navigator.pop(context);
@@ -159,7 +159,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        leading: Icon(Ionicons.person_add_outline, size: 30.0),
+                        leading: Icon(Icons.timelapse, size: 30.0),
                         title: new Text("Project"),
                         onTap: () {
                           Navigator.pop(context);
@@ -183,7 +183,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        //leading: Icon(Ionicons.calendar, ),
+                       // leading: Icon(Ionicons.calendar, ),
                         leading: FaIcon(FontAwesomeIcons.calendarAlt),
                         title: new Text("Timesheets"),
                         onTap: () {
@@ -196,7 +196,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        leading: Icon(Ionicons.compass_outline, size: 30.0),
+                        leading: Icon(Icons.rate_review, size: 30.0),
                         title: new Text("Leave Days"),
                         onTap: () {
                           Navigator.pop(context);
@@ -208,7 +208,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        leading: Icon(Ionicons.clipboard_outline, size: 30.0),
+                        leading: Icon(Icons.assessment, size: 30.0),
                         title: new Text("PaySlips"),
                         onTap: () {
                           Navigator.pop(context);

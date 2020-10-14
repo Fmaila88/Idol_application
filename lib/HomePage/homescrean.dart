@@ -23,6 +23,10 @@ import 'drawer.dart';
 import 'reports.dart';
 import 'projectservices.dart';
 import 'projectlist.dart';
+import 'package:App_idolconsulting/UserProjects/UserProjects.dart';
+import 'package:App_idolconsulting/UserProjects/FetchProjects.dart';
+import 'package:App_idolconsulting/UserTasks/FetchTasks.dart';
+import 'package:App_idolconsulting/UserTasks/UserTasks.dart';
 
 class Home extends StatefulWidget {
   final Widget child;
@@ -32,6 +36,17 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  bool isLoading=true;
+
+  UserProjects userProjects;
+  FetchProjects fetchUserProjects;
+  Map<String,dynamic> assignedProjects;
+
+
+  FetchTasks fetchTasks;
+  UserTasks userTasks;
+  Map<String, dynamic> assignedTasks;
+
 
   _displayDialog(BuildContext context) async {
     return showDialog(
@@ -106,7 +121,7 @@ print(response.body);
   var PictureID="https://eitrawmaterials.eu/wp-content/uploads/2016/09/person-icon.png";
   //Map<String, dynamic> data4;
 var shared;
-  bool isLoading=true;
+ // bool isLoading=true;
 
   //bool pictureLoad=true;
 
@@ -158,6 +173,11 @@ var shared;
         // print('Token ' + stringValue);
         var data = json.decode((response.body));
         data3 = json.decode((response.body));
+
+        Map map=json.decode((response.body));
+
+        userTasks=UserTasks.fromJson(map);
+
         for (int x = 0; x < data.length; x++) {
           var project = new Tasks(
             data3['name'].toString(),
@@ -175,7 +195,7 @@ var shared;
   List<Project> projects = new List<Project>();
   Map<String,dynamic> detail;
   Project project;
-  var name="Project Name not updated";
+
   Future<String> fetchProjects() async {
   bool load=true;
 
@@ -194,6 +214,13 @@ var shared;
         // print('Token from shared preferance ' + stringValue);
         var data = json.decode((response.body));
         detail = json.decode((response.body));
+
+        Map map=json.decode((response.body));
+
+        userProjects=UserProjects.fromJson(map);
+
+    //print(userProjects.manager.firstName + userProjects.manager.lastName);
+
 
         for (int x = 0; x < data.length; x++) {
           var project = new Project(
@@ -276,17 +303,29 @@ var shared;
    // }
 
 
+    setState(() {
+      //FetchProjects.getProjectDetails();
+
+    });
+
+
     _seriesData1 = List<charts.Series<Pollution, String>>();
     _seriesPieData = List<charts.Series<Task, String>>();
     _generateData();
     this.fetchProjects();
     //this.fetchProgressBar();
     // this.fetchTaskings();
-    this. fetchTask();
-    this.fetchProfileDetails();
+
+
+
   }
   convertDateFromString() {
-    DateTime todayDate = DateTime.parse(detail['createDate'].toString());
+    DateTime todayDate = DateTime.parse(
+        userProjects==null || userProjects.endDate==null
+            ? ' '
+            : userProjects.endDate
+      //detail['createDate'].toString()
+    );
     return formatDate(todayDate, [dd,' ',MM, ' ', yyyy]);
   }
 
@@ -296,7 +335,8 @@ var shared;
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 2,
-        child: Scaffold(
+        child: isLoading ? Center(child: CircularProgressIndicator()):
+        Scaffold(
           drawer: DrawerCodeOnly(),
           appBar: AppBar(
               backgroundColor: Colors.grey,
@@ -339,7 +379,7 @@ var shared;
               //  ),
               ]),
 
-          body:
+          body: isLoading ? Center(child: CircularProgressIndicator()):
           TabBarView(children: <Widget>[
             Padding(
               padding: EdgeInsets.all(8.0),
@@ -388,7 +428,8 @@ var shared;
                                 builder: (context) => new ProjectTask()));
                       },
 
-                      child: Card(
+                      child: isLoading ? Center(child: CircularProgressIndicator()):
+                      Card(
                         elevation: 2,
                         child: Column(
                           children: [
@@ -444,25 +485,34 @@ var shared;
             SizedBox(height: 30.0),
             Row(
               children: <Widget>[
-                Text(detail['name'] == null
+                Text(
+                  //'Idol App'
+                    userProjects==null || userProjects.name==null
                     ? 'Project Name not updated'
-                    : detail['name']),
+                    : userProjects.name
+                ),
                 SizedBox(width: 5.0),
-                Text(detail['endDate'].toString()),
+                Text(
+                    //convertDateFromString()
+                    //'31 December 2020'
+                    userProjects==null || userProjects.endDate==null ? 'end date not updated' : userProjects.endDate
+                ),
                 SizedBox(width: 5.0),
-                //Text(detail['status'].toString()),
+                //Text(userProjects==null || userProjects.status==null ? 'status not updated' : userProjects.status),
                 LinearPercentIndicator(
                   width: MediaQuery.of(context).size.width - 270,
                   animation: true,
                   lineHeight: 20.0,
                   animationDuration: 2000,
-                  percent: 0.9,
-                  center: Text("90.0%"),
+                  percent: 0.2,
+                  center: Text("31%"),
                   linearStrokeCap: LinearStrokeCap.roundAll,
                   progressColor: Colors.orange,
                 ),
                 SizedBox(width: 10.0),
-                Text(detail['manager']['firstName'].toString()), //createDate
+                Text(userProjects==null || userProjects.manager.firstName==null ? '' : userProjects.manager.firstName
+                    //+ " " + userProjects.manager.lastName
+                ), //createDate
               ],
             ),
           ],
@@ -580,7 +630,12 @@ var shared;
                                       ),
                                       Column(
                                         children: <Widget>[
-                                          Text(data3['content'][0]['name'].toString()==null ? '' :data3['content'][0]['name'].toString()),
+                                          Text(
+                                              //'App UI Home Page screan'
+                                              userTasks==null || userTasks.name==null
+                                                  ? 'Project Name not updated'
+                                                  : userTasks.name
+                                          ),
                                           FlatButton(
                                             onPressed: () {},
                                             color: Colors.orange,
@@ -588,7 +643,12 @@ var shared;
                                                 borderRadius:
                                                 BorderRadius.circular(
                                                     20.0)),
-                                            child: Text(detail['status'].toString(),
+                                            child: Text(
+                                                //'Pending'
+                                              //detail['status'].toString(),
+                                                userProjects==null || userProjects.name==null
+                                                    ? 'Project Name not updated'
+                                                    : userProjects.name
                                             ),
                                           ),
                                           SizedBox(height:15.0),
@@ -596,14 +656,26 @@ var shared;
                                             children: <Widget>[
                                               Text('Created:',style: TextStyle(fontSize: 15.0)),
                                               SizedBox(width: 10.0),
-                                              Text(convertDateFromString()),
+                                              Text(
+                                                  //'17 August 2020'
+                                                  //convertDateFromString()
+                                                  userProjects==null || userProjects.name==null
+                                                      ? 'Project Name not updated'
+                                                      : userProjects.name
+                                              ),
                                             ],
                                           ),
                                           Row(
                                             children: <Widget>[
                                               Text('Due Date:',style: TextStyle(fontSize: 15.0)),
                                               SizedBox(width: 10.0),
-                                              Text(detail['endDate'].toString()),
+                                              Text(
+                                                  //'31 August 2020'
+                                                // detail['endDate'].toString()
+                                                  userProjects==null || userProjects.name==null
+                                                      ? 'Project Name not updated'
+                                                      : userProjects.name
+                                              ),
                                             ],
                                           ),
                                         ],

@@ -9,6 +9,9 @@ import 'dart:convert';
 import 'userprofile.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'drawer.dart';
+import 'package:App_idolconsulting/UserProjects/UserProjects.dart';
+
+import 'package:App_idolconsulting/UserProjects/FetchProjects.dart';
 
 class ProjectTask extends StatefulWidget {
 
@@ -16,6 +19,10 @@ class ProjectTask extends StatefulWidget {
 }
 
 class _ProjectTaskState extends State<ProjectTask> {
+
+  UserProjects userProjects;
+  FetchProjects fetchUserProjects;
+  Map<String,dynamic> assignedProjects;
 
 
   List<Tasks> task = new List<Tasks>();
@@ -124,8 +131,13 @@ class _ProjectTaskState extends State<ProjectTask> {
         print('Token ' + stringValue);
 
         var data = json.decode((response.body));
-
         detail = json.decode((response.body));
+
+        Map map=json.decode((response.body));
+
+        userProjects=UserProjects.fromJson(map);
+
+        //print(userProjects.manager.firstName + userProjects.manager.lastName);
 
 
         // print(detail['endDate'].toString());
@@ -156,8 +168,13 @@ class _ProjectTaskState extends State<ProjectTask> {
     }
   }
   convertDateFromString() {
-    DateTime todayDate = DateTime.parse(detail['createDate'].toString());
-    return formatDate(todayDate, [dd,' ',MM, ' ', yyyy]);
+    DateTime todayDate = DateTime.parse(
+        userProjects==null || userProjects.createDate==null
+            ? ' '
+            : userProjects.createDate
+        //detail['createDate'].toString()
+    );
+    return formatDate(todayDate, [dd,' ',M, ' ', yyyy]);
   }
   @override
   void initState() {
@@ -202,7 +219,10 @@ class _ProjectTaskState extends State<ProjectTask> {
                     child: Column(
                       children: <Widget>[
                         Center(
-                          child: Text(detail['name'].toString(),
+                          child: Text(userProjects==null || userProjects.name==null
+                              ? ' '
+                              : userProjects.name,
+                            //detail['name'].toString(),
                             textAlign: TextAlign.center, style: TextStyle(fontSize: 24.0),),
                         ),
                         Center(
@@ -212,12 +232,17 @@ class _ProjectTaskState extends State<ProjectTask> {
                             shape: RoundedRectangleBorder(
                                 borderRadius:
                                 BorderRadius.circular(20.0)),
-                            child: Text(detail['status'].toString(),
+                            child: Text(userProjects==null || userProjects.status==null
+                                ? ' '
+                                : userProjects.status
+                              //detail['status'].toString(),
                             ),
                           ),
                         ),
                         Center(
-                          child: Text(detail['company']['name'].toString(),
+                          child: Text(
+                            userProjects==null || userProjects.company.name==null ? '' : userProjects.company.name,
+                            //detail['company']['name'].toString(),
                             textAlign: TextAlign.center, style: TextStyle(fontSize: 15.0),),
                         ),
                         SizedBox(height: 20.0),
@@ -231,8 +256,8 @@ class _ProjectTaskState extends State<ProjectTask> {
                                 animation: true,
                                 lineHeight: 20.0,
                                 animationDuration: 2000,
-                                percent: 0.9,
-                                center: Text("90.0%"),
+                                percent: 0.2,
+                                center: Text("31%"),
                                 linearStrokeCap: LinearStrokeCap.roundAll,
                                 progressColor: Colors.orange,
                               ),
@@ -246,7 +271,7 @@ class _ProjectTaskState extends State<ProjectTask> {
                           children: <Widget>[
                             Text('Start Date:',style: TextStyle(fontSize: 17.0),),
                             SizedBox(width: 90.0),
-                            Text( convertDateFromString()),
+                            Text(convertDateFromString()),
                           ],
                         ),
                         SizedBox(height: 20.0),
@@ -254,7 +279,11 @@ class _ProjectTaskState extends State<ProjectTask> {
                           children: <Widget>[
                             Text('End Date:',style: TextStyle(fontSize: 17.0)),
                             SizedBox(width: 90.0),
-                            Text(detail['endDate'].toString()),//createDate
+                            Text(userProjects==null || userProjects.endDate==null
+                                ? 'Project Name not updated'
+                                : userProjects.endDate
+                                //detail['endDate'].toString()
+                            ),//createDate
                           ],
                         ),
                         SizedBox(height: 20.0),
