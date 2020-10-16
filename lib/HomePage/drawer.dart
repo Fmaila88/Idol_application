@@ -1,3 +1,4 @@
+import 'package:App_idolconsulting/PaySlips/NewRole.dart';
 import 'package:App_idolconsulting/TravelAllowance/Admin.dart';
 import 'package:flutter/material.dart';
 import 'package:App_idolconsulting/LeaveDays/leavedays.dart';
@@ -24,7 +25,6 @@ import 'homescrean.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-
 class DrawerCodeOnly extends StatefulWidget {
   final Widget child;
   DrawerCodeOnly({Key key, this.child}) : super(key: key);
@@ -33,9 +33,8 @@ class DrawerCodeOnly extends StatefulWidget {
 }
 
 class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
-
   Map<String, dynamic> data3;
-  Map<String,dynamic> users;
+  Map<String, dynamic> users;
   bool isLoading = true;
 
   Future<String> fetchDrawer() async {
@@ -44,8 +43,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
 
     final response = await http.get(
         'http://app.idolconsulting.co.za/idols/users/profile',
-        headers: {"Accept": "application/json",
-          'X_TOKEN': stringValue});
+        headers: {"Accept": "application/json", 'X_TOKEN': stringValue});
 
     if (response.statusCode == 200) {
       setState(() {
@@ -69,63 +67,76 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
             height: 80,
             margin: EdgeInsets.only(top: 10),
             color: Colors.white,
-            child: Image(image: AssetImage('images/logo1.png'),),
+            child: Image(
+              image: AssetImage('images/logo1.png'),
+            ),
           ),
           Expanded(
             child: DrawerHeader(
-              child: isLoading ? Center(child: CircularProgressIndicator()) :
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, new MaterialPageRoute
-                    (builder: (context) => new Profile()));
-                },
-                child: Container(
-                  child: Column(
-                    children: [
-                      Center(
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.blue,
-                          backgroundImage: NetworkImage(
-                              'http://app.idolconsulting.co.za/idols/file/' +
-                                  data3['profilePicture']['id']),
-                          //backgroundImage:NetworkImage('http://app.idolconsulting.co.za/idols/file/' + ),
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                                builder: (context) => new Profile()));
+                      },
+                      child: Container(
+                        child: Column(
+                          children: [
+                            Center(
+                              child: CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.blue,
+                                backgroundImage: NetworkImage(
+                                    'http://app.idolconsulting.co.za/idols/file/' +
+                                        data3['profilePicture']['id']),
+                                //backgroundImage:NetworkImage('http://app.idolconsulting.co.za/idols/file/' + ),
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                data3['firstName'] == null
+                                    ? 'no name'
+                                    : data3['firstName'] +
+                                        '' +
+                                        data3['lastName'],
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Center(
+                                child: Text(
+                              data3['company'] == null
+                                  ? 'company found'
+                                  : data3['company']['name'],
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            )),
+                            Center(
+                                child: Text(
+                              data3['position'] == null
+                                  ? 'position not found'
+                                  : data3['position']['name'],
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            )),
+                          ],
                         ),
                       ),
-                      Center(
-                        child: Text(data3['firstName'] == null
-                            ? 'no name'
-                            : data3['firstName'] + '' + data3['lastName'],
-                          style: TextStyle(fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),),
-                      ),
-                      Center(
-                          child: Text(data3['company'] == null
-                              ? 'company found'
-                              : data3['company']['name'],
-                            style: TextStyle(fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),)
-                      ),
-                      Center(
-                          child: Text(data3['position'] == null
-                              ? 'position not found'
-                              : data3['position']['name'],
-                            style: TextStyle(fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),)
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
               decoration: BoxDecoration(
                   image: DecorationImage(
                       image: AssetImage('images/background.jpg'),
-                      fit: BoxFit.fill)
-              ),
+                      fit: BoxFit.fill)),
             ),
           ),
           Container(
@@ -136,16 +147,18 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                   child: ListView(
                     children: <Widget>[
                       ListTile(
-                        leading: Icon(Ionicons.home, ),
+                        leading: Icon(
+                          Ionicons.home,
+                        ),
                         title: new Text("Home"),
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.push(context,
+                          Navigator.push(
+                              context,
                               new MaterialPageRoute(
                                   builder: (context) => new Home()));
                         },
                       ),
-
                       new ListTile(
                         //leading: Icon(Ionicons.briefcase_sharp, size: 30.0),
                         leading: FaIcon(FontAwesomeIcons.home),
@@ -155,8 +168,8 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                // builder: (context) => new Services()
-                              ));
+                                  // builder: (context) => new Services()
+                                  ));
                         },
                       ),
                       new ListTile(
@@ -167,8 +180,8 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                //builder: (context) => new Teller()
-                              ));
+                                  //builder: (context) => new Teller()
+                                  ));
                         },
                       ),
                       new ListTile(
@@ -179,8 +192,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => new EmployeesHome()
-                              ));
+                                  builder: (context) => new EmployeesHome()));
                         },
                       ),
                       new ListTile(
@@ -192,8 +204,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => new Homepage()
-                              ));
+                                  builder: (context) => new Homepage()));
                         },
                       ),
                       new ListTile(
@@ -204,18 +215,39 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => new Leaveday()
-                              ));
+                                  builder: (context) => new Leaveday()));
                         },
                       ),
                       new ListTile(
                         leading: Icon(Ionicons.clipboard_outline, size: 30.0),
                         title: new Text("PaySlips"),
-                        onTap: () {
+                        onTap: () async {
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          String token = prefs.getString('userToken');
+
+                          final response = await http.get(
+                              'http://app.idolconsulting.co.za/idols/users/profile',
+                              headers: {
+                                "Accept": "application/json",
+                                'X_TOKEN': '$token'
+                              });
+                          var data = json.decode((response.body));
+                          users = json.decode((response.body));
+                          if (response.statusCode == 200) {
+                            print("dad");
+                            users['id'].toString();
+                            print(users['roles'].toString());
+                          }
+                          print("tttt");
                           Navigator.pop(context);
-                          Navigator.push(context,
+                          Navigator.push(
+                              context,
                               new MaterialPageRoute(
-                                  builder: (context) => new MyAppl()));
+                                  builder: (context) =>
+                                      users['roles'].toString() == '[Employee]'
+                                          ? NewRole()
+                                          : MyAppl()));
                         },
                       ),
                       new ListTile(
@@ -226,24 +258,26 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => new Performance()
-                              ));
+                                  builder: (context) => new Performance()));
                         },
                       ),
                       new ListTile(
                         leading: Icon(Ionicons.globe_outline, size: 30.0),
                         title: new Text("Travel Allowance"),
                         onTap: () async {
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
                           String token = prefs.getString('userToken');
 
                           final response = await http.get(
                               'http://app.idolconsulting.co.za/idols/users/profile',
-                              headers: {"Accept": "application/json",
-                                'X_TOKEN': '$token'});
+                              headers: {
+                                "Accept": "application/json",
+                                'X_TOKEN': '$token'
+                              });
                           var data = json.decode((response.body));
                           users = json.decode((response.body));
-                          if(response.statusCode == 200) {
+                          if (response.statusCode == 200) {
                             users['id'].toString();
                             print(users['roles'].toString());
                           }
@@ -252,8 +286,10 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => users['roles'].toString() == '[Employee]' ? TravelAllowance()
-                              : Admin()));
+                                  builder: (context) =>
+                                      users['roles'].toString() == '[Employee]'
+                                          ? TravelAllowance()
+                                          : Admin()));
                         },
                       ),
                     ],
@@ -266,9 +302,10 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
       ),
     );
   }
+
   @override
   void setState(fn) {
-    isLoading=false;
+    isLoading = false;
     super.setState(fn);
   }
 }

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:App_idolconsulting/HomePage/drawer.dart';
+import 'package:App_idolconsulting/PaySlips/NewRole.dart';
 import 'package:App_idolconsulting/PaySlips/payslips.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,14 +13,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'View.dart';
 import 'Employees.dart';
 
-class DetailsScreen extends StatefulWidget {
+class ViewUser extends StatefulWidget {
+  Map<String, dynamic> list;
+  int index;
+  ViewUser(this.list, this.index);
   @override
-  _DetailsScreenState createState() => new _DetailsScreenState();
+  ViewUserState createState() => new ViewUserState();
 }
 
 //String title = 'DropDownButton';
 
-class _DetailsScreenState extends State<DetailsScreen> {
+class ViewUserState extends State<ViewUser> {
   String _mySelection;
   var team;
   final String url = "http://app.idolconsulting.co.za/idols/users/all";
@@ -74,6 +79,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   TextEditingController _overtimeRateController = TextEditingController();
   TextEditingController _taxNumberController = TextEditingController();
   TextEditingController _bonusController = TextEditingController();
+  TextEditingController _naamController = TextEditingController();
 
   final DateFormat dateFormat = DateFormat('dd MMMM yyyy');
   DateTime _date = DateTime.now();
@@ -110,6 +116,36 @@ class _DetailsScreenState extends State<DetailsScreen> {
     }
   }
 
+  // void ViewPyslip() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String stringValue = prefs.getString('token');
+  //   Map<String, String> headers = {
+  //     "content-type": "application/json",
+  //     "Accept": "application/json",
+  //     "X_TOKEN": "$stringValue",
+  //   };
+  //   final body = jsonEncode({
+  //     "id": widget.list['content'][widget.index]['id'],
+  //     'paymentDate': _paymentDateController.text,
+  //     'hourlyRate': _hourlyRateController.text,
+  //     'monthlyHours': _monthlyHoursController.text,
+  //     'overtimeHours': _overtimeHoursController.text,
+  //     'overtimeRate': _overtimeRateController.text,
+  //     'taxNumber': _taxNumberController.text,
+  //     'bonus': _bonusController.text,
+  //   });
+  //   final response = await http.put(
+  //       'https://app.idolconsulting.co.za/idols/travel-allowance',
+  //       headers: headers,
+  //       body: body);
+  //   setState(() {
+  //     if (response.statusCode == 200) {
+  //       //print(response.body);
+  //       print(jsonDecode(body));
+  //     }
+  //   });
+  // }
+
   @override
   void initState() {
     fetchEmployees();
@@ -122,10 +158,37 @@ class _DetailsScreenState extends State<DetailsScreen> {
     _overtimeRateController.text = "0";
 
     _paymentDateController = TextEditingController();
+
+    _paymentDateController = new TextEditingController(
+        text:
+            "${widget.list['content'][widget.index]['paymentDate'].toString()}");
+    _hourlyRateController = new TextEditingController(
+        text:
+            "${widget.list['content'][widget.index]['hourlyRate'].toString()}");
+    _monthlyHoursController = new TextEditingController(
+        text:
+            "${widget.list['content'][widget.index]['monthlyHours'].toString()}");
+    _overtimeHoursController = new TextEditingController(
+        text:
+            "${widget.list['content'][widget.index]['overtimeHours'].toString()}");
+    _overtimeRateController = new TextEditingController(
+        text:
+            "${widget.list['content'][widget.index]['overtimeRate'].toString()}");
+    _taxNumberController = new TextEditingController(
+        text:
+            "${widget.list['content'][widget.index]['taxNumber'].toString()}");
+    _bonusController = new TextEditingController(
+        text: "${widget.list['content'][widget.index]['bonus'].toString()}");
+
+    _naamController = new TextEditingController(
+        text:
+            "${widget.list['content'][widget.index]['user']['firstName'] + ' ' + widget.list['content'][widget.index]['user']['lastName'].toString()}");
+
+    print('Id = ' + widget.list['content'][widget.index]['id']);
   }
 
   Future<bool> _onBackPressed() {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => MyAppl()));
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => NewRole()));
   }
 
   var items;
@@ -136,6 +199,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       onWillPop: _onBackPressed,
       child: Scaffold(
         backgroundColor: Colors.white,
+        // drawer: DrawerCodeOnly(),
         appBar: AppBar(
           title: Text('Payslip Details'),
           backgroundColor: Colors.blueGrey[300],
@@ -174,7 +238,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.fromLTRB(3, 0, 10, 0),
+                        padding: EdgeInsets.fromLTRB(3, 0, 0, 0),
                         height: 48,
                         child: TextField(
                           readOnly: true,
@@ -206,36 +270,49 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                       ),
+                      // Container(
+                      //   //margin: const EdgeInsets.all(16.0),
+                      //   // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
+                      //   padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                      //   // padding: const EdgeInsets.fromLTRB(130, 0, 0, 0),
+                      //
+                      //   decoration: BoxDecoration(
+                      //       border:
+                      //           Border.all(color: Colors.black54, width: 0.5)),
+                      //
+                      //   margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
+                      //
+                      //   alignment: Alignment.topLeft,
+                      //   child: new DropdownButton(
+                      //     items: data.map((team) {
+                      //       return new DropdownMenuItem(
+                      //         child: new Text(
+                      //             team['firstName'] + ' ' + team['lastName']),
+                      //         value: team['id'].toString(),
+                      //         //
+                      //       );
+                      //     }).toList(),
+                      //     onChanged: (newVal) {
+                      //       setState(() {
+                      //         _mySelection = newVal;
+                      //       });
+                      //     },
+                      //     value: _mySelection,
+                      //   ),
+                      // ),
+
                       Container(
-                        //margin: const EdgeInsets.all(16.0),
-                        // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
-                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
-                        // padding: const EdgeInsets.fromLTRB(130, 0, 0, 0),
-
-                        decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Colors.black54, width: 0.5)),
-
-                        margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
-
-                        alignment: Alignment.topLeft,
-                        child: new DropdownButton(
-                          //
-                          // isExpanded: true,
-                          items: data.map((team) {
-                            return new DropdownMenuItem(
-                              child: new Text(
-                                  team['firstName'] + ' ' + team['lastName']),
-                              value: team['id'].toString(),
-                              //
-                            );
-                          }).toList(),
-                          onChanged: (newVal) {
-                            setState(() {
-                              _mySelection = newVal;
-                            });
-                          },
-                          value: _mySelection,
+                        padding: EdgeInsets.fromLTRB(2, 0, 0, 0),
+                        height: 48,
+                        child: TextField(
+                          readOnly: true,
+                          controller: _naamController,
+                          decoration: InputDecoration(
+                            //  hintText: 'R00000',
+                            border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(0.0))),
+                          ),
                         ),
                       ),
                       Container(
@@ -264,6 +341,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(0.0))),
                               ),
+                              readOnly: true,
                               controller: _hourlyRateController,
                               keyboardType: TextInputType.numberWithOptions(
                                 decimal: false,
@@ -291,7 +369,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   child: InkWell(
                                     child: Icon(
                                       Icons.arrow_drop_up,
-                                      size: 18.0,
+                                      size: 0.0,
                                     ),
                                     onTap: () {
                                       int currentValue =
@@ -308,7 +386,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 InkWell(
                                   child: Icon(
                                     Icons.arrow_drop_down,
-                                    size: 20.0,
+                                    size: 0.0,
                                   ),
                                   onTap: () {
                                     int currentValue =
@@ -353,6 +431,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(0.0))),
                               ),
+                              readOnly: true,
                               controller: _monthlyHoursController,
                               keyboardType: TextInputType.numberWithOptions(
                                 decimal: false,
@@ -380,7 +459,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   child: InkWell(
                                     child: Icon(
                                       Icons.arrow_drop_up,
-                                      size: 18.0,
+                                      size: 0.0,
                                     ),
                                     onTap: () {
                                       int currentValue = int.parse(
@@ -397,7 +476,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 InkWell(
                                   child: Icon(
                                     Icons.arrow_drop_down,
-                                    size: 20.0,
+                                    size: 0.0,
                                   ),
                                   onTap: () {
                                     int currentValue =
@@ -442,6 +521,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(0.0))),
                               ),
+                              readOnly: true,
                               controller: _overtimeHoursController,
                               keyboardType: TextInputType.numberWithOptions(
                                 decimal: false,
@@ -469,7 +549,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   child: InkWell(
                                     child: Icon(
                                       Icons.arrow_drop_up,
-                                      size: 18.0,
+                                      size: 0.0,
                                     ),
                                     onTap: () {
                                       int currentValue = int.parse(
@@ -486,7 +566,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 InkWell(
                                   child: Icon(
                                     Icons.arrow_drop_down,
-                                    size: 20.0,
+                                    size: 0.0,
                                   ),
                                   onTap: () {
                                     int currentValue = int.parse(
@@ -531,6 +611,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(0.0))),
                               ),
+                              readOnly: true,
                               controller: _overtimeRateController,
                               keyboardType: TextInputType.numberWithOptions(
                                 decimal: false,
@@ -558,7 +639,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   child: InkWell(
                                     child: Icon(
                                       Icons.arrow_drop_up,
-                                      size: 18.0,
+                                      size: 0.0,
                                     ),
                                     onTap: () {
                                       int currentValue = int.parse(
@@ -575,7 +656,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 InkWell(
                                   child: Icon(
                                     Icons.arrow_drop_down,
-                                    size: 20.0,
+                                    size: 0.0,
                                   ),
                                   onTap: () {
                                     int currentValue =
@@ -608,9 +689,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.fromLTRB(2, 0, 20, 0),
+                        padding: EdgeInsets.fromLTRB(2, 0, 0, 0),
                         height: 48,
                         child: TextField(
+                          readOnly: true,
                           controller: _taxNumberController,
                           decoration: InputDecoration(
                             hintText: '1234567',
@@ -634,9 +716,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.fromLTRB(2, 0, 20, 0),
+                        padding: EdgeInsets.fromLTRB(2, 0, 0, 0),
                         height: 48,
                         child: TextField(
+                          readOnly: true,
                           controller: _bonusController,
                           decoration: InputDecoration(
                             hintText: 'R00000',
@@ -646,65 +729,63 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(11.0),
-                        alignment: Alignment.topLeft,
-                        padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        child: RaisedButton(
-                          color: Colors.lightBlue,
-                          onPressed: () async {
-                            // saved(context);
-                            SharedPreferences prefs =
-                                await SharedPreferences.getInstance();
-                            String stringValue = prefs.getString('token');
-                            Map<String, String> headers = {
-                              "content-type": "application/json",
-                              "Accept": "application/json",
-                            };
-                            final body = jsonEncode({
-                              // 'id': team['id'].toString,
-                              'id': _mySelection,
-                              'paymentDate': _paymentDateController.text,
-                              // 'employeeName': team,
-                              'hourlyRate': _hourlyRateController.text,
-                              'monthlyHours': _monthlyHoursController.text,
-                              'overtimeHours': _overtimeHoursController.text,
-                              'overtimeRate': _overtimeRateController.text,
-                              'taxNumber': _taxNumberController.text,
-                              'bonus': _bonusController.text,
-                            });
-                            final response = await http.put(
-                                'https://app.idolconsulting.co.za/idols/payslips',
-                                headers: headers,
-                                body: body);
-                            setState(() {
-                              print(body);
-                              if (response.statusCode == 200) {
-                                //print(json.decode(response.body));
-                                // print(_mySelection);
-                                // print(team);
-                              }
-                            });
-
-                            Navigator.pop(context);
-                            Navigator.push(
-                                context,
-                                new MaterialPageRoute(
-                                    builder: (context) => new MyAppl()));
-
-                            print("$stringValue");
-                            print(json.decode(response.body));
-                          },
-                          child: Text(
-                            'Save',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w400,
-                              fontSize: 17,
-                            ),
-                          ),
-                        ),
-                      ),
+                      // Container(
+                      //   margin: const EdgeInsets.all(11.0),
+                      //   alignment: Alignment.topLeft,
+                      //   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      //   child: RaisedButton(
+                      //     color: Colors.lightBlue,
+                      //     onPressed: () async {
+                      //       // saved(context);
+                      //       SharedPreferences prefs =
+                      //       await SharedPreferences.getInstance();
+                      //       String stringValue = prefs.getString('token');
+                      //       Map<String, String> headers = {
+                      //         "content-type": "application/json",
+                      //         "Accept": "application/json",
+                      //       };
+                      //       final body = jsonEncode({
+                      //         // 'id': team['id'].toString,
+                      //         'id': team,
+                      //         'paymentDate': _paymentDateController.text,
+                      //         //'employeeName': team,
+                      //         'hourlyRate': _hourlyRateController.text,
+                      //         'monthlyHours': _monthlyHoursController.text,
+                      //         'overtimeHours': _overtimeHoursController.text,
+                      //         'overtimeRate': _overtimeRateController.text,
+                      //         'taxNumber': _taxNumberController.text,
+                      //         'bonus': _bonusController.text,
+                      //       });
+                      //       final response = await http.put(
+                      //           'https://app.idolconsulting.co.za/idols/payslips',
+                      //           headers: headers,
+                      //           body: body);
+                      //       setState(() {
+                      //         print(body);
+                      //         if (response.statusCode == 200) {
+                      //           print(json.decode(response.body));
+                      //         }
+                      //       });
+                      //
+                      //       Navigator.pop(context);
+                      //       Navigator.push(
+                      //           context,
+                      //           new MaterialPageRoute(
+                      //               builder: (context) => new MyAppl()));
+                      //
+                      //       print("$stringValue");
+                      //       print(json.decode(response.body));
+                      //     },
+                      //     child: Text(
+                      //       'Save',
+                      //       style: TextStyle(
+                      //         color: Colors.white,
+                      //         fontWeight: FontWeight.w400,
+                      //         fontSize: 17,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                       Container(
                         margin: const EdgeInsets.all(11.0),
                         alignment: Alignment.topLeft,
@@ -717,6 +798,30 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               fontSize: 15),
                         ),
                       ),
+                      Container(
+                        margin: const EdgeInsets.all(1.0),
+                        alignment: Alignment.bottomRight,
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        child: RaisedButton.icon(
+                          onPressed: () {
+                            // BuildContext context;
+                            Navigator.of(context).push(
+                                MaterialPageRoute(builder: (_) => NewRole()));
+                          },
+                          icon: Icon(
+                            Icons.arrow_back,
+                            color: Colors.blueGrey,
+                          ),
+                          color: Colors.white,
+                          label: Text(
+                            ' ',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                                fontSize: 17),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -726,18 +831,5 @@ class _DetailsScreenState extends State<DetailsScreen> {
         ),
       ),
     );
-  }
-
-  void saved(BuildContext context) {
-    var alertDialog = AlertDialog(
-      title: Text("Saved"),
-      content: Text("Details Saved Successfully"),
-    );
-
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alertDialog;
-        });
   }
 }

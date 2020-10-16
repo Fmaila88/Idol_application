@@ -13,11 +13,13 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:date_format/date_format.dart';
 
 import 'dart:convert';
 
 import 'DetailsScreen.dart';
 import 'ListEmp.dart';
+import 'View.dart';
 
 class MyAppl extends StatefulWidget {
   @override
@@ -27,10 +29,26 @@ class MyAppl extends StatefulWidget {
 }
 
 class MyApplState extends State<MyAppl> {
-  // get searchController => null;
-  //Future future;
-//Future<bool>
-  List<ListEmp> employee_Details = new List<ListEmp>();
+  convertDateFromString(int index) {
+    DateTime todayDate =
+        DateTime.parse(list['content'][index]['createDate'].toString());
+    return formatDate(todayDate, [MM, ' ', yyyy]);
+  }
+  //
+  //
+  //
+  //
+  // TextEditingController _paymentDateController;
+  // TextEditingController _hourlyRateController ;
+  // TextEditingController _monthlyHoursController;
+  // TextEditingController _overtimeHoursController;
+  // TextEditingController _overtimeRateController ;
+  // TextEditingController _taxNumberController ;
+  // TextEditingController _bonusController ;
+  //
+
+  List<ListEmp> employee_Details = [];
+  Map<String, dynamic> list;
   String names;
 
   TextEditingController searchController = new TextEditingController();
@@ -43,39 +61,58 @@ class MyApplState extends State<MyAppl> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('token');
     print(stringValue);
-    final response = await http
-        .get('https://app.idolconsulting.co.za/idols/payslips/all', headers: {
-      "content-type": "application/json",
-      "Accept": "application/json",
-      "X_TOKEN": "$stringValue",
-      HttpHeaders.authorizationHeader: "$stringValue",
-    });
+    //'https://app.idolconsulting.co.za/idols/payslips/1/10/ASC/CreatedDate'
+    //https: //app.idolconsulting.co.za/idols/payslips/1/10/ASC/10?keyword=createDate
+    final response = await http.get(
+        'https://app.idolconsulting.co.za/idols/payslips/1/10/ASC/ASC',
+        headers: {
+          "content-type": "application/json",
+          "Accept": "application/json",
+          "X_TOKEN": "$stringValue",
+          HttpHeaders.authorizationHeader: "$stringValue",
+        });
+
+    // if (response.statusCode == 200) {
+    //   setState(() {
+    //     var data = json.decode((response.body));
+    //     print(data.length);
+    //     // print(response.body);
+    //
+    //     for (int x = 0; x < data.length; x++) {
+    //       if (data[x]['user'] != null) {
+    //         var listEmp = new ListEmp(
+    //             data[x]['user']['firstName'] +
+    //                 ' ' +
+    //                 data[x]['user']['lastName'].toString(),
+    //             data[x]['createDate']);
+    //
+    //         employee_Details.add(listEmp);
+    //       }
+    //     }
+    //     print(employee_Details.length);
+    //     // print(employee_Details.toString());
+    //   });
+    // }
 
     if (response.statusCode == 200) {
       setState(() {
         var data = json.decode((response.body));
-        print(data.length);
-        // print(response.body);
-
+        list = json.decode((response.body));
+        //if (list['user'] != null) {
         for (int x = 0; x < data.length; x++) {
-          if (data[x]['user'] != null) {
-            var listEmp = new ListEmp(
-                data[x]['user']['firstName'] +
-                    ' ' +
-                    data[x]['user']['lastName'].toString(),
-                data[x]['createDate']);
-
-            employee_Details.add(listEmp);
-          }
+          ListEmp bodyList = new ListEmp(list['id'].toString(),
+              list['user'].toString(), list['createDate']);
+          employee_Details.add(bodyList);
         }
+        // }
         print(employee_Details.length);
-        // print(employee_Details.toString());
+        print(data.length);
       });
     }
   }
 
   void deletePyslip() async {
-    var url = "https://app.idolconsulting.co.za/idols/payslips/";
+    var url = "https://app.idolconsulting.co.za/idols/payslips";
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('userToken');
     Map<String, String> headers = {
@@ -132,7 +169,7 @@ class MyApplState extends State<MyAppl> {
                 alignment: Alignment.topLeft,
                 padding: EdgeInsets.fromLTRB(6, 0, 0, 0),
                 child: Text(
-                  'Upload, view and download pay slips.',
+                  'Create, view and download pay slips.',
                   style: TextStyle(
                       color: Colors.black87,
                       fontWeight: FontWeight.w400,
@@ -155,7 +192,7 @@ class MyApplState extends State<MyAppl> {
                   ),
                   color: Colors.lightBlue,
                   label: Text(
-                    'Upload Payslip',
+                    'Create Payslip',
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w400,
@@ -224,10 +261,9 @@ class MyApplState extends State<MyAppl> {
                                       employee_Details.length,
                                       (index) => DataRow(cells: [
                                         DataCell(
-                                            Text((employee_Details
-                                                    .elementAt(index)
-                                                    .convertDateFromString()) ??
-                                                employee_Details), onTap: () {
+                                            Text(
+                                              convertDateFromString(index),
+                                            ), onTap: () {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -235,20 +271,24 @@ class MyApplState extends State<MyAppl> {
                                                     DetailsScreen()),
                                           );
                                         }),
-                                        DataCell(Text(employee_Details
-                                            .elementAt(index)
-                                            .user)),
-                                        // DataCell(Text(employee_Details
-                                        //     .elementAt(index)
-                                        //     .lastName)),
-
+                                        DataCell(
+                                          Text(
+                                            list['content'][index]['user']
+                                                    ['firstName'] +
+                                                ' ' +
+                                                list['content'][index]['user']
+                                                        ['lastName']
+                                                    .toString(),
+                                          ),
+                                        ),
                                         DataCell(
                                           FlatButton.icon(
                                             onPressed: () {
                                               Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          DetailsScreen()));
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        View(list, index)),
+                                              );
                                             },
                                             icon: Icon(
                                               Icons.remove_red_eye,
@@ -265,10 +305,55 @@ class MyApplState extends State<MyAppl> {
                                             ),
                                           ),
                                         ),
-
                                         DataCell(
                                           FlatButton.icon(
-                                            onPressed: () {},
+                                            onPressed: () async {
+                                              //var url = "https://app.idolconsulting.co.za/idols/payslips";
+                                              SharedPreferences prefs =
+                                                  await SharedPreferences
+                                                      .getInstance();
+                                              String stringValue =
+                                                  prefs.getString('userToken');
+                                              Map<String, String> headers = {
+                                                "content-type":
+                                                    "application/json",
+                                                "Accept": "application/json",
+                                                "X_TOKEN": "$stringValue",
+                                              };
+
+                                              final status = await Permission
+                                                  .storage
+                                                  .request();
+
+                                              if (status.isGranted) {
+                                                final externalDir =
+                                                    await getExternalStorageDirectory();
+
+                                                String PayslipId =
+                                                    list['content'][index]
+                                                        ['id'];
+                                                print(PayslipId);
+
+                                                final id =
+                                                    await FlutterDownloader
+                                                        .enqueue(
+                                                  url:
+                                                      "https://app.idolconsulting.co.za/idols/payslips/download/" +
+                                                          '$PayslipId',
+
+                                                  // url:
+                                                  //     "https://app.idolconsulting.co.za/idols/payslips/download/?id=${PayslipId}",
+                                                  savedDir: externalDir.path,
+                                                  fileName: "payslip.pdf",
+                                                  headers: headers,
+                                                  showNotification: true,
+                                                  openFileFromNotification:
+                                                      true,
+                                                );
+                                              } else {
+                                                print("Permission denied");
+                                              }
+                                            },
                                             icon: Icon(
                                               Icons.arrow_downward,
                                               size: 15,
@@ -286,9 +371,29 @@ class MyApplState extends State<MyAppl> {
                                         ),
                                         DataCell(
                                           FlatButton.icon(
-                                            onPressed: () {
+                                            onPressed: () async {
                                               _delete();
+                                              var url =
+                                                  "https://app.idolconsulting.co.za/idols/payslips";
+                                              SharedPreferences prefs =
+                                                  await SharedPreferences
+                                                      .getInstance();
+                                              String stringValue =
+                                                  prefs.getString('userToken');
+                                              Map<String, String> headers = {
+                                                "content-type":
+                                                    "application/json",
+                                                "Accept": "application/json",
+                                                "X_TOKEN": "$stringValue",
+                                              };
+                                              String PayslipId =
+                                                  list['content'][index]['id'];
+                                              http.delete(
+                                                url + "$PayslipId",
+                                                headers: headers,
+                                              );
                                             },
+                                            //},
                                             icon: Icon(
                                               Icons.delete,
                                               size: 15,
