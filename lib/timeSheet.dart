@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:table_calendar/table_calendar.dart';
@@ -10,8 +13,13 @@ import 'timesheetClass.dart';
 import 'package:App_idolconsulting/HomePage/homescrean.dart';
 import 'time_sheetclass_list.dart';
 import 'HomePage/drawer.dart';
+import 'gettingTimeSheetData.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize(
+      debug: false // optional: set false to disable printing logs to console
+      );
   runApp(MyApp());
 }
 
@@ -38,6 +46,7 @@ class _HomepageState extends State<Homepage> {
   CalendarController _controller;
   Map<DateTime, List<dynamic>> _events;
   TextEditingController _eventController;
+  TextEditingController _totalhoursController;
   TextEditingController _startController;
   TextEditingController _endtController;
   List<dynamic> _selectedEvents;
@@ -48,12 +57,14 @@ class _HomepageState extends State<Homepage> {
   String hintValue;
   String hintEndValue;
   String comment;
-  String Starttimez = "";
+  String Start_Time = "";
+  var subStart_Time;
   final DateFormat dateFormat = DateFormat('dd MMMM yyyy');
   var data;
   TimeOfDay time = TimeOfDay.now();
   TimeOfDay endtime = TimeOfDay.now();
   String startTimeDate = " ";
+  String Totalhours;
   Future<Null> getTime(BuildContext context) async {
     TimeOfDay timePicker = await showTimePicker(
       context: context,
@@ -63,19 +74,70 @@ class _HomepageState extends State<Homepage> {
     if (timePicker != null && timePicker != time) {
       setState(() {
         time = timePicker;
-        _startController.text = "${time.hour}:${time.minute}";
+        if (time.hour <= 9 && time.minute <= 9) {
+          _startController.text = "0${time.hour}:0${time.minute}";
+        } else if (time.hour > 9 && time.minute > 9) {
+          _startController.text = "${time.hour}:${time.minute}";
+        } else if (time.hour <= 9 || time.minute > 9) {
+          _startController.text = "0${time.hour}:${time.minute}";
+        } else if (time.hour > 9 || time.minute <= 9) {
+          _startController.text = "${time.hour}:0${time.minute}";
+        }
+        _totalhoursController.text = "${0 - time.hour}";
 
-        Starttimez = "${time.hour}:${time.minute}";
-        print(_startController.text);
         startTimeDate =
-            "${dateFormat.format(_controller.selectedDay)} ${time.hour}:${time.minute} ";
-        print(startTimeDate);
+            "${dateFormat.format(_controller.selectedDay)} ${_startController.text}";
       });
     }
   }
 
+  //var getdata;
+  Map<String, dynamic> getdata;
+  List<List<dynamic>> dataa;
+  List<GetTimeSheetData> getTimesheetData = new List<GetTimeSheetData>();
+  Future<String> getTimesheet() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String stringValue = prefs.getString('token');
+    var response;
+    Map<String, String> headers = {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN": "$stringValue",
+    };
+
+    response = await http.get(
+        'https://app.idolconsulting.co.za/idols/timesheetitems/items?start=2020-09-01&end=2020-11-08&_=1602701388544',
+        headers: headers);
+
+    if (response.statusCode == 200) {
+      // getdata = json.decode(response.body);
+      // dataa = json.decode(response.body);
+//      for (int i = 0; i < getdata.length; i++) {
+//        var timesheet = GetTimeSheetData(
+//            getdata['comment'].toString(),
+//            getdata['end'].toString(),
+//            getdata['id'].toString(),
+//            getdata['overtime'],
+//            getdata['normal'],
+//            getdata['start'].toString());
+//        getTimesheetData.add(timesheet);
+//      }
+      //  print(dataa[0][0]['comment']);
+      // daz[0][0]['comment'];
+      print(response.body);
+      print("sssssssssssssssssssssssssssssssssssssssss");
+    } else {
+      print(response.body);
+      print('kkkkk');
+    }
+  }
+
   String endTimeDate = " ";
-  String saveEvent='';
+  String End_Time = " ";
+  var subEnd_Time;
+  String saveEvent = '';
+
   Future<Null> getEndTime(BuildContext context) async {
     TimeOfDay timePicker = await showTimePicker(
       context: context,
@@ -84,11 +146,18 @@ class _HomepageState extends State<Homepage> {
     if (timePicker != null && timePicker != endtime) {
       setState(() {
         endtime = timePicker;
-
-        _endtController.text = "${endtime.hour}:${endtime.minute}";
+        if (endtime.hour <= 9 && endtime.minute <= 9) {
+          _endtController.text = "0${endtime.hour}:0${endtime.minute}";
+        } else if (endtime.hour > 9 && endtime.minute > 9) {
+          _endtController.text = "${endtime.hour}:${endtime.minute}";
+        } else if (endtime.hour <= 9 || endtime.minute > 9) {
+          _endtController.text = "0${endtime.hour}:${endtime.minute}";
+        } else if (endtime.hour > 9 || endtime.minute <= 9) {
+          _endtController.text = "${endtime.hour}:0${endtime.minute}";
+        }
+        _totalhoursController.text = "${endtime.hour - time.hour}";
         endTimeDate =
-            "${dateFormat.format(_controller.selectedDay)} ${endtime.hour}:${endtime.minute} ";
-        print(endTimeDate);
+            "${dateFormat.format(_controller.selectedDay)} ${_endtController.text}";
       });
     }
   }
@@ -127,11 +196,47 @@ class _HomepageState extends State<Homepage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Row(
+              children: <Widget>[
+                RaisedButton(
+                  child: Text("Download"),
+                  onPressed: () async {
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    var d1 = DateTime.now();
+                    var d3 = "01 September 2020";
+                    var con = dateFormat.format(d1);
+                    String stringValue = prefs.getString('token');
+                    var response;
+                    Map<String, String> headers = {
+                      "Content-Type": "application/json",
+                      "Accept": "application/json",
+                      "X_TOKEN": "$stringValue",
+                    };
+                    final status = await Permission.storage.request();
+                    if (status.isGranted) {
+                      final externalDir = await getExternalStorageDirectory();
+
+                      final id = await FlutterDownloader.enqueue(
+                        url:
+                            'https://app.idolconsulting.co.za/idols/timesheetitems/download?end=${con}&start=${d3}',
+                        savedDir: externalDir.path,
+                        fileName: "timesheet.xlsm",
+                        headers: headers,
+                        showNotification: true,
+                        openFileFromNotification: true,
+                      );
+                    } else {
+                      print("permission deined");
+                    }
+                  },
+                ),
+              ],
+            ),
             TableCalendar(
               events: _events,
               calendarStyle: CalendarStyle(
-                todayColor: Colors.blueGrey, //changing the color of today's day
-                //selectedColor: Theme.of(context).primaryColor,changing the color of the moving selector
+                todayColor: Colors.blueGrey,
                 todayStyle:
                     TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
@@ -141,7 +246,7 @@ class _HomepageState extends State<Homepage> {
               onDaySelected: (date, event) {
                 setState(() {
                   _selectedEvents = event;
-                  saveEvent='';
+                  saveEvent = '';
                   _showAddDialog();
                   _startController.clear();
                   // _endtController.clear();
@@ -156,7 +261,7 @@ class _HomepageState extends State<Homepage> {
             ..._selectedEvents.map((event) => ListTile(
                   title: Text(event),
                 )),
-            Text(saveEvent==null ? '' :saveEvent),
+            Text(saveEvent == null ? 'mdududu' : saveEvent),
           ],
         ),
       ),
@@ -164,6 +269,7 @@ class _HomepageState extends State<Homepage> {
   }
 
   _showAddDialog() {
+    _totalhoursController.clear();
     _startController.clear();
     _endtController.clear();
     _eventController.clear();
@@ -254,7 +360,9 @@ class _HomepageState extends State<Homepage> {
                                 BorderSide(color: Colors.blueGrey[500])),
                       ),
                       onTap: () {
-                        getEndTime(context);
+                        setState(() {
+                          getEndTime(context);
+                        });
                       },
                       maxLines: null,
                       keyboardType: TextInputType.multiline,
@@ -262,12 +370,25 @@ class _HomepageState extends State<Homepage> {
                     SizedBox(
                       height: 10,
                     ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-                      child: Text(
-                        "Total Hours:${endtime.hour - time.hour}",
-                        style: TextStyle(color: Colors.black),
-                      ),
+                    Row(
+                      children: <Widget>[
+                        Text("Total Hours :"),
+                        SizedBox(
+                          width: 5.0,
+                        ),
+                        Expanded(
+                          child: TextField(
+                            readOnly: true,
+                            controller: _totalhoursController,
+                            decoration: new InputDecoration(
+                              hintText: Totalhours,
+                              border: InputBorder.none,
+                            ),
+                            maxLines: null,
+                            keyboardType: TextInputType.multiline,
+                          ),
+                        )
+                      ],
                     ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(0, 8, 0, 5),
@@ -331,27 +452,33 @@ class _HomepageState extends State<Homepage> {
                               final body = jsonEncode({
                                 "comment": _eventController.text,
                                 "end": "$endTimeDate",
-                                "endTime": _startController.text,
+                                "endTime": _endtController.text,
                                 "start": "$startTimeDate",
                                 "startTime": _startController.text,
                               });
-                              print(body);
+                              // print(body);
                               response = await http.put(
                                   'https://app.idolconsulting.co.za/idols/timesheetitems',
                                   headers: headers,
                                   body: body);
+
                               setState(() {
                                 if (_events[_controller.selectedDay] != null ||
                                     _eventController.text.isNotEmpty) {
                                   _events[_controller.selectedDay] = [
-                                    "comment:${_eventController.text}",
-                                    "StartTime:${_startController.text}",
-                                    "EndTime:${_endtController.text}"
+                                    "${dateFormat.format(_controller.selectedDay)}",
+                                    "Started: ${_startController.text}",
+                                    "Ended: ${_endtController.text}",
+                                    "Total Hours:${_totalhoursController.text}",
                                   ];
-                                  saveEvent='commnet: ${_eventController.text}' +
-                                      "\n\n\n" +
-                                      'Start Time: ${_startController.text}' +
-                                      "\n\n\n" + 'End Time: ${_endtController.text}';
+                                  saveEvent =
+                                      '${dateFormat.format(_controller.selectedDay)}' +
+                                          "\n\n\n" +
+                                          'Started: ${_startController.text}' +
+                                          "\n\n\n" +
+                                          'Ended: ${_endtController.text}' +
+                                          "\n\n\n" +
+                                          'Total Hours: ${_totalhoursController.text}';
                                   _eventController.clear();
                                   Navigator.pop(context);
 //                                  _startController.text = " ";
@@ -361,26 +488,36 @@ class _HomepageState extends State<Homepage> {
                                     "events", json.encode(encodeMap(_events)));
 
                                 if (response.statusCode == 200) {
-                                  print(response.body);
-                                  return Timesheet.fromJson(
-                                      json.decode(response.body));
+                                  var data = json.decode(response.body);
+                                  String timesheetId = data['timeSheet']['id'];
+                                  prefs.setString("timeSheetId", timesheetId);
+                                  if ("${dateFormat.format(_controller.selectedDay)}" ==
+                                      "18 October 2020") {
+                                    _events[_controller.selectedDay] = [
+                                      "comment:00000000",
+                                      "StartTime:0000000000",
+                                      "EndTime:000000000"
+                                    ];
+                                    var time = "2020-10-18 12:00:00.000Z";
+                                    Text("${_events[time]}");
+                                    // _events[time];
+//                                    _events[_controller.selectedDay][1];
+//                                    _events[_controller.selectedDay][2];
+                                  }
                                 } else {
-                                  print(response.body);
-                                  print("Token: $stringValue");
-
-                                  print(response.body);
                                   throw Exception('Failed to load timesheet');
                                 }
                               });
 
                               back = Back(
-                                  startTime: "${time.hour}:${time.minute}",
-                                  endTime: "${endtime.hour}:${endtime.minute}",
+                                  startTime: "${_startController.text}",
+                                  endTime: "${_endtController.text}",
                                   comments: "${_eventController.text}",
                                   currentDate:
-                                      "${dateFormat.format(_controller.selectedDay)}");
+                                      "${dateFormat.format(_controller.selectedDay)}",
+                                  totalhours: "${_totalhoursController.text}");
                               listOfTimesheet.add(back);
-
+                              _totalhoursController.clear();
                               _startController.clear();
                               _endtController.clear();
                               _eventController.clear();
@@ -399,8 +536,9 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
-
+    this.getTimesheet();
     _events = {};
+    _totalhoursController = TextEditingController();
     _eventController = TextEditingController();
     _startController = TextEditingController();
     _endtController = TextEditingController();
@@ -418,12 +556,14 @@ class _HomepageState extends State<Homepage> {
           _events[_controller.selectedDay] = [
             hintValue = listOfTimesheet[x].getStartTime(),
             hintEndValue = listOfTimesheet[x].getendTime(),
-            comment = listOfTimesheet[x].getcomments()
+            comment = listOfTimesheet[x].getcomments(),
+            Totalhours = listOfTimesheet[x].gettotalhours(),
           ];
       }
     } else {
       hintValue = hintText;
       hintEndValue = "please select endtime";
+      Totalhours = " ";
     }
     return hintValue;
   }
@@ -443,6 +583,29 @@ class _HomepageState extends State<Homepage> {
 //    }
 //    return hintEndValue;
 //  }
+  void tesT() {
+    if (_events[_controller.selectedDay] != null ||
+        _eventController.text.isNotEmpty) {
+      for (int x = 0; x < listOfTimesheet.length; x++) {
+        if (getTimesheetData[x].start == "12 October 2020 10:30")
+          _events[_controller.selectedDay] = [
+            hintEndValue = getTimesheetData[x].start,
+          ];
+
+        saveEvent = 'comment: ${getTimesheetData[x].comment}' +
+            "\n\n\n" +
+            'Start Time: ${getTimesheetData[x].start}' +
+            "\n\n\n" +
+            'End Time: ${getTimesheetData[x].end}';
+      }
+    } else {
+      saveEvent = 'comment: ${" "}' +
+          "\n\n\n" +
+          'Start Time: ${" "}' +
+          "\n\n\n" +
+          'End Time: ${" "}';
+    }
+  }
 }
 
 class homeScreen extends StatefulWidget {
