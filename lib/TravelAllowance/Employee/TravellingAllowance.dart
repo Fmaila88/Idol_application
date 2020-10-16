@@ -1,12 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:App_idolconsulting/HomePage/drawer.dart';
-import 'AllowanceList.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
-import 'User.dart';
 import 'package:App_idolconsulting/TravelAllowance/Employee/ApplyTransportAllowance.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -67,16 +64,6 @@ class _TravelAllowanceState extends State<TravelAllowance> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    AllowanceServices.getProList().then((projectsFromServer){
-      setState(() {
-        filteredProject = projectsFromServer;
-        projectList = filteredProject;
-
-        print(projectList[1].username.firstName);
-      });
-    });
-
     this.fetchEmployData();
 
   }
