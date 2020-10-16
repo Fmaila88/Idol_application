@@ -1,8 +1,5 @@
 
-
-
 import 'package:json_annotation/json_annotation.dart';
-
 part 'Project.g.dart';
 
 @JsonSerializable()
@@ -14,7 +11,7 @@ class Project{
   String endDate;
   String description;
   String status;
-  String budget;
+  double budget;
   String startDate;
   String logo;
 

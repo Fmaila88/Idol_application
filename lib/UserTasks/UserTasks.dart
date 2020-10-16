@@ -12,8 +12,6 @@ class UserTasks{
   String createDate;
   String endDate;
   String description;
-  String status;
-  String budget;
   String startDate;
   Project project;
 
@@ -26,8 +24,6 @@ class UserTasks{
     this.createDate,
     this.endDate,
     this.description,
-    this.status,
-    this.budget,
     this.startDate,
     this.project
   });

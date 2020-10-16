@@ -3,14 +3,13 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart'as http;
-//import 'package:App_idolconsulting/UserProjects/UserProjects.dart';
 import 'UserTasks.dart';
 
 
 class FetchTasks{
 
   Map<String,dynamic> data0;
-  UserTasks Utasks;
+  UserTasks tasks;
 
 
   static const String url='https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate/5f3504f0c391b51061db90e3?keyword=';
@@ -26,9 +25,9 @@ class FetchTasks{
       var response=await http.get(url,headers: {"Accept": "application/json",
         "X_TOKEN": stringValue});
 
-      Map<String,dynamic> Utasks=getUserTasks(response.body);
+      Map<String,dynamic> tasks=getUserTasks(response.body);
 
-      return Utasks;
+      return tasks;
 
     }catch(e){
       throw Exception(e.toString());

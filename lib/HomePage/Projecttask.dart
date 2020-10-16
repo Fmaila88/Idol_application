@@ -6,12 +6,15 @@ import 'package:date_format/date_format.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'package:App_idolconsulting/logout.dart';
 import 'userprofile.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'drawer.dart';
 import 'package:App_idolconsulting/UserProjects/UserProjects.dart';
-
+import 'profile.dart';
 import 'package:App_idolconsulting/UserProjects/FetchProjects.dart';
+import 'package:App_idolconsulting/UserTasks/UserTasks.dart';
+import 'package:App_idolconsulting/UserTasks/FetchTasks.dart';
 
 class ProjectTask extends StatefulWidget {
 
@@ -24,8 +27,59 @@ class _ProjectTaskState extends State<ProjectTask> {
   FetchProjects fetchUserProjects;
   Map<String,dynamic> assignedProjects;
 
+  FetchTasks fetchTasks;
+  UserTasks userTasks;
+  Map<String, dynamic> assignedTasks;
 
-  List<Tasks> task = new List<Tasks>();
+  _displayDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+
+            // title: "LOGIN",
+            //title: Text('reason for tech decling'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                GestureDetector(
+                  child: TextField(
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, new MaterialPageRoute
+                        (builder: (context) => new Profile()));
+                    },
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      icon: Icon(Icons.person),
+                      labelText: 'Profile',
+                    ),
+                    readOnly: true,
+                  ),
+                ),
+                TextField(
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, new MaterialPageRoute
+                        (builder: (context) => new Logout()));
+                    },
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    icon: Icon(Icons.launch),
+                    labelText: 'Logout',
+                  ),
+                  readOnly: true,
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+
+  List<Taskss> task = new List<Taskss>();
 
   Map<String,dynamic> data3;
 
@@ -44,18 +98,25 @@ class _ProjectTaskState extends State<ProjectTask> {
 
     if (response.statusCode == 200) {
       setState(() {
-        print('Token ' + stringValue);
+        //print('Token ' + stringValue);
 
         var data = json.decode((response.body));
 
         data3 = json.decode((response.body));
+
+        Map map=json.decode((response.body));
+
+        userTasks=UserTasks.fromJson(map);
+
+
+
 
         //print(detail['endDate'].toString());
 
 
         // print('createDate');
         for (int x = 0; x < data.length; x++) {
-          var project = new Tasks(
+          var project = new Taskss(
             data3['name'].toString(),
             data3['startDate'].toString(),
             data3['endDate'].toString(),
@@ -66,6 +127,9 @@ class _ProjectTaskState extends State<ProjectTask> {
         }
       });
     }
+
+
+
   }
 
 
@@ -128,7 +192,7 @@ class _ProjectTaskState extends State<ProjectTask> {
 
     if (response.statusCode == 200) {
       setState(() {
-        print('Token ' + stringValue);
+       // print('Token ' + stringValue);
 
         var data = json.decode((response.body));
         detail = json.decode((response.body));
@@ -167,15 +231,16 @@ class _ProjectTaskState extends State<ProjectTask> {
       });
     }
   }
-  convertDateFromString() {
-    DateTime todayDate = DateTime.parse(
-        userProjects==null || userProjects.createDate==null
-            ? ' '
-            : userProjects.createDate
-        //detail['createDate'].toString()
-    );
-    return formatDate(todayDate, [dd,' ',M, ' ', yyyy]);
-  }
+//  convertDateFromString() {
+//    DateTime todayDate = DateTime.parse(
+////        userProjects==null || userProjects.createDate==null
+////            ? ' '
+////            :
+//        //userProjects.createDate
+//        detail['createDate'].toString()
+//    );
+//    return formatDate(todayDate, [dd,' ',M, ' ', yyyy]);
+//  }
   @override
   void initState() {
     super.initState();
@@ -192,17 +257,28 @@ class _ProjectTaskState extends State<ProjectTask> {
           title: Text("Project Tasks",style: TextStyle(
             color: Colors.white,
           ),),
-          actions:<Widget>[
+          actions: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
             ),
 
-            FlatButton(
-              child: new Text('Logout',style: new TextStyle(fontSize:17.0,color:Colors.white)),
-              onPressed: (){
-                //AuthService().signOut();
+            GestureDetector(
+              onTap: () {
+                _displayDialog(context);
               },
+              // width: 55.0,
+              // height: 60.0,
+              // color: Colors.grey,
+              child:
+              CircleAvatar(
+                radius:30,
+                backgroundColor: Colors.blue,
+                backgroundImage:NetworkImage(
+                  //'http://app.idolconsulting.co.za/idols/file/' + pic['profilePicture']['id']),
+                    PictureID),
+              ),
             ),
+            //  ),
           ]),
       body: SingleChildScrollView(
         child: Column(
@@ -257,7 +333,7 @@ class _ProjectTaskState extends State<ProjectTask> {
                                 lineHeight: 20.0,
                                 animationDuration: 2000,
                                 percent: 0.2,
-                                center: Text("31%"),
+                                center: Text("33%"),
                                 linearStrokeCap: LinearStrokeCap.roundAll,
                                 progressColor: Colors.orange,
                               ),
@@ -271,7 +347,10 @@ class _ProjectTaskState extends State<ProjectTask> {
                           children: <Widget>[
                             Text('Start Date:',style: TextStyle(fontSize: 17.0),),
                             SizedBox(width: 90.0),
-                            Text(convertDateFromString()),
+                            Text(
+                              '13 Aug 2020'
+                                //convertDateFromString()),
+                            ),
                           ],
                         ),
                         SizedBox(height: 20.0),
@@ -279,10 +358,12 @@ class _ProjectTaskState extends State<ProjectTask> {
                           children: <Widget>[
                             Text('End Date:',style: TextStyle(fontSize: 17.0)),
                             SizedBox(width: 90.0),
-                            Text(userProjects==null || userProjects.endDate==null
-                                ? 'Project Name not updated'
-                                : userProjects.endDate
+                            Text(
+//                                userProjects==null || userProjects.endDate==null
+//                                ? 'Project Name not updated'
+//                                : userProjects.endDate
                                 //detail['endDate'].toString()
+                                userProjects==null || userProjects.endDate==null ? ' ' : userProjects.endDate
                             ),//createDate
                           ],
                         ),
@@ -303,12 +384,21 @@ class _ProjectTaskState extends State<ProjectTask> {
               child: Column(
                 children: <Widget>[
                   Center(
-                    child: RaisedButton(
+                    child: RaisedButton.icon(
                       onPressed: () {},
                       color: Colors.blue,
+                      icon: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
                       shape: RoundedRectangleBorder(
                       ),
-                      child: Text('Add Task'),
+                      label: Text(
+                        'Add Task' ,style: TextStyle(
+                        color: Colors.white
+                      ),
+                      ),
+                      //child: Text('Add Task'),
                     ),
                   )
                 ],
@@ -317,12 +407,23 @@ class _ProjectTaskState extends State<ProjectTask> {
             Container(
               child: Column(
                 children: <Widget>[
-                  Center(
-                    child: TextField(
-                      decoration: InputDecoration(
-                          hintText: 'Filter tasks',
-                          border: OutlineInputBorder()),
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                              hintText: 'Filter tasks',
+                              border: OutlineInputBorder()),
+                        ),
+                      ),
+                      Expanded(
+                        child: TextField(
+                          decoration: InputDecoration(
+                              hintText: 'Filter by status',
+                              border: OutlineInputBorder()),
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 20.0),
                   Card(
@@ -360,7 +461,12 @@ class _ProjectTaskState extends State<ProjectTask> {
                                   ),
                                   Column(
                                     children: <Widget>[
-                                      Text(data3['content'][0]['name'].toString()),
+                                      Text('App UI Home Screen'
+//                                          userTasks==null || userTasks.name==null
+//                                          ? 'App UI Home page screen'
+//                                          : userTasks.name
+                                          //data3['content'][0]['name'].toString()
+                                      ),
                                       FlatButton(
                                         onPressed: () {},
                                         color: Colors.orange,
@@ -368,7 +474,10 @@ class _ProjectTaskState extends State<ProjectTask> {
                                             borderRadius:
                                             BorderRadius.circular(
                                                 20.0)),
-                                        child: Text(detail['status'].toString(),
+                                        child: Text(userProjects==null || userProjects.status==null
+                                            ? ' '
+                                            : userProjects.status
+                                          //detail['status'].toString(),
                                         ),
                                       ),
                                       SizedBox(height:15.0),
@@ -376,14 +485,18 @@ class _ProjectTaskState extends State<ProjectTask> {
                                         children: <Widget>[
                                           Text('Created:',style: TextStyle(fontSize: 15.0)),
                                           SizedBox(width: 10.0),
-                                          Text(convertDateFromString()),
+                                          Text('13 Aug 2020'
+                                              //convertDateFromString()),
+                                          ),
                                         ],
                                       ),
                                       Row(
                                         children: <Widget>[
                                           Text('Due Date:',style: TextStyle(fontSize: 15.0)),
                                           SizedBox(width: 10.0),
-                                          Text(detail['endDate'].toString()),
+                                          Text('31 Aug 2020'
+    //detail['endDate'].toString()),
+    ),
                                         ],
                                       ),
 //                                              Text('Created:',style: TextStyle(fontSize: 17.0)),

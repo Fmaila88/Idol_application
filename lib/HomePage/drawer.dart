@@ -136,7 +136,13 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                   child: ListView(
                     children: <Widget>[
                       ListTile(
-                        leading: Icon(Ionicons.home, ),
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(image: AssetImage('images/icons/home.PNG'),),
+                    ),
+                        //leading: Icon(Ionicons.home, ),
                         title: new Text("Home"),
                         onTap: () {
                           Navigator.pop(context);
@@ -146,22 +152,28 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
 
+//                      new ListTile(
+//                        leading: Icon(Ionicons.briefcase_sharp, size: 30.0),
+//                        //leading: FaIcon(FontAwesomeIcons.home),
+//                        title: new Text("Companies"),
+//                        onTap: () {
+//                          Navigator.pop(context);
+//                          Navigator.push(
+//                              context,
+//                              new MaterialPageRoute(
+//                                // builder: (context) => new Services()
+//                              ));
+//                        },
+//                      ),
                       new ListTile(
-                        leading: Icon(Ionicons.briefcase_sharp, size: 30.0),
-                        //leading: FaIcon(FontAwesomeIcons.home),
-                        title: new Text("Companies"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                // builder: (context) => new Services()
-                              ));
-                        },
-                      ),
-                      new ListTile(
-                        leading: Icon(Icons.timelapse, size: 30.0),
-                        title: new Text("Project"),
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(image: AssetImage('images/icons/analytics.PNG'),),
+                        ),
+                        //Icon(Icons.timelapse, size: 30.0),
+                        title: new Text("Projects"),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.push(
@@ -171,21 +183,27 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                               ));
                         },
                       ),
-                      new ListTile(
-                        leading: Icon(Ionicons.people_outline, size: 30.0),
-                        title: new Text("Employees"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (context) => new EmployeesHome()
-                              ));
-                        },
-                      ),
+//                      new ListTile(
+//                        leading: Icon(Ionicons.people_outline, size: 30.0),
+//                        title: new Text("Employees"),
+//                        onTap: () {
+//                          Navigator.pop(context);
+//                          Navigator.push(
+//                              context,
+//                              new MaterialPageRoute(
+//                                  builder: (context) => new EmployeesHome()
+//                              ));
+//                        },
+//                      ),
                       new ListTile(
                        // leading: Icon(Ionicons.calendar, ),
-                        leading: FaIcon(FontAwesomeIcons.calendarAlt),
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(image: AssetImage('images/icons/calendar.PNG'),),
+                        ),
+                        //FaIcon(FontAwesomeIcons.calendarAlt),
                         title: new Text("Timesheets"),
                         onTap: () {
                           Navigator.pop(context);
@@ -197,7 +215,13 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        leading: Icon(Icons.rate_review, size: 30.0),
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(image: AssetImage('images/icons/compose.PNG'),),
+                        ),
+                        //Icon(Icons.rate_review, size: 30.0),
                         title: new Text("Leave Days"),
                         onTap: () {
                           Navigator.pop(context);
@@ -209,7 +233,13 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        leading: Icon(Icons.assessment, size: 30.0),
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(image: AssetImage('images/icons/clipboard.PNG'),),
+                        ),
+                        //Icon(Icons.assessment, size: 30.0),
                         title: new Text("PaySlips"),
                         onTap: () {
                           Navigator.pop(context);
@@ -219,8 +249,14 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        leading: Icon(Ionicons.chatbox_outline, size: 30.0),
-                        title: new Text("Performance"),
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(image: AssetImage('images/icons/chatboxes.PNG'),),
+                        ),
+                        //Icon(Ionicons.chatbox_outline, size: 30.0),
+                        title: new Text("Performance Appraisals"),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.push(
@@ -231,8 +267,14 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        leading: Icon(Ionicons.globe_outline, size: 30.0),
-                        title: new Text("Travel Allowance"),
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(image: AssetImage('images/icons/world.PNG'),),
+                        ),
+                        //Icon(Ionicons.globe_outline, size: 30.0),
+                        title: new Text("Travel Allowances"),
                         onTap: () async {
                           SharedPreferences prefs = await SharedPreferences.getInstance();
                           String token = prefs.getString('userToken');

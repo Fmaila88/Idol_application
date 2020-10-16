@@ -1,32 +1,23 @@
-import 'package:App_idolconsulting/LeaveDays/leavedays.dart';
-import 'package:App_idolconsulting/PaySlips/DetailsScreen.dart';
-import 'package:App_idolconsulting/PaySlips/payslips.dart';
-import 'package:App_idolconsulting/TravelAllowance/TravellingAllowance.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:App_idolconsulting/timeSheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../employees_main.dart';
 import 'Project.dart';
 import 'profile.dart';
 import 'Projecttask.dart';
 import 'Taskdetails.dart';
-import 'package:App_idolconsulting/PerformanceAppraisal/performancemain.dart';
 import 'package:date_format/date_format.dart';
-import 'package:App_idolconsulting/employees_main.dart';
 import 'package:App_idolconsulting/logout.dart';
-import 'userprofile.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'drawer.dart';
 import 'reports.dart';
-import 'projectservices.dart';
-import 'projectlist.dart';
 import 'package:App_idolconsulting/UserProjects/UserProjects.dart';
 import 'package:App_idolconsulting/UserProjects/FetchProjects.dart';
 import 'package:App_idolconsulting/UserTasks/FetchTasks.dart';
 import 'package:App_idolconsulting/UserTasks/UserTasks.dart';
+import 'package:App_idolconsulting/UserProjects/ProjectList.dart';
+import 'package:App_idolconsulting/UserTasks/Tasks.dart';
 
 class Home extends StatefulWidget {
   final Widget child;
@@ -43,8 +34,9 @@ class _HomeState extends State<Home> {
   Map<String,dynamic> assignedProjects;
 
 
-  FetchTasks fetchTasks;
   UserTasks userTasks;
+  Tasks tasks;
+
   Map<String, dynamic> assignedTasks;
 
 
@@ -76,11 +68,12 @@ class _HomeState extends State<Home> {
                      ),
           ),
                   TextField(
-//                    onTap: () {
-//                      Navigator.pop(context);
-//                      Navigator.push(context, new MaterialPageRoute
-//                        (builder: (context) => new Logout()));
-//                    },
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context, new MaterialPageRoute
+                        (builder: (context) => new Logout()
+                      ));
+                    },
                     obscureText: true,
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -95,8 +88,13 @@ class _HomeState extends State<Home> {
         });
   }
 
-  Indicator persentage;
+  //Indicator persentage;
+  var Indicat="";
+  //Map<String, dynamic> data4;
+  var persentage;
   //String bar;
+  List<Indicator> per = new List<Indicator>();
+  Map<String,dynamic> cator;
   Future<String> fetchProgressBar() async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -109,24 +107,23 @@ class _HomeState extends State<Home> {
 
     if(response.statusCode ==200){
       setState((){
-         var bar=json.decode(response.body);
-        // persentage=Indicator.fromJson(bar);
-        //persentage=reports.fromJson(bar);
-        // persentage = json.decode(bar);
-print(response.body);
+         var bar =json.decode(response.body);
+        // String pictureId=bar['profilePicture']['id'];
+         //prefs.setString("picId", pictureId);
+
+         print(response.body);
       });
+      persentage=prefs.getString("bar");
+      //bar=persentage;
+    }else{
+      print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
     }
   }
 
+
   var PictureID="https://eitrawmaterials.eu/wp-content/uploads/2016/09/person-icon.png";
   //Map<String, dynamic> data4;
-var shared;
- // bool isLoading=true;
-
-  //bool pictureLoad=true;
-
-  //Map<String, dynamic> pic;
-  UserProfile profile;
+  var shared;
 
   Future<String> fetchProfileDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -143,7 +140,6 @@ var shared;
         String pictureId=data['profilePicture']['id'];
         prefs.setString("picId", pictureId);
 
-
         //profile=UserProfile.fromJson(data);
       });
       shared=prefs.getString("picId");
@@ -154,7 +150,7 @@ var shared;
     }
   }
 
-  List<Tasks> task = new List<Tasks>();
+  List<Taskss> task = new List<Taskss>();
   Map<String,dynamic> data3;
 
   Future<String> fetchTask() async {
@@ -174,19 +170,28 @@ var shared;
         var data = json.decode((response.body));
         data3 = json.decode((response.body));
 
-        Map map=json.decode((response.body));
+        //Map map=jsonDecode(data);
 
-        userTasks=UserTasks.fromJson(map);
+        //tasks=Tasks.fromJson(map);
+
+
+//       if(tasks!=null){
+//
+//        print(tasks.description);
+//
+//       }
+//
+//        userTasks=UserTasks.fromJson(map);
 
         for (int x = 0; x < data.length; x++) {
-          var project = new Tasks(
+          var test = new Taskss(
             data3['name'].toString(),
             data3['startDate'].toString(),
             data3['endDate'].toString(),
             data3['status'].toString(),
             data3['dueDate'].toString(),
           );
-          task.add(project);
+          task.add(test);
         }
       });
     }
@@ -194,7 +199,7 @@ var shared;
 
   List<Project> projects = new List<Project>();
   Map<String,dynamic> detail;
-  Project project;
+  //Project project;
 
   Future<String> fetchProjects() async {
   bool load=true;
@@ -288,18 +293,23 @@ var shared;
   }
   bool readOnly=true;
 
-//List<ProjectList> perproject = List();
-//List<ProjectList> filteredProject = List();
+List<UserProjects> projectList = List();
+List<UserProjects> filteredProject = List();
 
   @override
   void initState() {
     super.initState();
-//    CompanyServices.getCompanies().then((projectsFromServer){
-//      setState(() {
-//        perproject = projectsFromServer;
-//        filteredProject = perproject;
-//      });
-//      });
+
+    ProjectServices.getProList().then((projectsFromServer){
+      setState(() {
+        filteredProject = projectsFromServer;
+        projectList = filteredProject;
+
+         print(projectList[1].name);
+      });
+    });
+
+
    // }
 
 
@@ -313,21 +323,24 @@ var shared;
     _seriesPieData = List<charts.Series<Task, String>>();
     _generateData();
     this.fetchProjects();
-    //this.fetchProgressBar();
+    this.fetchTask();
+    this.fetchProfileDetails();
+    //this.fetchTasks();
+    this.fetchProgressBar();
     // this.fetchTaskings();
 
 
 
   }
-  convertDateFromString() {
-    DateTime todayDate = DateTime.parse(
-        userProjects==null || userProjects.endDate==null
-            ? ' '
-            : userProjects.endDate
-      //detail['createDate'].toString()
-    );
-    return formatDate(todayDate, [dd,' ',MM, ' ', yyyy]);
-  }
+//  convertDateFromString() {
+//    DateTime todayDate = DateTime.parse(
+////        userProjects==null || userProjects.endDate==null
+////            ? ' '
+////            : userProjects.endDate
+//      //detail['createDate'].toString()
+//    );
+//    return formatDate(todayDate, [dd,' ',MM, ' ', yyyy]);
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -382,20 +395,24 @@ var shared;
           body: isLoading ? Center(child: CircularProgressIndicator()):
           TabBarView(children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+              //EdgeInsets.all(8.0),
               child: Container(
                 child: Center(
                   child: Column(children: <Widget>[
+
+
                     Text(
                       'Project Status',
                       style: TextStyle(
                           fontSize: 24.0, fontWeight: FontWeight.bold),
                     ),
+
                     SizedBox(height: 10.0),
                     Expanded(
                       child: charts.PieChart(_seriesData1,
                           animate: true,
-                          animationDuration: Duration(seconds: 5),
+                          animationDuration: Duration(seconds: 1),
                           behaviors: [
                             new charts.DatumLegend(
                               outsideJustification:
@@ -434,7 +451,7 @@ var shared;
                         child: Column(
                           children: [
                           Container(
-                          height: 54,
+                          height: 75,
                             padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                             child: TextField(
                               //readOnly: true,
@@ -448,12 +465,13 @@ var shared;
                                 border: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.blueGrey[500])),
                               ),
-//                              onChanged: (string){
-//                                setState(() {
-//                                  filteredProject = perproject.where((c) => c.name
-//                                      .toLowerCase().contains(string.toLowerCase())).toList();
-//                                });
-//                              },
+
+                              onChanged: (string){
+                                setState(() {
+                                  projectList = filteredProject.where((c) => c.name
+                                      .toLowerCase().contains(string.toLowerCase())).toList();
+                                });
+                              },
                               onTap: () {
                                 //getEndTime(context);
                               },
@@ -465,9 +483,12 @@ var shared;
                           height: 100,
                           width: 400,
                           child: SizedBox(
-    child:  ListView(
-      children: <Widget>[
-        Container(
+    child: ListView.builder(
+        itemCount: projectList == null ? 0 : projectList.length,
+        padding: const EdgeInsets.all(15.0),
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (BuildContext context, int index){
+        return Container(
         child: Column(
           children: <Widget>[
             //SizedBox(height: 60.0),
@@ -488,38 +509,38 @@ var shared;
                 Text(
                   //'Idol App'
                     userProjects==null || userProjects.name==null
-                    ? 'Project Name not updated'
+                    ? ' '
                     : userProjects.name
                 ),
                 SizedBox(width: 5.0),
                 Text(
                     //convertDateFromString()
                     //'31 December 2020'
-                    userProjects==null || userProjects.endDate==null ? 'end date not updated' : userProjects.endDate
+                    userProjects==null || userProjects.endDate==null ? ' ' : userProjects.endDate
                 ),
                 SizedBox(width: 5.0),
-                //Text(userProjects==null || userProjects.status==null ? 'status not updated' : userProjects.status),
+                //Text(userProjects==null || userProjects.status==null ? ' ' : userProjects.status),
                 LinearPercentIndicator(
                   width: MediaQuery.of(context).size.width - 270,
                   animation: true,
                   lineHeight: 20.0,
                   animationDuration: 2000,
                   percent: 0.2,
-                  center: Text("31%"),
+                  center: Text('33%'),
                   linearStrokeCap: LinearStrokeCap.roundAll,
                   progressColor: Colors.orange,
                 ),
                 SizedBox(width: 10.0),
-                Text(userProjects==null || userProjects.manager.firstName==null ? '' : userProjects.manager.firstName
+                Text(userProjects==null || userProjects.manager.firstName==null ? ' ' : userProjects.manager.firstName
                     //+ " " + userProjects.manager.lastName
                 ), //createDate
               ],
             ),
           ],
         ),
-      ),
-    ]
-    //}
+      );
+   // ]
+    }
                           ),
                           ),
                         ),
@@ -545,7 +566,7 @@ var shared;
                     Expanded(
                       child: charts.PieChart(_seriesPieData,
                           animate: true,
-                          animationDuration: Duration(seconds: 5),
+                          animationDuration: Duration(seconds: 1),
                           behaviors: [
                             new charts.DatumLegend(
                               outsideJustification:
@@ -582,7 +603,7 @@ var shared;
                         child: Column(
                           children: [
                           Container(
-                          height: 54,
+                          height: 75,
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                           child: TextField(
                             //readOnly: true,
@@ -631,10 +652,12 @@ var shared;
                                       Column(
                                         children: <Widget>[
                                           Text(
-                                              //'App UI Home Page screan'
-                                              userTasks==null || userTasks.name==null
-                                                  ? 'Project Name not updated'
-                                                  : userTasks.name
+                                              //data3['content'][0]['name'].toString()
+                                              'App UI Home Page screan'
+                                              //userProjects.name
+//                                              userTasks==null || userTasks.project.name==null
+//                                                  ? 'Pending'
+//                                                  : userTasks.project.name
                                           ),
                                           FlatButton(
                                             onPressed: () {},
@@ -644,11 +667,11 @@ var shared;
                                                 BorderRadius.circular(
                                                     20.0)),
                                             child: Text(
-                                                //'Pending'
-                                              //detail['status'].toString(),
-                                                userProjects==null || userProjects.name==null
-                                                    ? 'Project Name not updated'
-                                                    : userProjects.name
+                                                'Pending'
+                                                 //detail['status'].toString(),
+//                                                userTasks==null || userTasks.project.name==null
+//                                                    ? 'Pending'
+//                                                    : userTasks.project.name
                                             ),
                                           ),
                                           SizedBox(height:15.0),
@@ -657,11 +680,11 @@ var shared;
                                               Text('Created:',style: TextStyle(fontSize: 15.0)),
                                               SizedBox(width: 10.0),
                                               Text(
-                                                  //'17 August 2020'
+                                                  '17 Aug 2020'
                                                   //convertDateFromString()
-                                                  userProjects==null || userProjects.name==null
-                                                      ? 'Project Name not updated'
-                                                      : userProjects.name
+//                                                  userTasks==null || userTasks.createDate==null
+//                                                      ? '17 Aug 2020'
+//                                                      : userTasks.createDate
                                               ),
                                             ],
                                           ),
@@ -670,11 +693,11 @@ var shared;
                                               Text('Due Date:',style: TextStyle(fontSize: 15.0)),
                                               SizedBox(width: 10.0),
                                               Text(
-                                                  //'31 August 2020'
-                                                // detail['endDate'].toString()
-                                                  userProjects==null || userProjects.name==null
-                                                      ? 'Project Name not updated'
-                                                      : userProjects.name
+                                                  '31 Aug 2020'
+                                                 //detail['endDate'].toString()
+//                                                  userTasks==null || userTasks.endDate==null
+//                                                      ? '31 Aug 2020'
+//                                                      : userTasks.endDate
                                               ),
                                             ],
                                           ),

@@ -49,7 +49,7 @@ class Project {
   }
 }
 
-class Tasks {
+class Taskss {
   String name;
   String dueDate;
   String createDate;
@@ -66,7 +66,7 @@ class Tasks {
 //  Map company;
 //  String attachments;
 
-  Tasks(this.name,this.createDate, this.endDate, this.status,this.dueDate,
+  Taskss(this.name,this.createDate, this.endDate, this.status,this.dueDate,
       //this.status,this.logo, this.createdBy,
       // this.manager, this.observers,this.members,this.company, this.attachments,
       );
