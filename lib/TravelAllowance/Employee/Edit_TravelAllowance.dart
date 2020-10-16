@@ -28,6 +28,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
   TextEditingController _travelDateController;
   TextEditingController _commentController;
   TextEditingController _ratePerKm;
+  TextEditingController _employeeController;
 
   final DateFormat dateFormat=DateFormat('dd MMMM yyyy');
   DateTime _date = DateTime.now();
@@ -106,6 +107,9 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _employeeController = new TextEditingController(
+        text: "${widget.list['content'][widget.index]['user']['firstName'] + ' ' +
+            widget.list['content'][widget.index]['user']['lastName'].toString()}");
     _startKmController = new TextEditingController(
         text: "${widget.list['content'][widget.index]['startKm'].toString()}");
     _endKmController = new TextEditingController(
@@ -153,7 +157,27 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                         ),
                       ),
                     ),
-
+                    Container(
+                      margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
+                      child: Text(
+                        'Employee*',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
+                      height: 34,
+                      child: TextField(
+                        readOnly: true,
+                        controller: _employeeController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
                     Container(
                       margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
                       child: Text(

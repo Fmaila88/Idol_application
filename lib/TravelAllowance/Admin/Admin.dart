@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:App_idolconsulting/HomePage/drawer.dart';
-import 'file:///C:/Users/Dell/Desktop/IDOL/Idol_application/lib/TravelAllowance/Admin/AdminApply.dart';
+import 'package:App_idolconsulting/TravelAllowance/Admin/AdminApply.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -46,7 +46,7 @@ class _AdminState extends State<Admin> {
             list['ratePerKm'].toString(),
             list['status'].toString(),
             list['travelDate'].toString(),
-            list['comment'].toString(),);
+            list['comment'],);
           employee_allowance.add(bodyList);
         }
         print(data.length);
@@ -210,14 +210,14 @@ class _AdminState extends State<Admin> {
                                                     color: Colors.black,
                                                     fontSize: 14,
                                                   ),),
-                                                    // onTap: () {
-                                                    //   Navigator.push(
-                                                    //     context,
-                                                    //     MaterialPageRoute(builder: (context) => Admin_Edit(
-                                                    //         list, index
-                                                    //     )),
-                                                    //   );
-                                                    // }
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(builder: (context) => Admin_Edit(
+                                                            list, index
+                                                        )),
+                                                      );
+                                                    }
                                                     ),
                                                 // DataCell(Text(list['content'][index]['startKm'].toString(),
                                                 //   style: TextStyle(

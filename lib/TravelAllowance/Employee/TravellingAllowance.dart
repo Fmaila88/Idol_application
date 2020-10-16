@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:App_idolconsulting/HomePage/drawer.dart';
-import 'file:///C:/Users/Dell/Desktop/IDOL/Idol_application/lib/TravelAllowance/Admin/Admin.dart';
-import 'package:intl/intl.dart';
+import 'AllowanceList.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
-import 'file:///C:/Users/Dell/Desktop/IDOL/Idol_application/lib/TravelAllowance/Employee/ApplyTransportAllowance.dart';
+import 'User.dart';
+import 'package:App_idolconsulting/TravelAllowance/Employee/ApplyTransportAllowance.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,13 +42,13 @@ class _TravelAllowanceState extends State<TravelAllowance> {
         for(int x = 0; x<data.length; x++){
           EmployeeData bodyList = new EmployeeData(
             list['id'].toString(),
-            list['user'].toString(),
             list['startKm'].toString(),
             list['endKm'].toString(),
             list['ratePerKm'].toString(),
             list['status'].toString(),
             list['travelDate'].toString(),
-            list['comment'].toString(),);
+            list['username'].toString(),
+            list['comment'],);
           employee_allowance.add(bodyList);
         }
         print(data.length);
@@ -58,11 +58,27 @@ class _TravelAllowanceState extends State<TravelAllowance> {
     }
   }
 
+  List<EmployeeData> projectList = List();
+  List<EmployeeData> filteredProject = List();
+  EmployeeData userAllownce;
+  // FetchProjects fetchUserProjects;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    AllowanceServices.getProList().then((projectsFromServer){
+      setState(() {
+        filteredProject = projectsFromServer;
+        projectList = filteredProject;
+
+        print(projectList[1].username.firstName);
+      });
+    });
+
     this.fetchEmployData();
+
   }
 
   @override
@@ -163,161 +179,72 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                                     child: SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
                                       child: DataTable (
-                                        columnSpacing: 20,
-                                        dataRowHeight: 50,
-                                        headingRowHeight: 60,
-                                        columns: [
-                                          DataColumn(label: Text('Name',
-                                            style: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w800
-                                            ),),
-                                          ),
-                                          DataColumn(label: Text('Total Km',
-                                            style: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w800
-                                            ),),
-                                          ),
-                                          // DataColumn(label: Text('End Km',
-                                          //   style: TextStyle(
-                                          //       color: Colors.black54,
-                                          //       fontSize: 16,
-                                          //       fontWeight: FontWeight.w800
-                                          //   ),),
-                                          // ),
-                                          DataColumn(label: Text('Status',
-                                            style: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w800
-                                            ),),
-                                          ),
-                                          DataColumn(label: Text('Travel Date',
-                                            style: TextStyle(
-                                                color: Colors.black54,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w800
-                                            ),),
-                                          ),
-                                          // DataColumn(label: Text('',
-                                          //   style: TextStyle(
-                                          //       color: Colors.black54,
-                                          //       fontSize: 16,
-                                          //       fontWeight: FontWeight.w800
-                                          //   ),),
-                                          // ),
-                                          // DataColumn(label: Text(''),
-                                          //   numeric: false,
-                                          // ),
-                                        ],
-                                        rows: List.generate(
-                                            employee_allowance.length , (index) =>
-                                          DataRow(cells: <DataCell> [
-                                            DataCell(Text(list['content'][index]['user']['firstName'] + ' ' +
-                                                list['content'][index]['user']['lastName'].toString(),
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 14,
-                                            ),),
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(builder: (context) => Edit_Allowance(
-                                                 list, index
-                                                )),
-                                              );
-                                            }),
-                                            // DataCell(Text(list['content'][index]['startKm'].toString(),
-                                            //   style: TextStyle(
-                                            //       color: Colors.black,
-                                            //       fontSize: 14
-                                            //   ),)),
-                                            DataCell(Text(list['content'][index]['endKm'].toString(),
+                                          columnSpacing: 20,
+                                          dataRowHeight: 50,
+                                          headingRowHeight: 60,
+                                          columns: [
+                                            DataColumn(label: Text('Name',
                                               style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 14
-                                              ),)),
-                                            DataCell(Text(list['content'][index]['status'].toString(),
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                            DataColumn(label: Text('Total Km',
                                               style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 14
-                                              ),)),
-                                            DataCell(Text(list['content'][index]['travelDate'].toString(),
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                            DataColumn(label: Text('Status',
                                               style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 14
-                                              ),)),
-                                            // DataCell(
-                                            //     Container(
-                                            //         child: Row(
-                                            //           children: [
-                                            //             FlatButton.icon(
-                                            //               onPressed: () async {
-                                            //                 // final result = await showDialog(
-                                            //                 //     context: context, builder: (_) => Approve());
-                                            //               },
-                                            //               icon: Icon(
-                                            //                 Icons.arrow_downward,
-                                            //                 size: 15,
-                                            //                 color: Colors.white,
-                                            //               ),
-                                            //               color: Colors.orange,
-                                            //               label: Text(
-                                            //                 'Download',
-                                            //                 style: TextStyle(
-                                            //                     color: Colors.white,
-                                            //                     fontWeight: FontWeight.w400,
-                                            //                     fontSize: 17),
-                                            //               ),
-                                            //             ),
-                                            //             SizedBox(width: 2),
-                                            //             FlatButton.icon(
-                                            //               onPressed: () async {
-                                            //                 final result = await showDialog(
-                                            //                     context: context, builder: (_) => Approve());
-                                            //               },
-                                            //               icon: Icon(
-                                            //                 Icons.thumb_up,
-                                            //                 size: 15,
-                                            //                 color: Colors.white,
-                                            //               ),
-                                            //               color: Colors.green,
-                                            //               label: Text(
-                                            //                 'Approve',
-                                            //                 style: TextStyle(
-                                            //                     color: Colors.white,
-                                            //                     fontWeight: FontWeight.w400,
-                                            //                     fontSize: 17),
-                                            //               ),
-                                            //             ),
-                                            //             SizedBox(width: 2),
-                                            //             FlatButton.icon(
-                                            //               onPressed: () async {
-                                            //                 final result = await showDialog(
-                                            //                     context: context, builder: (_) => Decline());
-                                            //               },
-                                            //               icon: Icon(
-                                            //                 Icons.thumb_down,
-                                            //                 size: 15,
-                                            //                 color: Colors.white,
-                                            //               ),
-                                            //               color: Colors.red[500],
-                                            //               label: Text(
-                                            //                 'Decline',
-                                            //                 style: TextStyle(
-                                            //                     color: Colors.white,
-                                            //                     fontWeight: FontWeight.w400,
-                                            //                     fontSize: 17),
-                                            //               ),
-                                            //             ),
-                                            //           ],
-                                            //         )
-                                            //     )
-                                            // ),
-                                          ])).toList()
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                            DataColumn(label: Text('Travel Date',
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                          ],
+                                          rows: List.generate(
+                                              employee_allowance.length , (index) =>
+                                              DataRow(cells: <DataCell> [
+                                                DataCell(Text(list['content'][index]['user']['firstName'] + ' ' +
+                                                    list['content'][index]['user']['lastName'].toString(),
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 14,
+                                                  ),),
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(builder: (context) => Edit_Allowance(
+                                                            list, index
+                                                        )),
+                                                      );
+                                                    }),
+                                                DataCell(Text(list['content'][index]['endKm'].toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 14
+                                                  ),)),
+                                                DataCell(Text(list['content'][index]['status'].toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 14
+                                                  ),)),
+                                                DataCell(Text(list['content'][index]['travelDate'].toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 14
+                                                  ),)),
+                                              ])).toList()
                                       ),
                                     )
                                 );
