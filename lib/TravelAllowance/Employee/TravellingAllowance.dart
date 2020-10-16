@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:App_idolconsulting/HomePage/drawer.dart';
-import 'package:App_idolconsulting/TravelAllowance/Admin.dart';
+import 'file:///C:/Users/Dell/Desktop/IDOL/Idol_application/lib/TravelAllowance/Admin/Admin.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
-import 'package:App_idolconsulting/TravelAllowance/ApplyTransportAllowance.dart';
+import 'file:///C:/Users/Dell/Desktop/IDOL/Idol_application/lib/TravelAllowance/Employee/ApplyTransportAllowance.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 

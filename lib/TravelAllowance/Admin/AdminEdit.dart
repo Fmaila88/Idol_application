@@ -9,17 +9,36 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'Admin.dart';
-import 'TravellingAllowance.dart';
+import '../Employee/TravellingAllowance.dart';
 
-class Edit_Allowance extends StatefulWidget {
+class Admin_Edit extends StatefulWidget {
   Map<String,dynamic> list;
   int index;
-  Edit_Allowance(this.list, this.index);
+  Admin_Edit(this.list, this.index);
   @override
-  _Edit_AllowanceState createState() => _Edit_AllowanceState();
+  _Admin_EditState createState() => _Admin_EditState();
 }
 
-class _Edit_AllowanceState extends State<Edit_Allowance> {
+class _Admin_EditState extends State<Admin_Edit> {
+
+
+  String _mySelection;
+  final String url = "https://app.idolconsulting.co.za/idols/users/all";
+  List data = List(); //edited line
+
+  Future<String> getSWData() async {
+    var res = await http
+        .get(Uri.encodeFull(url), headers: {"Accept": "application/json"});
+    var resBody = json.decode(res.body);
+
+    setState(() {
+      data = resBody;
+    });
+
+    print(resBody);
+
+    return "Sucess";
+  }
 
   String _filePath;
   Map<String,dynamic> users;
@@ -28,6 +47,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
   TextEditingController _travelDateController;
   TextEditingController _commentController;
   TextEditingController _ratePerKm;
+  TextEditingController _user;
 
   final DateFormat dateFormat=DateFormat('dd MMMM yyyy');
   DateTime _date = DateTime.now();
@@ -77,6 +97,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    this.getSWData();
     _startKmController = new TextEditingController(
         text: "${widget.list['content'][widget.index]['startKm'].toString()}");
     _endKmController = new TextEditingController(
@@ -87,7 +108,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
         text: "${widget.list['content'][widget.index]['travelDate'].toString()}");
     _commentController = new TextEditingController(
         text: "${widget.list['content'][widget.index]['comment'].toString()}");
-    print('Id = '+ widget.list['content'][widget.index]['id']);
+    // // print('Id = '+ widget.list['content'][widget.index]['id']);
   }
 
   @override
@@ -124,7 +145,49 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                         ),
                       ),
                     ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
+                      child: Text(
+                        'Employee*',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
+                      height: 50,
+                      child: Container(
+                        //margin: const EdgeInsets.all(16.0),
+                        // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
+                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                        // padding: const EdgeInsets.fromLTRB(130, 0, 0, 0),
 
+                        decoration: BoxDecoration(
+                            border:
+                            Border.all(color: Colors.black54, width: 0.5)),
+
+                        margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
+
+                        alignment: Alignment.topLeft,
+                        child:  new DropdownButton(
+                          items: data.map((item) {
+                            return new DropdownMenuItem(
+                              child: new Text(item['firstName'] + ' ' + item['lastName']),
+                              value: item['id'].toString(),
+                            );
+                          }).toList(),
+                          onChanged: (newVal) {
+                            setState(() {
+                              _mySelection = newVal;
+                              print(_mySelection);
+                            });
+                          },
+                          value: _mySelection,
+                        ),
+                      ),
+                    ),
                     Container(
                       margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
                       child: Text(
@@ -373,7 +436,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
 }
 
 class AllowanceDelete extends StatelessWidget {
-  _Edit_AllowanceState obj = new _Edit_AllowanceState();
+  _Admin_EditState obj = new _Admin_EditState();
   @override
   Widget build(BuildContext context) {
     return AlertDialog(

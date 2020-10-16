@@ -1,7 +1,7 @@
 import 'package:App_idolconsulting/LeaveDays/leavedays.dart';
 import 'package:App_idolconsulting/PaySlips/DetailsScreen.dart';
 import 'package:App_idolconsulting/PaySlips/payslips.dart';
-import 'package:App_idolconsulting/TravelAllowance/TravellingAllowance.dart';
+import 'file:///C:/Users/Dell/Desktop/IDOL/Idol_application/lib/TravelAllowance/Employee/TravellingAllowance.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'dart:convert';

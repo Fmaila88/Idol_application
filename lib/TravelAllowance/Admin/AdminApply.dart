@@ -38,6 +38,8 @@ class _AdminApplyState extends State<AdminApply> {
     return "Sucess";
   }
 
+  final _formKey = GlobalKey<FormState>();
+
 
   TextEditingController _startKmController = TextEditingController();
   TextEditingController _endKmController = TextEditingController();
@@ -63,6 +65,41 @@ class _AdminApplyState extends State<AdminApply> {
 
       });
     }
+  }
+
+  void save() async {
+    SharedPreferences prefs =await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('token');
+    Map<String, String> headers = {"content-type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN":"$stringValue",
+    };
+    final body = jsonEncode({
+      'user''id': _mySelection,
+      'startKm': _startKmController.text,
+      'endKm': _endKmController.text,
+      'ratePerKm': _ratePerKm.text,
+      'travelDate': _travelDateController.text,
+      'comment': _commentController.text,
+      'attachment' : _filePath,
+    });
+    final response = await http.put(
+        'https://app.idolconsulting.co.za/idols/travel-allowance',
+        headers: headers,
+        body: body
+    );
+    setState(() {
+      if(response.statusCode == 200) {
+        print(response.body);
+        print(jsonDecode(body));
+        //print(stringValue);
+      }
+    });
+    Navigator.pop(context);
+    Navigator.push(
+        context,
+        new MaterialPageRoute(
+            builder: (context) => new Admin()));
   }
 
   void getFilePath() async {
@@ -307,39 +344,8 @@ class _AdminApplyState extends State<AdminApply> {
                       padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                       child: RaisedButton(
                         color: Colors.lightBlue,
-                        onPressed: () async {
-                          SharedPreferences prefs =await SharedPreferences.getInstance();
-                          String stringValue = prefs.getString('token');
-                          Map<String, String> headers = {"content-type": "application/json",
-                            "Accept": "application/json",
-                            "X_TOKEN":"$stringValue",
-                          };
-                          final body = jsonEncode({
-                            'user''id': _mySelection,
-                            'startKm': _startKmController.text,
-                            'endKm': _endKmController.text,
-                            'ratePerKm': _ratePerKm.text,
-                            'travelDate': _travelDateController.text,
-                            'comment': _commentController.text,
-                            'attachment' 'name': _filePath,
-                          });
-                          final response = await http.put(
-                              'https://app.idolconsulting.co.za/idols/travel-allowance',
-                              headers: headers,
-                              body: body
-                          );
-                          setState(() {
-                            if(response.statusCode == 200) {
-                              print(response.body);
-                              print(jsonDecode(body));
-                              //print(stringValue);
-                            }
-                          });
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (context) => new Admin()));
+                        onPressed: () {
+                          save();
                         },
                         child: Text(
                           'Apply',
@@ -369,10 +375,4 @@ class _AdminApplyState extends State<AdminApply> {
         )
     );
   }
-}
-
-class UsersDetails{
-  String firstName;
-  String lastName;
-  UsersDetails(this.firstName, this.lastName);
 }

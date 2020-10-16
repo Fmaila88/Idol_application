@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:App_idolconsulting/HomePage/drawer.dart';
-import 'package:App_idolconsulting/TravelAllowance/AdminApply.dart';
+import 'file:///C:/Users/Dell/Desktop/IDOL/Idol_application/lib/TravelAllowance/Admin/AdminApply.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -8,7 +8,8 @@ import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'Edit_TravelAllowance.dart';
+import 'AdminEdit.dart';
+import '../Employee/Edit_TravelAllowance.dart';
 
 class Admin extends StatefulWidget {
 
@@ -160,7 +161,7 @@ class _AdminState extends State<Admin> {
                                     child: SingleChildScrollView(
                                       scrollDirection: Axis.horizontal,
                                       child: DataTable (
-                                          columnSpacing: 20,
+                                          columnSpacing: 5,
                                           dataRowHeight: 50,
                                           headingRowHeight: 60,
                                           columns: [
@@ -209,14 +210,15 @@ class _AdminState extends State<Admin> {
                                                     color: Colors.black,
                                                     fontSize: 14,
                                                   ),),
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(builder: (context) => Edit_Allowance(
-                                                            list, index
-                                                        )),
-                                                      );
-                                                    }),
+                                                    // onTap: () {
+                                                    //   Navigator.push(
+                                                    //     context,
+                                                    //     MaterialPageRoute(builder: (context) => Admin_Edit(
+                                                    //         list, index
+                                                    //     )),
+                                                    //   );
+                                                    // }
+                                                    ),
                                                 // DataCell(Text(list['content'][index]['startKm'].toString(),
                                                 //   style: TextStyle(
                                                 //       color: Colors.black,
