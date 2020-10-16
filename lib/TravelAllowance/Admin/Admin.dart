@@ -47,7 +47,6 @@ class _AdminState extends State<Admin> {
             list['travelDate'].toString(),
             list['comment'].toString(),
           );
-          employee_allowance.add(bodyList);
         }
         print(data.length);
         //print('total km ' + list['endkm'] + list['startKm']);
@@ -157,6 +156,7 @@ class _AdminState extends State<Admin> {
                               itemBuilder: (BuildContext context, int i) {
                                 return Container(
                                     child: SingleChildScrollView(
+<<<<<<< HEAD
                                   scrollDirection: Axis.horizontal,
                                   child: DataTable(
                                       columnSpacing: 5,
@@ -225,6 +225,67 @@ class _AdminState extends State<Admin> {
                                                     style: TextStyle(
                                                       color: Colors.black,
                                                       fontSize: 14,
+=======
+                                      scrollDirection: Axis.horizontal,
+                                      child: DataTable (
+                                          columnSpacing: 5,
+                                          dataRowHeight: 50,
+                                          headingRowHeight: 60,
+                                          columns: [
+                                            DataColumn(label: Text('Name',
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                            DataColumn(label: Text('Total Km',
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                            DataColumn(label: Text('Status',
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                            DataColumn(label: Text('Travel Date',
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                            DataColumn(label: Text('',
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                          ],
+                                          rows: List.generate(
+                                              employee_allowance.length , (index) =>
+                                              DataRow(cells: <DataCell> [
+                                                DataCell(Text(list['content'][index]['user']['firstName'] + ' ' +
+                                                    list['content'][index]['user']['lastName'].toString(),
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 14,
+                                                  ),),
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(builder: (context) => Admin_Edit(
+                                                            list, index
+                                                        )),
+                                                      );
+                                                    }
+>>>>>>> 5e66b2db9b9a86ac7cdeaa0487750f7388b3bbc9
                                                     ),
                                                   ),
                                                   // onTap: () {

@@ -47,7 +47,7 @@ class _Admin_EditState extends State<Admin_Edit> {
   TextEditingController _travelDateController;
   TextEditingController _commentController;
   TextEditingController _ratePerKm;
-  TextEditingController _user;
+  TextEditingController _employeeController;
 
   final DateFormat dateFormat=DateFormat('dd MMMM yyyy');
   DateTime _date = DateTime.now();
@@ -98,6 +98,9 @@ class _Admin_EditState extends State<Admin_Edit> {
     // TODO: implement initState
     super.initState();
     this.getSWData();
+    _employeeController = new TextEditingController(
+        text: "${widget.list['content'][widget.index]['user']['firstName'] + ' ' +
+            widget.list['content'][widget.index]['user']['lastName'].toString()}");
     _startKmController = new TextEditingController(
         text: "${widget.list['content'][widget.index]['startKm'].toString()}");
     _endKmController = new TextEditingController(
@@ -157,34 +160,12 @@ class _Admin_EditState extends State<Admin_Edit> {
                     ),
                     Container(
                       padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
-                      height: 50,
-                      child: Container(
-                        //margin: const EdgeInsets.all(16.0),
-                        // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
-                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
-                        // padding: const EdgeInsets.fromLTRB(130, 0, 0, 0),
-
-                        decoration: BoxDecoration(
-                            border:
-                            Border.all(color: Colors.black54, width: 0.5)),
-
-                        margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
-
-                        alignment: Alignment.topLeft,
-                        child:  new DropdownButton(
-                          items: data.map((item) {
-                            return new DropdownMenuItem(
-                              child: new Text(item['firstName'] + ' ' + item['lastName']),
-                              value: item['id'].toString(),
-                            );
-                          }).toList(),
-                          onChanged: (newVal) {
-                            setState(() {
-                              _mySelection = newVal;
-                              print(_mySelection);
-                            });
-                          },
-                          value: _mySelection,
+                      height: 34,
+                      child: TextField(
+                        readOnly: true,
+                        controller: _employeeController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
                         ),
                       ),
                     ),
@@ -365,7 +346,7 @@ class _Admin_EditState extends State<Admin_Edit> {
                               Navigator.push(
                                   context,
                                   new MaterialPageRoute(
-                                      builder: (context) => new TravelAllowance()));
+                                      builder: (context) => new Admin()));
                             },
                             child: Text(
                               'Update',
@@ -377,42 +358,42 @@ class _Admin_EditState extends State<Admin_Edit> {
                             ),
                           ),
                         ),
-                        Container(
-                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: RaisedButton(
-                            color: Colors.redAccent,
-                            onPressed: () async {
-                              SharedPreferences prefs = await SharedPreferences.getInstance();
-                              String token = prefs.getString('userToken');
-
-                              final response = await http.get(
-                                  'http://app.idolconsulting.co.za/idols/users/profile',
-                                  headers: {"Accept": "application/json",
-                                    'X_TOKEN': '$token'});
-                              //var data = json.decode((response.body));
-                              users = json.decode((response.body));
-                              if(response.statusCode == 200) {
-                                users['id'].toString();
-                                print(users['roles'].toString());
-                              }
-
-                              Navigator.pop(context);
-                              Navigator.push(
-                                  context,
-                                  new MaterialPageRoute(
-                                      builder: (context) => users['roles'].toString() == '[Employee]' ? TravelAllowance()
-                                          : Admin()));
-                            },
-                            child: Text(
-                              'Delete',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Container(
+                        //   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        //   child: RaisedButton(
+                        //     color: Colors.redAccent,
+                        //     onPressed: () async {
+                        //       SharedPreferences prefs = await SharedPreferences.getInstance();
+                        //       String token = prefs.getString('userToken');
+                        //
+                        //       final response = await http.get(
+                        //           'http://app.idolconsulting.co.za/idols/users/profile',
+                        //           headers: {"Accept": "application/json",
+                        //             'X_TOKEN': '$token'});
+                        //       //var data = json.decode((response.body));
+                        //       users = json.decode((response.body));
+                        //       if(response.statusCode == 200) {
+                        //         users['id'].toString();
+                        //         print(users['roles'].toString());
+                        //       }
+                        //
+                        //       Navigator.pop(context);
+                        //       Navigator.push(
+                        //           context,
+                        //           new MaterialPageRoute(
+                        //               builder: (context) => users['roles'].toString() == '[Employee]' ? TravelAllowance()
+                        //                   : Admin()));
+                        //     },
+                        //     child: Text(
+                        //       'Delete',
+                        //       style: TextStyle(
+                        //         color: Colors.white,
+                        //         fontWeight: FontWeight.w500,
+                        //         fontSize: 18,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                     Container(

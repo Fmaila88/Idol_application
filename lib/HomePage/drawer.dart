@@ -4,6 +4,8 @@ import 'package:App_idolconsulting/TravelAllowance/Admin/Admin.dart';
 //
 import 'package:App_idolconsulting/TravelAllowance/Admin/AdminApply.dart';
 
+import 'package:App_idolconsulting/TravelAllowance/Admin/Admin.dart';
+
 import 'package:flutter/material.dart';
 import 'package:App_idolconsulting/LeaveDays/leavedays.dart';
 import 'package:App_idolconsulting/PaySlips/payslips.dart';

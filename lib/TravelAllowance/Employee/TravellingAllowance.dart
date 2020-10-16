@@ -1,13 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:App_idolconsulting/HomePage/drawer.dart';
+
 import 'package:App_idolconsulting/TravelAllowance/Admin/Admin.dart';
 import 'package:intl/intl.dart';
+
+
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
+
 //import 'package:App_idolconsulting/TravelAllowance/Employee/Apply.dart';
+
+import 'package:App_idolconsulting/TravelAllowance/Employee/ApplyTransportAllowance.dart';
+
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -50,6 +57,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
             list['travelDate'].toString(),
             list['comment'].toString(),
           );
+
           employee_allowance.add(bodyList);
         }
         print(data.length);
@@ -59,11 +67,27 @@ class _TravelAllowanceState extends State<TravelAllowance> {
     }
   }
 
+  List<EmployeeData> projectList = List();
+  List<EmployeeData> filteredProject = List();
+  EmployeeData userAllownce;
+  // FetchProjects fetchUserProjects;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    AllowanceServices.getProList().then((projectsFromServer){
+      setState(() {
+        filteredProject = projectsFromServer;
+        projectList = filteredProject;
+
+        print(projectList[1].username.firstName);
+      });
+    });
+
     this.fetchEmployData();
+
   }
 
   @override
@@ -160,6 +184,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                               itemBuilder: (BuildContext context, int i) {
                                 return Container(
                                     child: SingleChildScrollView(
+
                                   scrollDirection: Axis.horizontal,
                                   child: DataTable(
                                       columnSpacing: 20,
@@ -348,6 +373,81 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                             ),
                           ),
                         ),
+
+                                      scrollDirection: Axis.horizontal,
+                                      child: DataTable (
+                                          columnSpacing: 20,
+                                          dataRowHeight: 50,
+                                          headingRowHeight: 60,
+                                          columns: [
+                                            DataColumn(label: Text('Name',
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                            DataColumn(label: Text('Total Km',
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                            DataColumn(label: Text('Status',
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                            DataColumn(label: Text('Travel Date',
+                                              style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w800
+                                              ),),
+                                            ),
+                                          ],
+                                          rows: List.generate(
+                                              employee_allowance.length , (index) =>
+                                              DataRow(cells: <DataCell> [
+                                                DataCell(Text(list['content'][index]['user']['firstName'] + ' ' +
+                                                    list['content'][index]['user']['lastName'].toString(),
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 14,
+                                                  ),),
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(builder: (context) => Edit_Allowance(
+                                                            list, index
+                                                        )),
+                                                      );
+                                                    }),
+                                                DataCell(Text(list['content'][index]['endKm'].toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 14
+                                                  ),)),
+                                                DataCell(Text(list['content'][index]['status'].toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 14
+                                                  ),)),
+                                                DataCell(Text(list['content'][index]['travelDate'].toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 14
+                                                  ),)),
+                                              ])).toList()
+                                      ),
+                                    )
+                                );
+                              },),
+                          ),),
+
                       ],
                     )),
               )
