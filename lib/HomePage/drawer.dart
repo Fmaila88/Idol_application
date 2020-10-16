@@ -1,25 +1,20 @@
 import 'package:App_idolconsulting/PaySlips/NewRole.dart';
-import 'package:App_idolconsulting/TravelAllowance/Admin.dart';
+//import 'package:App_idolconsulting/TravelAllowance/Admin.dart';
+import 'package:App_idolconsulting/TravelAllowance/Admin/Admin.dart';
+//
+import 'package:App_idolconsulting/TravelAllowance/Admin/AdminApply.dart';
+
 import 'package:flutter/material.dart';
 import 'package:App_idolconsulting/LeaveDays/leavedays.dart';
-import 'package:App_idolconsulting/PaySlips/DetailsScreen.dart';
 import 'package:App_idolconsulting/PaySlips/payslips.dart';
-import 'package:App_idolconsulting/TravelAllowance/TravellingAllowance.dart';
-import 'package:flutter/material.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:App_idolconsulting/TravelAllowance/Employee/TravellingAllowance.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/timeSheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../employees_main.dart';
-import 'Project.dart';
 import 'profile.dart';
-import 'Projecttask.dart';
-import 'Taskdetails.dart';
 import 'package:App_idolconsulting/PerformanceAppraisal/performancemain.dart';
-import 'package:date_format/date_format.dart';
-import 'package:App_idolconsulting/employees_main.dart';
-import 'package:App_idolconsulting/logout.dart';
 import 'userprofile.dart';
 import 'homescrean.dart';
 import 'package:ionicons/ionicons.dart';
@@ -150,6 +145,17 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         leading: Icon(
                           Ionicons.home,
                         ),
+
+                        // leading: Container(
+                        //   height: 20,
+                        //   margin: EdgeInsets.only(top: 10),
+                        //   color: Colors.white,
+                        //   child: Image(
+                        //     image: AssetImage('images/icons/home.PNG'),
+                        //   ),
+                        // ),
+                        //leading: Icon(Ionicons.home, ),
+
                         title: new Text("Home"),
                         onTap: () {
                           Navigator.pop(context);
@@ -159,6 +165,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                                   builder: (context) => new Home()));
                         },
                       ),
+
                       new ListTile(
                         //leading: Icon(Ionicons.briefcase_sharp, size: 30.0),
                         leading: FaIcon(FontAwesomeIcons.home),
@@ -175,6 +182,32 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                       new ListTile(
                         leading: Icon(Ionicons.person_add_outline, size: 30.0),
                         title: new Text("Project"),
+
+//                      new ListTile(
+//                        leading: Icon(Ionicons.briefcase_sharp, size: 30.0),
+//                        //leading: FaIcon(FontAwesomeIcons.home),
+//                        title: new Text("Companies"),
+//                        onTap: () {
+//                          Navigator.pop(context);
+//                          Navigator.push(
+//                              context,
+//                              new MaterialPageRoute(
+//                                // builder: (context) => new Services()
+//                              ));
+//                        },
+                      ),
+                      new ListTile(
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(
+                            image: AssetImage('images/icons/analytics.PNG'),
+                          ),
+                        ),
+                        //Icon(Icons.timelapse, size: 30.0),
+                        title: new Text("Projects"),
+
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.push(
@@ -184,6 +217,18 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                                   ));
                         },
                       ),
+//                      new ListTile(
+//                        leading: Icon(Ionicons.people_outline, size: 30.0),
+//                        title: new Text("Employees"),
+//                        onTap: () {
+//                          Navigator.pop(context);
+//                          Navigator.push(
+//                              context,
+//                              new MaterialPageRoute(
+//                                  builder: (context) => new EmployeesHome()
+//                              ));
+//                        },
+//                      ),
                       new ListTile(
                         leading: Icon(Ionicons.people_outline, size: 30.0),
                         title: new Text("Employees"),
@@ -198,6 +243,16 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                       new ListTile(
                         //leading: Icon(Ionicons.calendar, ),
                         leading: FaIcon(FontAwesomeIcons.calendarAlt),
+
+                        // leading: Icon(Ionicons.calendar, ),
+                        //  leading: Container(
+                        //    height: 20,
+                        //    margin: EdgeInsets.only(top: 10),
+                        //    color: Colors.white,
+                        //    child: Image(image: AssetImage('images/icons/calendar.PNG'),),
+                        //  ),
+                        //FaIcon(FontAwesomeIcons.calendarAlt),
+
                         title: new Text("Timesheets"),
                         onTap: () {
                           Navigator.pop(context);
@@ -208,7 +263,15 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        leading: Icon(Ionicons.compass_outline, size: 30.0),
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(
+                            image: AssetImage('images/icons/compose.PNG'),
+                          ),
+                        ),
+                        //Icon(Icons.rate_review, size: 30.0),
                         title: new Text("Leave Days"),
                         onTap: () {
                           Navigator.pop(context);
@@ -219,7 +282,15 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        leading: Icon(Ionicons.clipboard_outline, size: 30.0),
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(
+                            image: AssetImage('images/icons/clipboard.PNG'),
+                          ),
+                        ),
+                        //Icon(Icons.assessment, size: 30.0),
                         title: new Text("PaySlips"),
                         onTap: () async {
                           SharedPreferences prefs =
@@ -251,8 +322,16 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        leading: Icon(Ionicons.chatbox_outline, size: 30.0),
-                        title: new Text("Performance"),
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(
+                            image: AssetImage('images/icons/chatboxes.PNG'),
+                          ),
+                        ),
+                        //Icon(Ionicons.chatbox_outline, size: 30.0),
+                        title: new Text("Performance Appraisals"),
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.push(
@@ -262,8 +341,16 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         },
                       ),
                       new ListTile(
-                        leading: Icon(Ionicons.globe_outline, size: 30.0),
-                        title: new Text("Travel Allowance"),
+                        leading: Container(
+                          height: 20,
+                          margin: EdgeInsets.only(top: 10),
+                          color: Colors.white,
+                          child: Image(
+                            image: AssetImage('images/icons/world.PNG'),
+                          ),
+                        ),
+                        //Icon(Ionicons.globe_outline, size: 30.0),
+                        title: new Text("Travel Allowances"),
                         onTap: () async {
                           SharedPreferences prefs =
                               await SharedPreferences.getInstance();
