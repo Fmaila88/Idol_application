@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -12,7 +11,7 @@ import '../Admin/Admin.dart';
 import 'TravellingAllowance.dart';
 
 class Edit_Allowance extends StatefulWidget {
-  Map<String,dynamic> list;
+  Map<String, dynamic> list;
   int index;
   Edit_Allowance(this.list, this.index);
   @override
@@ -20,9 +19,8 @@ class Edit_Allowance extends StatefulWidget {
 }
 
 class _Edit_AllowanceState extends State<Edit_Allowance> {
-
   String _filePath;
-  Map<String,dynamic> users;
+  Map<String, dynamic> users;
   TextEditingController _startKmController;
   TextEditingController _endKmController;
   TextEditingController _travelDateController;
@@ -30,7 +28,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
   TextEditingController _ratePerKm;
   TextEditingController _employeeController;
 
-  final DateFormat dateFormat=DateFormat('dd MMMM yyyy');
+  final DateFormat dateFormat = DateFormat('dd MMMM yyyy');
   DateTime _date = DateTime.now();
 
   Future<Null> _selectdateTime(BuildContext context) async {
@@ -43,8 +41,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
     if (datepicker != null && datepicker != _date) {
       setState(() {
         _date = datepicker;
-        _travelDateController.text= dateFormat.format(_date);
-
+        _travelDateController.text = dateFormat.format(_date);
       });
     }
   }
@@ -68,8 +65,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
   void confirm() {
     AlertDialog alertDialog = new AlertDialog(
       title: new Text('Wanring'),
-      content: new Text(
-          "Are your sure you want to Delete this  item?"),
+      content: new Text("Are your sure you want to Delete this  item?"),
       actions: [
         new RaisedButton(
           child: new Text(
@@ -85,8 +81,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
           },
         ),
         new RaisedButton(
-            child:
-            new Text("NO", style: new TextStyle(color: Colors.black)),
+            child: new Text("NO", style: new TextStyle(color: Colors.black)),
             color: Colors.redAccent,
             onPressed: () => Navigator.pop(context)),
       ],
@@ -109,19 +104,21 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
     // TODO: implement initState
     super.initState();
     _employeeController = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['user']['firstName'] + ' ' +
-            widget.list['content'][widget.index]['user']['lastName'].toString()}");
+        text:
+            "${widget.list['content'][widget.index]['user']['firstName'] + ' ' + widget.list['content'][widget.index]['user']['lastName'].toString()}");
     _startKmController = new TextEditingController(
         text: "${widget.list['content'][widget.index]['startKm'].toString()}");
     _endKmController = new TextEditingController(
         text: "${widget.list['content'][widget.index]['endKm'].toString()}");
     _ratePerKm = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['ratePerKm'].toString()}");
+        text:
+            "${widget.list['content'][widget.index]['ratePerKm'].toString()}");
     _travelDateController = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['travelDate'].toString()}");
+        text:
+            "${widget.list['content'][widget.index]['travelDate'].toString()}");
     _commentController = new TextEditingController(
         text: "${widget.list['content'][widget.index]['comment'].toString()}");
-    print('Id = '+ widget.list['content'][widget.index]['id']);
+    print('Id = ' + widget.list['content'][widget.index]['id']);
   }
 
   @override
@@ -146,7 +143,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                 color: Colors.white,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget> [
+                  children: <Widget>[
                     Container(
                       padding: EdgeInsets.fromLTRB(260, 8, 5, 0),
                       child: Text(
@@ -297,14 +294,15 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                                 border: Border.all(color: Colors.black54)),
                             child: _filePath == null
                                 ? new Text('Attach File')
-                                : new Text( _filePath),
-
+                                : new Text(_filePath),
                           ),
                           Container(
                             padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
                             child: RaisedButton(
                               padding: EdgeInsets.symmetric(vertical: 14.0),
-                              onPressed: () {getFilePath();},
+                              onPressed: () {
+                                getFilePath();
+                              },
                               child: Text(
                                 'Browse',
                                 style: TextStyle(
@@ -320,20 +318,23 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                     ),
                     SizedBox(height: 20),
                     Row(
-                      children: <Widget> [
+                      children: <Widget>[
                         Container(
                           padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                           child: RaisedButton(
                             color: Colors.lightBlue,
                             onPressed: () async {
-                              SharedPreferences prefs =await SharedPreferences.getInstance();
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
                               String stringValue = prefs.getString('token');
-                              Map<String, String> headers = {"content-type": "application/json",
+                              Map<String, String> headers = {
+                                "content-type": "application/json",
                                 "Accept": "application/json",
-                                "X_TOKEN":"$stringValue",
+                                "X_TOKEN": "$stringValue",
                               };
                               final body = jsonEncode({
-                                "id": widget.list['content'][widget.index]['id'],
+                                "id": widget.list['content'][widget.index]
+                                    ['id'],
                                 'startKm': _startKmController.text,
                                 'endKm': _endKmController.text,
                                 'ratePerKm': _ratePerKm.text,
@@ -344,10 +345,9 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                               final response = await http.put(
                                   'https://app.idolconsulting.co.za/idols/travel-allowance',
                                   headers: headers,
-                                  body: body
-                              );
+                                  body: body);
                               setState(() {
-                                if(response.statusCode == 200) {
+                                if (response.statusCode == 200) {
                                   //print(response.body);
                                   print(jsonDecode(body));
                                 }
@@ -356,7 +356,8 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                               Navigator.push(
                                   context,
                                   new MaterialPageRoute(
-                                      builder: (context) => new TravelAllowance()));
+                                      builder: (context) =>
+                                          new TravelAllowance()));
                             },
                             child: Text(
                               'Update',
@@ -368,6 +369,27 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                             ),
                           ),
                         ),
+
+                        Container(
+                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                          child: RaisedButton(
+                            color: Colors.redAccent,
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (_) => AllowanceDelete());
+                            },
+                            child: Text(
+                              'Delete',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+
                         // Container(
                         //   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                         //   child: RaisedButton(
@@ -401,8 +423,41 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                   ],
                 ),
               ),
-            )
+            )));
+  }
+}
+
+class AllowanceDelete extends StatelessWidget {
+  _Edit_AllowanceState obj = new _Edit_AllowanceState();
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        'Warning',
+        style: TextStyle(
+            color: Colors.red, fontWeight: FontWeight.bold, fontSize: 25),
+      ),
+      content: Text(
+        'Are you sure you want to delete this application?',
+        style: TextStyle(fontSize: 16),
+      ),
+      actions: [
+        FlatButton(
+          child: Text('Yes'),
+          onPressed: () {
+            obj.deleteData();
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (BuildContext context) => new TravelAllowance()));
+          },
+        ),
+        FlatButton(
+          child: Text('No'),
+          onPressed: () {
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (BuildContext context) => new TravelAllowance()));
+          },
         )
+      ],
     );
   }
 }

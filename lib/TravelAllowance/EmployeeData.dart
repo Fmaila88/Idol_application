@@ -1,6 +1,3 @@
-
-import 'Employee/User.dart';
-
 class EmployeeData {
   final String Id;
   String startKm;
@@ -9,7 +6,8 @@ class EmployeeData {
   String comment;
   String status;
   String ratePerKm;
-  User username;
+  String user;
 
-  EmployeeData(this.Id, this.startKm, this.endKm, this.status, this.ratePerKm, this.travelDate, this.comment,this.username);
+  EmployeeData(this.Id, this.startKm, this.endKm, this.status, this.ratePerKm,
+      this.travelDate, this.comment, this.user);
 }
