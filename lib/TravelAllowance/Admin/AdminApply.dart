@@ -112,6 +112,40 @@ class _AdminApplyState extends State<AdminApply> {
     });
   }
 
+  void saveAndApply() async {
+    SharedPreferences prefs =await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('token');
+    Map<String, String> headers = {"content-type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN":"$stringValue",
+    };
+    final body = jsonEncode({
+      'user' 'id': _mySelection,
+      'startKm': _startKmController.text,
+      'endKm': _endKmController.text,
+      'ratePerKm': _ratePerKm.text,
+      'travelDate': _travelDateController.text,
+      'comment': _commentController.text,
+      'attachment' 'name': _filePath,
+    });
+    final response = await http.put(
+        'https://app.idolconsulting.co.za/idols/travel-allowance',
+        headers: headers,
+        body: body
+    );
+    setState(() {
+      if(response.statusCode == 200) {
+        //print(response.body);
+        print(jsonDecode(body));
+      }
+    });
+    Navigator.pop(context);
+    Navigator.push(
+        context,
+        new MaterialPageRoute(
+            builder: (context) => new Admin()));
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -137,240 +171,242 @@ class _AdminApplyState extends State<AdminApply> {
         body: Container(
             padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
             child: SingleChildScrollView(
-              child: Card(
-                elevation: 40,
-                color: Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget> [
-                    Container(
-                      padding: EdgeInsets.fromLTRB(260, 8, 5, 0),
-                      child: Text(
-                        '*Required fields',
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
-                      child: Text(
-                        'Employees*',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
-                      height: 50,
-                      child: Container(
-                        //margin: const EdgeInsets.all(16.0),
-                        // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
-                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
-                        // padding: const EdgeInsets.fromLTRB(130, 0, 0, 0),
-
-                        decoration: BoxDecoration(
-                            border:
-                            Border.all(color: Colors.black54, width: 0.5)),
-
-                        margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
-
-                        alignment: Alignment.topLeft,
-                        child:  new DropdownButton(
-                          items: data.map((item) {
-                            return new DropdownMenuItem(
-                              child: new Text(item['firstName'] + ' ' + item['lastName']),
-                              value: item['id'].toString(),
-                            );
-                          }).toList(),
-                          onChanged: (newVal) {
-                            setState(() {
-                              _mySelection = newVal;
-                              print(_mySelection);
-                            });
-                          },
-                          value: _mySelection,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
-                      child: Text(
-                        'Start Kilometers*',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
-                      height: 34,
-                      child: TextField(
-                        controller: _startKmController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
-                      child: Text(
-                        'End Kilometers*',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
-                      height: 34,
-                      child: TextField(
-                        controller: _endKmController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
-                      child: Text(
-                        'Rate Per Kilometer*',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
-                      height: 34,
-                      child: TextField(
-                        controller: _ratePerKm,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
-                      child: Text(
-                        'Travel Date*',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
-                      height: 34,
-                      child: TextField(
-                        controller: _travelDateController,
-                        readOnly: true,
-                        //controller: _textEditingController,
-                        decoration: InputDecoration(
-                          //hintText: 'Please select date',
-                          border: OutlineInputBorder(),
-                        ),
-                        onTap: (){
-                          setState(() {
-                            _selectdateTime(context);
-                          });
-                        },
-                        keyboardType: TextInputType.multiline,
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
-                      child: Text(
-                        'Comment*',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
-                      height: 60,
-                      child: TextField(
-                        keyboardType: TextInputType.multiline,
-                        controller: _commentController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      child: Row(
-                        children: <Widget>[
+              child: SingleChildScrollView(
+                  child: Container(
+                      padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
+                      child: Column(
+                        children: [
                           Container(
-                            padding: EdgeInsets.fromLTRB(150, 19, 80, 12),
-                            alignment: Alignment.centerLeft,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black54)),
-                            child: _filePath == null
-                                ? new Text('Attach File')
-                                : new Text( _filePath),
-
-                          ),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
-                            child: RaisedButton(
-                              padding: EdgeInsets.symmetric(vertical: 14.0),
-                              onPressed: () {getFilePath();},
-                              child: Text(
-                                'Browse',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 17,
-                                ),
+                            padding: EdgeInsets.fromLTRB(260, 8, 5, 0),
+                            child: Text(
+                              '*Required fields',
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
                               ),
                             ),
                           ),
+                          Card(
+                              child: Form(
+                                key: _formKey,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
+                                      height: 50,
+                                      child: Container(
+                                        padding: EdgeInsets.only(left: 16.0, right: 16.0),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(color: Colors.black54, width: 0.5)),
+                                        margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
+                                        alignment: Alignment.topLeft,
+                                        child:  new DropdownButton(
+                                          hint: Container(
+                                            child: Text('Employee*'),
+                                          ),
+                                          items: data.map((item) {
+                                            return new DropdownMenuItem(
+                                              child: new Text(item['firstName'] + ' ' + item['lastName']),
+                                              value: item['id'].toString(),
+                                            );
+                                          }).toList(),
+                                          onChanged: (newVal) {
+                                            setState(() {
+                                              _mySelection = newVal;
+                                              print(_mySelection);
+                                            });
+                                          },
+                                          value: _mySelection,
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                      height: 80,
+                                      child: TextFormField(
+                                        controller: _startKmController,
+                                        decoration: InputDecoration(
+                                            labelText: 'Start Km*',
+                                            border: new OutlineInputBorder(
+                                                borderRadius: new BorderRadius.circular(4.2),
+                                                borderSide: new BorderSide()
+                                            )
+                                        ),
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return 'Please enter start Km';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                    // SizedBox(height: 10,),
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                      height: 80,
+                                      child: TextFormField(
+                                        controller: _endKmController,
+                                        decoration: InputDecoration(
+                                            labelText: 'End Km*',
+                                            border: new OutlineInputBorder(
+                                                borderRadius: new BorderRadius.circular(4.2),
+                                                borderSide: new BorderSide()
+                                            )
+                                        ),
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return 'Please enter end Km';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                    // SizedBox(height: 10,),
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                      height: 80,
+                                      child: TextFormField(
+                                        controller: _ratePerKm,
+                                        decoration: InputDecoration(
+                                            labelText: 'Rate Per Km*',
+                                            border: new OutlineInputBorder(
+                                                borderRadius: new BorderRadius.circular(4.2),
+                                                borderSide: new BorderSide()
+                                            )
+                                        ),
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return 'Please enter Rate Per Km';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                    // SizedBox(height: 10,),
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                      height: 80,
+                                      child: TextFormField(
+                                        readOnly: true,
+                                        controller: _travelDateController,
+                                        decoration: InputDecoration(
+                                            labelText: 'Travel Date*',
+                                            border: new OutlineInputBorder(
+                                                borderRadius: new BorderRadius.circular(4.2),
+                                                borderSide: new BorderSide()
+                                            )
+                                        ),
+                                        onTap: (){
+                                          setState(() {
+                                            _selectdateTime(context);
+                                          });
+                                        },
+                                        keyboardType: TextInputType.multiline,
+                                        validator: (value) {
+                                          if (value.isEmpty) {
+                                            return 'Please enter date';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                    // SizedBox(height: 10,),
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                                      height: 80,
+                                      child: TextFormField(
+                                        controller: _commentController,
+                                        decoration: InputDecoration(
+                                            labelText: 'Comment',
+                                            border: new OutlineInputBorder(
+                                                borderRadius: new BorderRadius.circular(4.2),
+                                                borderSide: new BorderSide()
+                                            )
+                                        ),
+                                        // validator: (value) {
+                                        //   if (value.isEmpty) {
+                                        //     return 'Required field';
+                                        //   }
+                                        //   return null;
+                                        // },
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Container(
+                                            padding: EdgeInsets.fromLTRB(150, 19, 80, 12),
+                                            alignment: Alignment.centerLeft,
+                                            decoration: BoxDecoration(
+                                                border: Border.all(color: Colors.black54)),
+                                            child: _filePath == null
+                                                ? new Text('Attach File')
+                                                : new Text( _filePath),
+
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
+                                            child: RaisedButton(
+                                              padding: EdgeInsets.symmetric(vertical: 14.0),
+                                              onPressed: () {getFilePath();},
+                                              child: Text(
+                                                'Browse',
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 17,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 40,),
+                                    Container(
+                                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                        child: Container(
+                                          child: RaisedButton(
+                                            color: Colors.lightBlue,
+                                            onPressed: () {
+                                              // Validate returns true if the form is valid, or false
+                                              // otherwise.
+                                              if (_formKey.currentState.validate()) {
+                                                // If the form is valid, display a Snackbar.
+                                                saveAndApply();
+                                              }
+                                            },
+                                            child: Text('Apply',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 18,),
+                                            ),
+                                          ),
+                                        )
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                      child: Text(
+                                        '*Complete all required fields',
+                                        style: TextStyle(
+                                          color: Colors.black54,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                          )
                         ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      child: RaisedButton(
-                        color: Colors.lightBlue,
-                        onPressed: () {
-                          save();
-                        },
-                        child: Text(
-                          'Apply',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      child: Text(
-                        '*Complete all required fields',
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                      )
+                  )
+              )
             )
         )
     );

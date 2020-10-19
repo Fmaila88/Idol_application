@@ -58,8 +58,9 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
       "Accept": "application/json",
       "X_TOKEN": "$stringValue",
     };
+    String id = "${widget.list['content'][widget.index]['id']}";
     http.delete(
-      url + "/${widget.list['content'][widget.index]['id']}",
+      url + "/" + id,
       headers: headers,
     );
   }

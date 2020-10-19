@@ -149,9 +149,9 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                               ),
                               border: OutlineInputBorder(),
                             ),
-                            // onChanged: (text){
-                            //   _filterDogList(text);
-                            // },
+                            onChanged: (text){
+                              //_filterDogList(text);
+                            },
 
                           ),
                         ),
