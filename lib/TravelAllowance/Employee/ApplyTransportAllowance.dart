@@ -113,23 +113,24 @@ class _ApplyState extends State<Apply> {
               padding: EdgeInsets.fromLTRB(5, 5, 5, 5),
               child: Column(
                 children: [
-                  Container(
-                    padding: EdgeInsets.fromLTRB(260, 8, 5, 0),
-                    child: Text(
-                      '*Required fields',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
                   Card(
+                    elevation: 50,
                       child: Form(
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.fromLTRB(260, 8, 5, 0),
+                              child: Text(
+                                '*Required fields',
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ),
                             Container(
                               padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
                               height: 80,
@@ -246,7 +247,7 @@ class _ApplyState extends State<Apply> {
                               child: Row(
                                 children: <Widget>[
                                   Container(
-                                    padding: EdgeInsets.fromLTRB(150, 19, 80, 12),
+                                    padding: EdgeInsets.fromLTRB(100, 19, 80, 12),
                                     alignment: Alignment.centerLeft,
                                     decoration: BoxDecoration(
                                         border: Border.all(color: Colors.black54)),
@@ -256,7 +257,7 @@ class _ApplyState extends State<Apply> {
 
                                   ),
                                   Container(
-                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
+                                    //padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
                                     child: RaisedButton(
                                       padding: EdgeInsets.symmetric(vertical: 14.0),
                                       onPressed: () {getFilePath();},

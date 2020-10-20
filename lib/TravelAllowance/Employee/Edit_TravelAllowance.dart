@@ -370,25 +370,25 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                           ),
                         ),
 
-                        Container(
-                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: RaisedButton(
-                            color: Colors.redAccent,
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (_) => AllowanceDelete());
-                            },
-                            child: Text(
-                              'Delete',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Container(
+                        //   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        //   child: RaisedButton(
+                        //     color: Colors.redAccent,
+                        //     onPressed: () {
+                        //       showDialog(
+                        //           context: context,
+                        //           builder: (_) => AllowanceDelete());
+                        //     },
+                        //     child: Text(
+                        //       'Delete',
+                        //       style: TextStyle(
+                        //         color: Colors.white,
+                        //         fontWeight: FontWeight.w500,
+                        //         fontSize: 18,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
 
                         // Container(
                         //   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
@@ -423,7 +423,8 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                   ],
                 ),
               ),
-            )));
+            ))
+    );
   }
 }
 

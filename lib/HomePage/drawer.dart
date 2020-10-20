@@ -1,10 +1,7 @@
 import 'package:App_idolconsulting/PaySlips/NewRole.dart';
-//import 'package:App_idolconsulting/TravelAllowance/Admin.dart';
 import 'package:App_idolconsulting/TravelAllowance/Admin/Admin.dart';
-//
-import 'package:App_idolconsulting/TravelAllowance/Admin/AdminApply.dart';
 
-import 'package:App_idolconsulting/TravelAllowance/Admin/Admin.dart';
+import 'package:App_idolconsulting/User/Profile_details.dart';
 
 import 'package:flutter/material.dart';
 import 'package:App_idolconsulting/LeaveDays/leavedays.dart';
@@ -78,7 +75,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                         Navigator.push(
                             context,
                             new MaterialPageRoute(
-                                builder: (context) => new Profile()));
+                                builder: (context) => new Profile_details(data3)));
                       },
                       child: Container(
                         child: Column(
@@ -177,7 +174,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  // builder: (context) => new Services()
+                                  // builder: (context) => new list_of_companies()
                                   ));
                         },
                       ),

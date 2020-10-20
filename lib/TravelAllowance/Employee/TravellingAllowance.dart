@@ -126,7 +126,7 @@ class _TravelAllowanceState extends State<TravelAllowance> {
                       color: Colors.white,
                     ),
                     label: Text(
-                      'Apply',
+                      'Create Travel Allowance',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 14,

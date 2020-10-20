@@ -338,7 +338,7 @@ class _AdminApplyState extends State<AdminApply> {
                                       child: Row(
                                         children: <Widget>[
                                           Container(
-                                            padding: EdgeInsets.fromLTRB(150, 19, 80, 12),
+                                            padding: EdgeInsets.fromLTRB(100, 19, 80, 12),
                                             alignment: Alignment.centerLeft,
                                             decoration: BoxDecoration(
                                                 border: Border.all(color: Colors.black54)),
