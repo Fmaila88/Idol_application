@@ -442,7 +442,7 @@ List<UserProjects> filteredProject = List();
 //                          fontSize: 15.0, fontWeight: FontWeight.bold),
 //                    ),
 
-                    SizedBox(height: 10.0),
+                    SizedBox(height: 0.0),
                     Expanded(
                       child: charts.PieChart(_seriesData1,
                           animate: true,

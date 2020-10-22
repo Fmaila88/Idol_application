@@ -167,7 +167,7 @@ class _ProjectTaskState extends State<ProjectTask> {
       setState((){
         var bar =json.decode(response.body);
 
-        myRoundedNumber = double.parse((bar).toStringAsFixed(1));
+        myRoundedNumber = double.parse((bar).toStringAsFixed(2));
         myRoundedNumber = myRoundedNumber.round();
 
 //         print(myRoundedNumber);
