@@ -1,23 +1,23 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Project.dart';
-import 'profile.dart';
 import 'Projecttask.dart';
 import 'Taskdetails.dart';
 import 'package:App_idolconsulting/logout.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'drawer.dart';
 import 'reports.dart';
+import 'package:date_format/date_format.dart';
 import 'package:App_idolconsulting/UserProjects/UserProjects.dart';
 import 'package:App_idolconsulting/UserProjects/FetchProjects.dart';
 import 'package:App_idolconsulting/UserTasks/UserTasks.dart';
+import 'package:App_idolconsulting/UserTasks/FetchTasks.dart';
 import 'package:App_idolconsulting/UserProjects/ProjectList.dart';
 import 'package:App_idolconsulting/UserTasks/Tasks.dart';
+import 'package:App_idolconsulting/HomePage/Profile_details.dart';
 
 class Home extends StatefulWidget {
   final Widget child;
@@ -35,9 +35,30 @@ class _HomeState extends State<Home> {
 
 
   UserTasks userTasks;
+  Taskss userTaskss;
+  FetchTasks fetchTasks;
   Tasks tasks;
-
   Map<String, dynamic> assignedTasks;
+
+  Map<String, dynamic> data3;
+  Map<String,dynamic> users;
+
+
+  Future<String> fetchDrawer() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('userToken');
+
+    final response = await http.get(
+        'http://app.idolconsulting.co.za/idols/users/profile',
+        headers: {"Accept": "application/json",
+          'X_TOKEN': stringValue});
+
+    if (response.statusCode == 200) {
+      setState(() {
+        data3 = json.decode(response.body);
+      });
+    }
+  }
 
 
   _displayDialog(BuildContext context) async {
@@ -57,7 +78,7 @@ class _HomeState extends State<Home> {
                         onTap: () {
                           Navigator.pop(context);
                           Navigator.push(context, new MaterialPageRoute
-                            (builder: (context) => new Profile()));
+                            (builder: (context) => new Profile_details(data3)));
                         },
                        decoration: InputDecoration(
                          border: InputBorder.none,
@@ -88,11 +109,9 @@ class _HomeState extends State<Home> {
         });
   }
 
-  //Indicator persentage;
-  var Indicat="";
-  //Map<String, dynamic> data4;
-  var persentage;
-  //String bar;
+
+  var myRoundedNumber;
+
   List<Indicator> per = new List<Indicator>();
   Map<String,dynamic> cator;
   Future<String> fetchProgressBar() async {
@@ -108,15 +127,13 @@ class _HomeState extends State<Home> {
     if(response.statusCode ==200){
       setState((){
          var bar =json.decode(response.body);
-        // String pictureId=bar['profilePicture']['id'];
-         //prefs.setString("picId", pictureId);
 
-         print(response.body);
+         myRoundedNumber = double.parse((bar).toStringAsFixed(2));
+         myRoundedNumber = myRoundedNumber.round();
+         //print(response.body);
+         //print(myRoundedNumber);
       });
-      persentage=prefs.getString("bar");
-      //bar=persentage;
-    }else{
-      print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+
     }
   }
 
@@ -137,8 +154,10 @@ class _HomeState extends State<Home> {
     if (response.statusCode == 200) {
       setState(() {
         var data = json.decode(response.body);
+
         String pictureId=data['profilePicture']['id'];
         prefs.setString("picId", pictureId);
+
 
         //profile=UserProfile.fromJson(data);
       });
@@ -150,8 +169,13 @@ class _HomeState extends State<Home> {
     }
   }
 
+
+
   List<Taskss> task = new List<Taskss>();
-  Map<String,dynamic> data3;
+  Map<String,dynamic> taski;
+var taskname=" ";
+var taskdate="2020-08-17T10:50:44.227+0000";
+var taskdue=" ";
 
   Future<String> fetchTask() async {
     SharedPreferences prefs =
@@ -159,7 +183,8 @@ class _HomeState extends State<Home> {
 
     String stringValue = prefs.getString('userToken');
     final response = await http.get(
-        'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate/5f3504f0c391b51061db90e3?keyword=',
+
+        'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate?keyword=',
         headers: {"Accept": "application/json",
           "X_TOKEN": stringValue,
         });
@@ -168,32 +193,30 @@ class _HomeState extends State<Home> {
       setState(() {
         // print('Token ' + stringValue);
         var data = json.decode((response.body));
-        data3 = json.decode((response.body));
 
-        //Map map=jsonDecode(data);
+        taskname=data['content'][0]['name'];
+        taskdate=data['content'][0]['createDate'];
+        taskdue=data ['content'][0]['dueDate'];
 
-        //tasks=Tasks.fromJson(map);
+        taski = json.decode((response.body));
+        Map map=jsonDecode((response.body));
 
-
-//       if(tasks!=null){
-//
-//        print(tasks.description);
-//
-//       }
-//
-//        userTasks=UserTasks.fromJson(map);
-
-        for (int x = 0; x < data.length; x++) {
-          var test = new Taskss(
-            data3['name'].toString(),
-            data3['startDate'].toString(),
-            data3['endDate'].toString(),
-            data3['status'].toString(),
-            data3['dueDate'].toString(),
-          );
-          task.add(test);
-        }
+       userTasks=UserTasks.fromJson(map);
+//        for (int x = 0; x < data.length; x++) {
+//          var test = new Taskss(
+//            taski['name'].toString(),
+//            taski['startDate'].toString(),
+//            taski['endDate'].toString(),
+//            taski['status'].toString(),
+//            taski['dueDate'].toString(),
+//          );
+//          task.add(test);
+//        }
+//        print("ffffffffffffffffffffffffffffffffffdd");
+//        print(userTasks.project.name);
+     // print(data['content'][0]['dueDate']);
       });
+
     }
   }
 
@@ -256,9 +279,9 @@ class _HomeState extends State<Home> {
   _generateData() {
     var pieData = [
       new Task('Created', 0, Colors.pinkAccent),
-      new Task('Pending', 18, Colors.blue),
+      new Task('Pending', 19, Colors.blue),
       //report['0']['count'],
-      new Task('Done', 24, Colors.orangeAccent),
+      new Task('Done', 29, Colors.orangeAccent),
     ];
 
     var pieData1 = [
@@ -296,6 +319,9 @@ class _HomeState extends State<Home> {
 List<UserProjects> projectList = List();
 List<UserProjects> filteredProject = List();
 
+  List<Taskss> taskList = List();
+  List<Taskss> filteredTask = List();
+
   @override
   void initState() {
     super.initState();
@@ -305,9 +331,18 @@ List<UserProjects> filteredProject = List();
         filteredProject = projectsFromServer;
         projectList = filteredProject;
 
-         print(projectList[1].name);
+                // print(projectList[1].name);
       });
     });
+
+//    TaskServices.getTaskList().then((TaskFromServer){
+//      setState(() {
+//        filteredTask = TaskFromServer;
+//        taskList = filteredTask;
+//
+//        print(taskList[1].name);
+//      });
+//    });
 
 
    // }
@@ -322,25 +357,24 @@ List<UserProjects> filteredProject = List();
     _seriesData1 = List<charts.Series<Pollution, String>>();
     _seriesPieData = List<charts.Series<Task, String>>();
     _generateData();
+    this.fetchDrawer();
     this.fetchProjects();
     this.fetchTask();
     this.fetchProfileDetails();
     //this.fetchTasks();
     this.fetchProgressBar();
-    // this.fetchTaskings();
+    //this.fetchTaskings();
 
 
 
   }
-//  convertDateFromString() {
-//    DateTime todayDate = DateTime.parse(
-////        userProjects==null || userProjects.endDate==null
-////            ? ' '
-////            : userProjects.endDate
-//      //detail['createDate'].toString()
-//    );
-//    return formatDate(todayDate, [dd,' ',MM, ' ', yyyy]);
-//  }
+  convertDateFromString() {
+    DateTime todayDate = DateTime.parse(
+        taskdate
+    );
+    return formatDate(todayDate, [dd,' ',M, ' ', yyyy]);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -402,11 +436,11 @@ List<UserProjects> filteredProject = List();
                   child: Column(children: <Widget>[
 
 
-                    Text(
-                      'Project Status',
-                      style: TextStyle(
-                          fontSize: 24.0, fontWeight: FontWeight.bold),
-                    ),
+//                    Text(
+//                      'Project Status',
+//                      style: TextStyle(
+//                          fontSize: 15.0, fontWeight: FontWeight.bold),
+//                    ),
 
                     SizedBox(height: 10.0),
                     Expanded(
@@ -451,6 +485,7 @@ List<UserProjects> filteredProject = List();
                         child: Column(
                           children: [
                           Container(
+
                           height: 75,
                             padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                             child: TextField(
@@ -483,61 +518,101 @@ List<UserProjects> filteredProject = List();
                           height: 100,
                           width: 400,
                           child: SizedBox(
+                            width: 400,
     child: ListView.builder(
-        itemCount: projectList == null ? 0 : projectList.length,
-        padding: const EdgeInsets.all(15.0),
-        scrollDirection: Axis.horizontal,
+        itemCount: 1,
+        padding: const EdgeInsets.all(0.0),
+        scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index){
         return Container(
-        child: Column(
-          children: <Widget>[
-            //SizedBox(height: 60.0),
-            Row(
-              children: <Widget>[
-                Text('Name', style: TextStyle(fontSize: 15.0),),
-                SizedBox(width: 40.0),
-                Text('End Date', style: TextStyle(fontSize: 15.0),),
-                SizedBox(width: 40.0),
-                Text('Status', style: TextStyle(fontSize: 15.0),),
-                SizedBox(width: 40.0),
-                Text('Manager', style: TextStyle(fontSize: 15.0),),
-              ],
-            ),
-            SizedBox(height: 30.0),
-            Row(
-              children: <Widget>[
-                Text(
-                  //'Idol App'
-                    userProjects==null || userProjects.name==null
+            //padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+           // margin: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: DataTable (
+                  columnSpacing: 5,
+                  dataRowHeight: 50,
+                  headingRowHeight: 60,
+                  columns: [
+                    DataColumn(label: Text('Name',
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800
+                      ),),
+                    ),
+                    DataColumn(label: Text('End Date',
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800
+                      ),),
+                    ),
+                    DataColumn(label: Text('Status',
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800
+                      ),),
+                    ),
+                    DataColumn(label: Text('Manager',
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800
+                      ),),
+                    ),
+                  ],
+                  rows: List.generate(
+                      projectList.length, (index) =>
+                      DataRow(cells: <DataCell> [
+                        DataCell(Text(
+                          userProjects==null || userProjects.name==null
                     ? ' '
-                    : userProjects.name
-                ),
-                SizedBox(width: 5.0),
-                Text(
-                    //convertDateFromString()
-                    //'31 December 2020'
-                    userProjects==null || userProjects.endDate==null ? ' ' : userProjects.endDate
-                ),
-                SizedBox(width: 5.0),
-                //Text(userProjects==null || userProjects.status==null ? ' ' : userProjects.status),
-                LinearPercentIndicator(
-                  width: MediaQuery.of(context).size.width - 270,
+                    : userProjects.name,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ProjectTask(
+//                                    list, index
+                                )),
+                              );
+                            }
+                            ),
+
+                        DataCell(Text(
+                          userProjects==null || userProjects.endDate==null
+                            ? ' ' : userProjects.endDate,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14
+                          ),)),
+                        DataCell(
+                          LinearPercentIndicator(
+                  width: MediaQuery.of(context).size.width - 290,
                   animation: true,
                   lineHeight: 20.0,
                   animationDuration: 2000,
                   percent: 0.2,
-                  center: Text('33%'),
+                  center: Text("$myRoundedNumber"),
                   linearStrokeCap: LinearStrokeCap.roundAll,
                   progressColor: Colors.orange,
-                ),
-                SizedBox(width: 10.0),
-                Text(userProjects==null || userProjects.manager.firstName==null ? ' ' : userProjects.manager.firstName
-                    //+ " " + userProjects.manager.lastName
-                ), //createDate
-              ],
+                          ),
+                        ),
+                        DataCell(Text(
+                            userProjects==null || userProjects.manager.firstName==null ? ' ' : userProjects.manager.firstName
+                                + " " + userProjects.manager.lastName,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14
+                          ),)),
+                      ])).toList()
+              ),
             ),
-          ],
-        ),
       );
    // ]
     }
@@ -557,11 +632,11 @@ List<UserProjects> filteredProject = List();
               child: Container(
                 child: Center(
                   child: Column(children: <Widget>[
-                    Text(
-                      'Task Status',
-                      style: TextStyle(
-                          fontSize: 24.0, fontWeight: FontWeight.bold),
-                    ),
+//                    Text(
+//                      'Task Status',
+//                      style: TextStyle(
+//                          fontSize: 24.0, fontWeight: FontWeight.bold),
+//                    ),
                     SizedBox(height: 10.0),
                     Expanded(
                       child: charts.PieChart(_seriesPieData,
@@ -596,9 +671,10 @@ List<UserProjects> filteredProject = List();
                         Navigator.push(
                             context,
                             new MaterialPageRoute(
-                                builder: (context) => new TaskDetails()));
+                                builder: (context) => new TaskDetails(taski)));
                       },
-                      child: Card(
+                      child: isLoading ? Center(child: CircularProgressIndicator()):
+                      Card(
                         elevation: 5.0,
                         child: Column(
                           children: [
@@ -652,12 +728,7 @@ List<UserProjects> filteredProject = List();
                                       Column(
                                         children: <Widget>[
                                           Text(
-                                              //data3['content'][0]['name'].toString()
-                                              'App UI Home Page screan'
-                                              //userProjects.name
-//                                              userTasks==null || userTasks.project.name==null
-//                                                  ? 'Pending'
-//                                                  : userTasks.project.name
+                                              taskname
                                           ),
                                           FlatButton(
                                             onPressed: () {},
@@ -667,11 +738,10 @@ List<UserProjects> filteredProject = List();
                                                 BorderRadius.circular(
                                                     20.0)),
                                             child: Text(
-                                                'Pending'
                                                  //detail['status'].toString(),
-//                                                userTasks==null || userTasks.project.name==null
-//                                                    ? 'Pending'
-//                                                    : userTasks.project.name
+                                                userProjects==null || userProjects.status==null
+                                                    ? ' '
+                                                    : userProjects.status
                                             ),
                                           ),
                                           SizedBox(height:15.0),
@@ -680,8 +750,8 @@ List<UserProjects> filteredProject = List();
                                               Text('Created:',style: TextStyle(fontSize: 15.0)),
                                               SizedBox(width: 10.0),
                                               Text(
-                                                  '17 Aug 2020'
-                                                  //convertDateFromString()
+                                             //taskdate
+                                                  convertDateFromString()
 //                                                  userTasks==null || userTasks.createDate==null
 //                                                      ? '17 Aug 2020'
 //                                                      : userTasks.createDate
@@ -692,8 +762,8 @@ List<UserProjects> filteredProject = List();
                                             children: <Widget>[
                                               Text('Due Date:',style: TextStyle(fontSize: 15.0)),
                                               SizedBox(width: 10.0),
-                                              Text(
-                                                  '31 Aug 2020'
+                                              Text(taskdue
+                                                  //'31 Aug 2020'
                                                  //detail['endDate'].toString()
 //                                                  userTasks==null || userTasks.endDate==null
 //                                                      ? '31 Aug 2020'

@@ -12,7 +12,9 @@ class FetchTasks{
   UserTasks tasks;
 
 
-  static const String url='https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate/5f3504f0c391b51061db90e3?keyword=';
+  static const String url=
+    //  'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate?keyword=';
+  'https://app.idolconsulting.co.za/idols/tasks/all';
 
 
   static Future<Map<String,dynamic>> getTasksDetails() async{
