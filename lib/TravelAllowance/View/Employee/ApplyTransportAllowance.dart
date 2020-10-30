@@ -234,12 +234,6 @@ class _ApplyState extends State<Apply> {
                                         borderSide: new BorderSide()
                                     )
                                 ),
-                                // validator: (value) {
-                                //   if (value.isEmpty) {
-                                //     return 'Required field';
-                                //   }
-                                //   return null;
-                                // },
                               ),
                             ),
                             Container(

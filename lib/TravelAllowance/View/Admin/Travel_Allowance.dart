@@ -1,72 +1,37 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:App_idolconsulting/HomePage/drawer.dart';
-import 'package:App_idolconsulting/TravelAllowance/Admin/AdminEdit.dart';
-
-
+import 'package:App_idolconsulting/TravelAllowance/Model/Allowance_Model.dart';
+import 'package:App_idolconsulting/TravelAllowance/Service/Allowance_Service.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
-
-
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
-import 'AdminApply.dart';
+import 'Modify.dart';
+import 'Save_Allowance.dart';
 
-class Admin extends StatefulWidget {
+
+class Admin_Allowance extends StatefulWidget {
   @override
-  _AdminState createState() => _AdminState();
+  _Admin_AllowanceState createState() => _Admin_AllowanceState();
 }
 
-class _AdminState extends State<Admin> {
-  List<EmployeeData> employee_allowance = [];
-  Map<String, dynamic> list;
+class _Admin_AllowanceState extends State<Admin_Allowance> {
 
-  Future<EmployeeData> fetchEmployData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String stringValue = prefs.getString('token');
-    print(stringValue);
-    final response = await http.get(
-        'https://app.idolconsulting.co.za/idols/travel-allowance/1/10/ASC/CreatedDate',
-        headers: {
-          "content-type": "application/json",
-          "Accept": "application/json",
-          "X_TOKEN": "$stringValue",
-        });
-    if (response.statusCode == 200) {
-      setState(() {
-        var data = json.decode((response.body));
-        list = json.decode((response.body));
-        for (int x = 0; x < data.length; x++) {
-          EmployeeData bodyList = new EmployeeData(
-            list['id'].toString(),
-            list['user'].toString(),
-            list['startKm'].toString(),
-            list['endKm'].toString(),
-            list['ratePerKm'].toString(),
-            list['status'].toString(),
-            list['travelDate'].toString(),
-            list['comment'].toString(),
-          );
-
-          employee_allowance.add(bodyList);
-        }
-        print(data.length);
-        //print('total km ' + list['endkm'] + list['startKm']);
-        //print(jsonDecode(response.body));
-      });
-    }
-  }
-
-  List<EmployeeData> projectList = List();
-  List<EmployeeData> filteredProject = List();
-  EmployeeData userAllownce;
-  // FetchProjects fetchUserProjects;
+  List<Allowance_Model> allowance = List();
+  List<Allowance_Model> filteredAllowance = List();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    this.fetchEmployData();
+
+    Services.getAllowance().then((AllowanceFromServer) {
+      setState(() {
+        allowance = AllowanceFromServer;
+        filteredAllowance = allowance;
+      });
+    });
   }
 
   @override
@@ -118,7 +83,7 @@ class _AdminState extends State<Admin> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AdminApply()),
+                        MaterialPageRoute(builder: (context) => Admin_Save()),
                       );
                     },
                     icon: Icon(
@@ -133,7 +98,6 @@ class _AdminState extends State<Admin> {
                       ),
                     )),
               ),
-              // bodyDate(),
               Container(
                 padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                 child: Card(
@@ -150,14 +114,15 @@ class _AdminState extends State<Admin> {
                               ),
                               border: OutlineInputBorder(),
                             ),
-
-                            onChanged: (text){
-                              //_filterDogList(text);
+                            onChanged: (string) {
+                                setState(() {
+                                  filteredAllowance = allowance
+                                      .where((c) => (c.firstName
+                                      .toLowerCase()
+                                      .contains(string.toLowerCase())))
+                                      .toList();
+                                });
                             },
-
-                            // onChanged: (text){
-                            //   _filterDogList(text);
-                            // },
                           ),
                         ),
                         Container(
@@ -192,13 +157,6 @@ class _AdminState extends State<Admin> {
                                                     fontWeight: FontWeight.w800),
                                               ),
                                             ),
-                                            // DataColumn(label: Text('End Km',
-                                            //   style: TextStyle(
-                                            //       color: Colors.black54,
-                                            //       fontSize: 16,
-                                            //       fontWeight: FontWeight.w800
-                                            //   ),),
-                                            // ),
                                             DataColumn(
                                               label: Text(
                                                 'Status',
@@ -218,108 +176,35 @@ class _AdminState extends State<Admin> {
                                               ),
                                             ),
                                             DataColumn(
-                                              label: Text(
-                                                '',
-                                                style: TextStyle(
-                                                    color: Colors.black54,
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w800),
-                                              ),
+                                              label: Text(''),
                                             ),
-                                            // DataColumn(label: Text('',
-                                            //   style: TextStyle(
-                                            //       color: Colors.black54,
-                                            //       fontSize: 16,
-                                            //       fontWeight: FontWeight.w800
-                                            //   ),),
-                                            // ),
-                                            // DataColumn(label: Text(''),
-                                            //   numeric: false,
-                                            // ),
                                           ],
                                           rows: List.generate(
-                                              employee_allowance.length,
+                                              filteredAllowance.length,
                                                   (index) => DataRow(cells: <DataCell>[
-                                                DataCell(
-                                                    Text(
-                                                      list['content'][index]
-                                                      ['user']
-                                                      ['firstName'] +
-                                                          ' ' +
-                                                          list['content'][index]
-                                                          ['user']
-                                                          ['lastName']
-                                                              .toString(),
-                                                      style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 14,
-                                                      ),
-                                                    ), onTap: () {
+                                                DataCell(Text(filteredAllowance[index].firstName + ' ' +
+                                                    filteredAllowance[index].lastName),
+                                                onTap: () {
                                                   Navigator.push(
                                                     context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            Admin_Edit(
-                                                                list, index)),
-                                                  );
+                                                    MaterialPageRoute(builder: (context) => Admin_modify(
+                                                        filteredAllowance, index)));
                                                 }),
-                                                // DataCell(Text(list['content'][index]['startKm'].toString(),
-                                                //   style: TextStyle(
-                                                //       color: Colors.black,
-                                                //       fontSize: 14
-                                                //   ),)),
-                                                DataCell(Text(
-                                                  list['content'][index]
-                                                  ['endKm']
-                                                      .toString(),
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14),
-                                                )),
-                                                DataCell(Text(
-                                                  list['content'][index]
-                                                  ['status']
-                                                      .toString(),
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14),
-                                                )),
-                                                DataCell(Text(
-                                                  list['content'][index]
-                                                  ['travelDate']
-                                                      .toString(),
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14),
-                                                )),
+                                                DataCell(Text(filteredAllowance[index].endKm.toString())),
+                                                DataCell(Text(filteredAllowance[index].status == null ? 'Pending'
+                                                : filteredAllowance[index].status)),
+                                                DataCell(Text(filteredAllowance[index].travelDate)),
                                                 DataCell(
                                                     Container(
                                                         child: Row(
                                                           children: [
-                                                            // FlatButton.icon(
-                                                            //   onPressed: () async {
-                                                            //     // final result = await showDialog(
-                                                            //     //     context: context, builder: (_) => Approve());
-                                                            //   },
-                                                            //   icon: Icon(
-                                                            //     Icons.arrow_downward,
-                                                            //     size: 15,
-                                                            //     color: Colors.white,
-                                                            //   ),
-                                                            //   color: Colors.orange,
-                                                            //   label: Text(
-                                                            //     'Download',
-                                                            //     style: TextStyle(
-                                                            //         color: Colors.white,
-                                                            //         fontWeight: FontWeight.w400,
-                                                            //         fontSize: 17),
-                                                            //   ),
-                                                            // ),
                                                             SizedBox(width: 4),
                                                             FlatButton.icon(
                                                               onPressed: () async {
                                                                 final result = await showDialog(
-                                                                    context: context, builder: (_) => Approve());
+                                                                    context: context, builder: (_) => Approve(
+                                                                  filteredAllowance, index
+                                                                ));
                                                               },
                                                               icon: Icon(
                                                                 Icons.thumb_up,
@@ -338,8 +223,8 @@ class _AdminState extends State<Admin> {
                                                             SizedBox(width: 2),
                                                             FlatButton.icon(
                                                               onPressed: () async {
-                                                                final result = await showDialog(
-                                                                    context: context, builder: (_) => Decline());
+                                                                  final result = await showDialog(
+                                                                  context: context, builder: (_) => Decline(filteredAllowance, index));
                                                               },
                                                               icon: Icon(
                                                                 Icons.thumb_down,
@@ -374,7 +259,44 @@ class _AdminState extends State<Admin> {
   }
 }
 
-class Decline extends StatelessWidget {
+
+class Decline extends StatefulWidget {
+  List list;
+  int index;
+  Decline(this.list, this.index);
+  @override
+  _DeclineState createState() => _DeclineState();
+}
+
+class _DeclineState extends State<Decline> {
+
+  void confirm() async {
+    var url = "https://app.idolconsulting.co.za/idols/travel-allowance";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('userToken');
+    Map<String, String> headers = {
+      "content-type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN": "$token",
+    };
+
+    final body = jsonEncode({
+      'id': widget.list.elementAt(widget.index).id,
+      'user': {'firstName': widget.list.elementAt(widget.index).firstName,
+                'id': widget.list.elementAt(widget.index).userId,
+                'lastName':widget.list.elementAt(widget.index).lastName },
+      'status': 'Declined',
+    });
+
+    final response = await http.put(url, headers: headers, body: body);
+
+    print(body);
+    print(response.body);
+    if (response.statusCode == 200) {
+      print(json.decode(response.body));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -392,7 +314,10 @@ class Decline extends StatelessWidget {
         FlatButton(
           child: Text('Yes'),
           onPressed: () {
-            Navigator.of(context).pop(true);
+            confirm();
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Admin_Allowance()));
           },
         ),
         FlatButton(
@@ -406,7 +331,44 @@ class Decline extends StatelessWidget {
   }
 }
 
-class Approve extends StatelessWidget {
+class Approve extends StatefulWidget {
+
+  List list;
+  int index;
+  Approve(this.list, this.index);
+
+  @override
+  _ApproveState createState() => _ApproveState();
+}
+
+class _ApproveState extends State<Approve> {
+
+  void confirm() async {
+    var url = "https://app.idolconsulting.co.za/idols/travel-allowance";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('userToken');
+    Map<String, String> headers = {
+      "content-type": "application/json",
+      "Accept": "application/json",
+      "X_TOKEN": "$token",
+    };
+
+    final body = jsonEncode({
+      'id': widget.list.elementAt(widget.index).id,
+      'user': {'firstName': widget.list.elementAt(widget.index).firstName,
+        'id': widget.list.elementAt(widget.index).userId,
+        'lastName':widget.list.elementAt(widget.index).lastName },
+      'status': 'Approved',
+    });
+
+    final response = await http.put(url, headers: headers, body: body);
+
+    print(body);
+    if (response.statusCode == 200) {
+      print(json.decode(response.body));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -424,7 +386,10 @@ class Approve extends StatelessWidget {
         FlatButton(
           child: Text('Yes'),
           onPressed: () {
-            Navigator.of(context).pop(true);
+            confirm();
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Admin_Allowance()));
           },
         ),
         FlatButton(
@@ -437,4 +402,3 @@ class Approve extends StatelessWidget {
     );
   }
 }
-

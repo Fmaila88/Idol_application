@@ -1,12 +1,11 @@
 import 'package:App_idolconsulting/PaySlips/NewRole.dart';
-import 'package:App_idolconsulting/TravelAllowance/Admin/Admin.dart';
-
+import 'package:App_idolconsulting/TravelAllowance/View/Admin/Travel_Allowance.dart';
+import 'package:App_idolconsulting/TravelAllowance/View/Employee/TravellingAllowance.dart';
 import 'package:App_idolconsulting/User/Profile_details.dart';
 
 import 'package:flutter/material.dart';
 import 'package:App_idolconsulting/LeaveDays/leavedays.dart';
 import 'package:App_idolconsulting/PaySlips/payslips.dart';
-import 'package:App_idolconsulting/TravelAllowance/Employee/TravellingAllowance.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:App_idolconsulting/timeSheet.dart';
@@ -374,8 +373,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
                               new MaterialPageRoute(
                                   builder: (context) =>
                                       users['roles'].toString() == '[Employee]'
-                                          ? TravelAllowance()
-                                          : Admin()));
+                                          ? TravelAllowance() : Admin_Allowance()));
                         },
                       ),
                     ],
