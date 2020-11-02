@@ -1,14 +1,11 @@
 import 'dart:convert';
-
 import 'package:App_idolconsulting/PaySlips/payslips.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'View.dart';
 import 'Employees.dart';
 
 class DetailsScreen extends StatefulWidget {
@@ -38,8 +35,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
     return "Sucess";
   }
-
-  // get searchController => null;
 
   DateTime datePicker;
   TextEditingController _textEditingController = TextEditingController();
@@ -114,7 +109,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
   void initState() {
     fetchEmployees();
     this.getSWData();
-    //savePay();
     super.initState();
     _hourlyRateController.text = "0";
     _monthlyHoursController.text = "0";
@@ -207,21 +201,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         ),
                       ),
                       Container(
-                        //margin: const EdgeInsets.all(16.0),
-                        // padding: const EdgeInsets.only(left: 16.0, right: 16.0)
                         padding: EdgeInsets.only(left: 16.0, right: 16.0),
-                        // padding: const EdgeInsets.fromLTRB(130, 0, 0, 0),
-
                         decoration: BoxDecoration(
                             border:
                                 Border.all(color: Colors.black54, width: 0.5)),
-
                         margin: EdgeInsets.fromLTRB(3, 5, 10, 5),
-
                         alignment: Alignment.topLeft,
                         child: new DropdownButton(
-                          //
-                          // isExpanded: true,
+                          underline: SizedBox(),
+                          isExpanded: true,
                           items: data.map((team) {
                             return new DropdownMenuItem(
                               child: new Text(
@@ -662,10 +650,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               "Accept": "application/json",
                             };
                             final body = jsonEncode({
-                              // 'id': team['id'].toString,
                               'id': _mySelection,
                               'paymentDate': _paymentDateController.text,
                               // 'employeeName': team,
+                              //'firstame': selectedEmpName,
                               'hourlyRate': _hourlyRateController.text,
                               'monthlyHours': _monthlyHoursController.text,
                               'overtimeHours': _overtimeHoursController.text,

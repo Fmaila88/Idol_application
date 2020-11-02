@@ -1,21 +1,16 @@
 import 'dart:core';
-
 import 'dart:io';
-
 import 'package:App_idolconsulting/HomePage/homescrean.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:date_format/date_format.dart';
-
 import 'dart:convert';
-
 import 'DetailsScreen.dart';
 import 'ListEmp.dart';
 import 'View.dart';
@@ -33,18 +28,6 @@ class MyApplState extends State<MyAppl> {
         DateTime.parse(list['content'][index]['createDate'].toString());
     return formatDate(todayDate, [MM, ' ', yyyy]);
   }
-  //
-  //
-  //
-  //
-  // TextEditingController _paymentDateController;
-  // TextEditingController _hourlyRateController ;
-  // TextEditingController _monthlyHoursController;
-  // TextEditingController _overtimeHoursController;
-  // TextEditingController _overtimeRateController ;
-  // TextEditingController _taxNumberController ;
-  // TextEditingController _bonusController ;
-  //
 
   List<ListEmp> employee_Details = [];
   Map<String, dynamic> list;
@@ -60,8 +43,6 @@ class MyApplState extends State<MyAppl> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String stringValue = prefs.getString('token');
     print(stringValue);
-    //'https://app.idolconsulting.co.za/idols/payslips/1/10/ASC/CreatedDate'
-    //https: //app.idolconsulting.co.za/idols/payslips/1/10/ASC/10?keyword=createDate
     final response = await http.get(
         'https://app.idolconsulting.co.za/idols/payslips/1/10/ASC/ASC',
         headers: {
@@ -71,36 +52,15 @@ class MyApplState extends State<MyAppl> {
           HttpHeaders.authorizationHeader: "$stringValue",
         });
 
-    // if (response.statusCode == 200) {
-    //   setState(() {
-    //     var data = json.decode((response.body));
-    //     print(data.length);
-    //     // print(response.body);
-    //
-    //     for (int x = 0; x < data.length; x++) {
-    //       if (data[x]['user'] != null) {
-    //         var listEmp = new ListEmp(
-    //             data[x]['user']['firstName'] +
-    //                 ' ' +
-    //                 data[x]['user']['lastName'].toString(),
-    //             data[x]['createDate']);
-    //
-    //         employee_Details.add(listEmp);
-    //       }
-    //     }
-    //     print(employee_Details.length);
-    //     // print(employee_Details.toString());
-    //   });
-    // }
-
     if (response.statusCode == 200) {
       setState(() {
         var data = json.decode((response.body));
         list = json.decode((response.body));
-        //if (list['user'] != null) {
         for (int x = 0; x < data.length; x++) {
-          ListEmp bodyList = new ListEmp(list['id'].toString(),
-              list['user'].toString(), list['createDate']);
+          ListEmp bodyList = new ListEmp(
+              list['id'].toString(),
+              list['user'].toString(),
+              list['createDate']);
           employee_Details.add(bodyList);
         }
         // }
@@ -119,10 +79,6 @@ class MyApplState extends State<MyAppl> {
       "Accept": "application/json",
       "X_TOKEN": "$stringValue",
     };
-    // http.delete(
-    //   url + "/${[index]['id']}",
-    //   headers: headers,
-    // );
   }
 
   @override
@@ -139,10 +95,8 @@ class MyApplState extends State<MyAppl> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _onBackPressed,
-      //debugShowCheckedModeBanner: false,
       child: Scaffold(
         backgroundColor: Colors.blueGrey[90],
-        // drawer: DrawerCodeOnly(),
         appBar: AppBar(
           title: Text('Payslips'),
           backgroundColor: Colors.blueGrey[300],
@@ -181,7 +135,6 @@ class MyApplState extends State<MyAppl> {
                 padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
                 child: RaisedButton.icon(
                   onPressed: () {
-                    // BuildContext context;
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => DetailsScreen()));
                   },
@@ -205,7 +158,6 @@ class MyApplState extends State<MyAppl> {
                   margin: const EdgeInsets.all(0.0),
                   elevation: 6,
                   child: Column(
-                    // crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Container(
                         padding: EdgeInsets.all(5),
@@ -226,9 +178,6 @@ class MyApplState extends State<MyAppl> {
                         child: SizedBox(
                           child: ListView.builder(
                             itemCount: 1,
-
-                            // scrollDirection: Axis.vertical,
-                            // shrinkWrap: true,
                             itemBuilder: (BuildContext context, int index) {
                               return Container(
                                 child: SingleChildScrollView(
@@ -307,7 +256,6 @@ class MyApplState extends State<MyAppl> {
                                         DataCell(
                                           FlatButton.icon(
                                             onPressed: () async {
-                                              //var url = "https://app.idolconsulting.co.za/idols/payslips";
                                               SharedPreferences prefs =
                                                   await SharedPreferences
                                                       .getInstance();
@@ -339,9 +287,6 @@ class MyApplState extends State<MyAppl> {
                                                   url:
                                                       "https://app.idolconsulting.co.za/idols/payslips/download/" +
                                                           '$PayslipId',
-
-                                                  // url:
-                                                  //     "https://app.idolconsulting.co.za/idols/payslips/download/?id=${PayslipId}",
                                                   savedDir: externalDir.path,
                                                   fileName: "payslip.pdf",
                                                   headers: headers,

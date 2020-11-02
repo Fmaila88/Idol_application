@@ -301,7 +301,7 @@ class _Admin_modifyState extends State<Admin_modify> {
                                           'id': widget.list.elementAt(widget.index).userId,
                                           'lastName':widget.list.elementAt(widget.index).lastName },
                                 'startKm': _startKmController.text,
-                                // 'status' : _status,
+                                'status' : widget.list.elementAt(widget.index).status,
                                 'endKm': _endKmController.text,
                                 'ratePerKm': _ratePerKmController.text,
                                 'travelDate': _travelDateController.text,

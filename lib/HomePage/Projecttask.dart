@@ -1,5 +1,5 @@
+import 'package:App_idolconsulting/User/Profile_details.dart';
 import 'package:flutter/material.dart';
-import 'package:App_idolconsulting/HomePage/homescrean.dart';
 import 'Project.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:date_format/date_format.dart';
@@ -7,11 +7,8 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:App_idolconsulting/logout.dart';
-import 'userprofile.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'drawer.dart';
 import 'package:App_idolconsulting/UserProjects/UserProjects.dart';
-import 'profile.dart';
 import 'package:App_idolconsulting/UserProjects/FetchProjects.dart';
 import 'package:App_idolconsulting/UserTasks/UserTasks.dart';
 import 'package:App_idolconsulting/UserTasks/FetchTasks.dart';
@@ -48,7 +45,7 @@ class _ProjectTaskState extends State<ProjectTask> {
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(context, new MaterialPageRoute
-                        (builder: (context) => new Profile()));
+                        (builder: (context) => new Profile_details(data3)));
                     },
                     decoration: InputDecoration(
                       border: InputBorder.none,
@@ -59,11 +56,12 @@ class _ProjectTaskState extends State<ProjectTask> {
                   ),
                 ),
                 TextField(
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(context, new MaterialPageRoute
-                        (builder: (context) => new Logout()));
-                    },
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, new MaterialPageRoute
+                      (builder: (context) => new Logout()
+                    ));
+                  },
                   obscureText: true,
                   decoration: InputDecoration(
                     border: InputBorder.none,
@@ -78,11 +76,32 @@ class _ProjectTaskState extends State<ProjectTask> {
         });
   }
 
+  Map<String, dynamic> data3;
+  Map<String,dynamic> users;
+
+  Future<String> fetchDrawer() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('userToken');
+
+    final response = await http.get(
+        'http://app.idolconsulting.co.za/idols/users/profile',
+        headers: {"Accept": "application/json",
+          'X_TOKEN': stringValue});
+
+    if (response.statusCode == 200) {
+      setState(() {
+        data3 = json.decode(response.body);
+      });
+    }
+  }
+
 
   List<Taskss> task = new List<Taskss>();
 
-  Map<String,dynamic> data3;
-
+  Map<String,dynamic> data6;
+  var taskname=" ";
+  var taskdate="2020-08-17T10:50:44.227+0000";
+  var taskdue=" ";
   Future<String> fetchTask() async {
     SharedPreferences prefs =
     await SharedPreferences.getInstance();
@@ -90,7 +109,7 @@ class _ProjectTaskState extends State<ProjectTask> {
     String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
-        'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate/5f3504f0c391b51061db90e3?keyword=',
+        'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate?keyword=',
 
         headers: {"Accept": "application/json",
           "X_TOKEN": stringValue,
@@ -98,50 +117,69 @@ class _ProjectTaskState extends State<ProjectTask> {
 
     if (response.statusCode == 200) {
       setState(() {
-        //print('Token ' + stringValue);
 
         var data = json.decode((response.body));
+        taskname=data['content'][0]['name'];
+        taskdate=data['content'][0]['createDate'];
+        taskdue=data ['content'][0]['dueDate'];
 
-        data3 = json.decode((response.body));
+        data6 = json.decode((response.body));
 
         Map map=json.decode((response.body));
 
         userTasks=UserTasks.fromJson(map);
 
-
-
-
         //print(detail['endDate'].toString());
 
 
         // print('createDate');
-        for (int x = 0; x < data.length; x++) {
-          var project = new Taskss(
-            data3['name'].toString(),
-            data3['startDate'].toString(),
-            data3['endDate'].toString(),
-            data3['status'].toString(),
-            data3['dueDate'].toString(),
-          );
-          task.add(project);
-        }
+//        for (int x = 0; x < data.length; x++) {
+////          var project = new Taskss(
+////            data3['name'].toString(),
+////            data3['startDate'].toString(),
+////            data3['endDate'].toString(),
+////            data3['status'].toString(),
+////            data3['dueDate'].toString(),
+////          );
+//          task.add(project);
+//        }
+       // print(data['content'][0]['name']);
       });
     }
 
+  }
 
+  var myRoundedNumber;
 
+ // List<Indicating> per = new List<Indicating>();
+  Map<String,dynamic> cator;
+  Future<String> fetchProgressBar() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String stringValue = prefs.getString('userToken');
+
+    final response = await http.get(
+        'https://app.idolconsulting.co.za/idols/projects/status/5f3504f0c391b51061db90e3',
+        headers: {"Accept": "application/json",
+          'X_TOKEN': stringValue});
+
+    if(response.statusCode ==200){
+      setState((){
+        var bar =json.decode(response.body);
+
+        myRoundedNumber = double.parse((bar).toStringAsFixed(2));
+        myRoundedNumber = myRoundedNumber.round();
+
+//         print(myRoundedNumber);
+      });
+
+    }
   }
 
 
   var PictureID="https://eitrawmaterials.eu/wp-content/uploads/2016/09/person-icon.png";
-  //Map<String, dynamic> data4;
   var shared;
   bool isLoading=true;
-//  bool load=true;
-//  bool pictureLoad=true;
-
-  //Map<String, dynamic> pic;
-  //UserProfile profile;
 
   Future<String> fetchProfileDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -158,22 +196,17 @@ class _ProjectTaskState extends State<ProjectTask> {
         String pictureId=data['profilePicture']['id'];
         prefs.setString("picId", pictureId);
 
-
         //profile=UserProfile.fromJson(data);
       });
       shared=prefs.getString("picId");
       PictureID='https://app.idolconsulting.co.za/idols/file/'+shared;
-//      if(PictureID==null){
-//        PictureID='5f3a589dc391b506469af55d';
-//      }
+
     }
   }
 
   List<Project> projects = new List<Project>();
-
   Map<String,dynamic> detail;
   Project project;
-
 
   Future<String> fetchProjects() async {
     SharedPreferences prefs =
@@ -182,8 +215,6 @@ class _ProjectTaskState extends State<ProjectTask> {
     String stringValue = prefs.getString('userToken');
 
     final response = await http.get(
-      //'https://app.idolconsulting.co.za/idols/tasks/1/10/DESC/createDate/5f3504f0c391b51061db90e3?keyword=',
-      //'https://app.idolconsulting.co.za/idols/projects/all',
         'https://app.idolconsulting.co.za/idols/projects/5f3504f0c391b51061db90e3',
 
         headers: {"Accept": "application/json",
@@ -192,7 +223,6 @@ class _ProjectTaskState extends State<ProjectTask> {
 
     if (response.statusCode == 200) {
       setState(() {
-       // print('Token ' + stringValue);
 
         var data = json.decode((response.body));
         detail = json.decode((response.body));
@@ -201,13 +231,6 @@ class _ProjectTaskState extends State<ProjectTask> {
 
         userProjects=UserProjects.fromJson(map);
 
-        //print(userProjects.manager.firstName + userProjects.manager.lastName);
-
-
-        // print(detail['endDate'].toString());
-
-
-        // print('createDate');
         for (int x = 0; x < data.length; x++) {
           var project = new Project(
 
@@ -231,27 +254,25 @@ class _ProjectTaskState extends State<ProjectTask> {
       });
     }
   }
-//  convertDateFromString() {
-//    DateTime todayDate = DateTime.parse(
-////        userProjects==null || userProjects.createDate==null
-////            ? ' '
-////            :
-//        //userProjects.createDate
-//        detail['createDate'].toString()
-//    );
-//    return formatDate(todayDate, [dd,' ',M, ' ', yyyy]);
-//  }
+  convertDateFromString() {
+    DateTime todayDate = DateTime.parse(
+        taskdate
+    );
+    return formatDate(todayDate, [dd,' ',M, ' ', yyyy]);
+  }
   @override
   void initState() {
     super.initState();
     this.fetchProjects();
     this.fetchProfileDetails();
     this.fetchTask();
+    this.fetchProgressBar();
+    this.fetchDrawer();
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: DrawerCodeOnly(),
+     // drawer: DrawerCodeOnly(),
       appBar: AppBar(
           backgroundColor: Colors.grey,
           title: Text("Project Tasks",style: TextStyle(
@@ -266,9 +287,6 @@ class _ProjectTaskState extends State<ProjectTask> {
               onTap: () {
                 _displayDialog(context);
               },
-              // width: 55.0,
-              // height: 60.0,
-              // color: Colors.grey,
               child:
               CircleAvatar(
                 radius:30,
@@ -278,13 +296,11 @@ class _ProjectTaskState extends State<ProjectTask> {
                     PictureID),
               ),
             ),
-            //  ),
           ]),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget> [
-            // bodyDate(),
             Card(
               elevation:2,
               child: Container(
@@ -333,14 +349,12 @@ class _ProjectTaskState extends State<ProjectTask> {
                                 lineHeight: 20.0,
                                 animationDuration: 2000,
                                 percent: 0.2,
-                                center: Text("33%"),
+                                center: Text("$myRoundedNumber"),
                                 linearStrokeCap: LinearStrokeCap.roundAll,
                                 progressColor: Colors.orange,
                               ),
                             ],
                           ),
-//                          child: Text('prograss',
-//                            textAlign: TextAlign.center, style: TextStyle(fontSize: 15.0),),
                         ),
                         SizedBox(height: 20.0),
                         Row(
@@ -348,8 +362,7 @@ class _ProjectTaskState extends State<ProjectTask> {
                             Text('Start Date:',style: TextStyle(fontSize: 17.0),),
                             SizedBox(width: 90.0),
                             Text(
-                              '13 Aug 2020'
-                                //convertDateFromString()),
+                                convertDateFromString()
                             ),
                           ],
                         ),
@@ -359,9 +372,6 @@ class _ProjectTaskState extends State<ProjectTask> {
                             Text('End Date:',style: TextStyle(fontSize: 17.0)),
                             SizedBox(width: 90.0),
                             Text(
-//                                userProjects==null || userProjects.endDate==null
-//                                ? 'Project Name not updated'
-//                                : userProjects.endDate
                                 //detail['endDate'].toString()
                                 userProjects==null || userProjects.endDate==null ? ' ' : userProjects.endDate
                             ),//createDate
@@ -461,11 +471,10 @@ class _ProjectTaskState extends State<ProjectTask> {
                                   ),
                                   Column(
                                     children: <Widget>[
-                                      Text('App UI Home Screen'
+                                      Text(taskname
 //                                          userTasks==null || userTasks.name==null
 //                                          ? 'App UI Home page screen'
 //                                          : userTasks.name
-                                          //data3['content'][0]['name'].toString()
                                       ),
                                       FlatButton(
                                         onPressed: () {},
@@ -485,8 +494,8 @@ class _ProjectTaskState extends State<ProjectTask> {
                                         children: <Widget>[
                                           Text('Created:',style: TextStyle(fontSize: 15.0)),
                                           SizedBox(width: 10.0),
-                                          Text('13 Aug 2020'
-                                              //convertDateFromString()),
+                                          Text(
+                                              convertDateFromString()
                                           ),
                                         ],
                                       ),
@@ -494,9 +503,8 @@ class _ProjectTaskState extends State<ProjectTask> {
                                         children: <Widget>[
                                           Text('Due Date:',style: TextStyle(fontSize: 15.0)),
                                           SizedBox(width: 10.0),
-                                          Text('31 Aug 2020'
-    //detail['endDate'].toString()),
-    ),
+                                          Text(taskdue
+                                          ),
                                         ],
                                       ),
 //                                              Text('Created:',style: TextStyle(fontSize: 17.0)),

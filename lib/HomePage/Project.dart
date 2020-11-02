@@ -66,10 +66,22 @@ class Taskss {
 //  Map company;
 //  String attachments;
 
-  Taskss(this.name,this.createDate, this.endDate, this.status,this.dueDate,
-      //this.status,this.logo, this.createdBy,
-      // this.manager, this.observers,this.members,this.company, this.attachments,
-      );
+  Taskss({this.name, this.createDate, this.endDate, this.status, this.dueDate,
+    //this.status,this.logo, this.createdBy,
+    // this.manager, this.observers,this.members,this.company, this.attachments,
+  });
+
+    factory Taskss.fromJson(Map<String,dynamic> json){
+    return Taskss(
+
+      name: json['name'] as String,
+      createDate: json['createDate'] as String,
+      endDate: json['endDate'] as String,
+      status: json['status'] as String,
+      dueDate: json['dueDate'] as String,
+
+    );
+  }
 
   getName(){
     return name;

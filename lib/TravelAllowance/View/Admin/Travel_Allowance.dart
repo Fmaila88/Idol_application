@@ -286,6 +286,11 @@ class _DeclineState extends State<Decline> {
                 'id': widget.list.elementAt(widget.index).userId,
                 'lastName':widget.list.elementAt(widget.index).lastName },
       'status': 'Declined',
+      'startKm':  widget.list.elementAt(widget.index).startKm,
+      'endKm':  widget.list.elementAt(widget.index).endKm,
+      'ratePerKm':  widget.list.elementAt(widget.index).ratePerKm,
+      'travelDate':  widget.list.elementAt(widget.index).travelDate,
+      'comment':  widget.list.elementAt(widget.index).comment,
     });
 
     final response = await http.put(url, headers: headers, body: body);
@@ -355,10 +360,15 @@ class _ApproveState extends State<Approve> {
 
     final body = jsonEncode({
       'id': widget.list.elementAt(widget.index).id,
-      'user': {'firstName': widget.list.elementAt(widget.index).firstName,
-        'id': widget.list.elementAt(widget.index).userId,
+      'user': {'id': widget.list.elementAt(widget.index).userId,
+        'firstName': widget.list.elementAt(widget.index).firstName,
         'lastName':widget.list.elementAt(widget.index).lastName },
       'status': 'Approved',
+      'startKm':  widget.list.elementAt(widget.index).startKm,
+      'endKm':  widget.list.elementAt(widget.index).endKm,
+      'ratePerKm':  widget.list.elementAt(widget.index).ratePerKm,
+      'travelDate':  widget.list.elementAt(widget.index).travelDate,
+      'comment':  widget.list.elementAt(widget.index).comment,
     });
 
     final response = await http.put(url, headers: headers, body: body);

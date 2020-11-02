@@ -6,7 +6,7 @@ class ProjectServices {
   //declaring url
   static const String url =
   //    "https://app.idolconsulting.co.za/idols/projects/5f3504f0c391b51061db90e3";
-      "https://app.idolconsulting.co.za/idols/projects/all";
+         "https://app.idolconsulting.co.za/idols/projects/all";
  // static const headers = {'': ''};
   //getting users asynchronously
   static Future<List<UserProjects>> getProList() async {

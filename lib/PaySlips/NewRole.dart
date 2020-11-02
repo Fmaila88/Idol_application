@@ -153,42 +153,18 @@ class NewRoleState extends State<NewRole> {
                       fontSize: 22),
                 ),
               ),
-              // Container(
-              //   margin: const EdgeInsets.all(11.0),
-              //   alignment: Alignment.topLeft,
-              //   padding: EdgeInsets.fromLTRB(6, 0, 0, 0),
-              //   child: Text(
-              //     'Upload, view and download pay slips.',
-              //     style: TextStyle(
-              //         color: Colors.black87,
-              //         fontWeight: FontWeight.w400,
-              //         fontSize: 17),
-              //   ),
-              // ),
-              // Container(
-              //   margin: const EdgeInsets.all(11.0),
-              //   alignment: Alignment.topLeft,
-              //   padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-              //   child: RaisedButton.icon(
-              //     onPressed: () {
-              //       // BuildContext context;
-              //       Navigator.of(context).push(
-              //           MaterialPageRoute(builder: (_) => DetailsScreen()));
-              //     },
-              //     icon: Icon(
-              //       Icons.cloud_upload,
-              //       color: Colors.white,
-              //     ),
-              //     color: Colors.lightBlue,
-              //     label: Text(
-              //       'Upload Payslip',
-              //       style: TextStyle(
-              //           color: Colors.white,
-              //           fontWeight: FontWeight.w400,
-              //           fontSize: 17),
-              //     ),
-              //   ),
-              // ),
+              Container(
+                margin: const EdgeInsets.all(11.0),
+                alignment: Alignment.topLeft,
+                padding: EdgeInsets.fromLTRB(6, 0, 0, 0),
+                child: Text(
+                  'View and download pay slips.',
+                  style: TextStyle(
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 17),
+                ),
+              ),
               Container(
                 padding: EdgeInsets.fromLTRB(10, 5, 9, 4),
                 child: Card(
@@ -202,7 +178,7 @@ class NewRoleState extends State<NewRole> {
                         child: TextField(
                           controller: searchController,
                           decoration: InputDecoration(
-                              labelText: 'Search',
+                              labelText: 'Search by date',
                               border: new OutlineInputBorder(
                                   borderSide: new BorderSide(
                                       color: Theme.of(context).primaryColor)),

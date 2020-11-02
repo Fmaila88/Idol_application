@@ -35,8 +35,6 @@ class FetchProjects{
 
   }
 
-
-
   static Map<String,dynamic> getUserProjects(String response){
 
     final parsed=jsonDecode(response);
