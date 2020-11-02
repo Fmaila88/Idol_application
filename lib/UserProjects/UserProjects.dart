@@ -4,7 +4,6 @@ import 'ProjectList.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:App_idolconsulting/UserProjects/CreatedBy.dart';
-
 import 'Company.dart';
 import 'Manager.dart';
 

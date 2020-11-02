@@ -4,6 +4,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:App_idolconsulting/HomePage/reports.dart';
+
+import 'HomePage/Admin/homeadmin.dart';
 //import 'FadeAnimation.dart';
 
 class LoginBody extends StatefulWidget {
@@ -20,6 +23,40 @@ class _Login extends State<LoginBody> {
   var response;
 
   String message = '';
+
+
+//  Future<String> fetcTaskbar(String token) async {
+//
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String stringValue = prefs.getString('userToken');
+//
+//    final response = await http.get(
+//        'https://app.idolconsulting.co.za/idols/tasks/report',
+//        headers: {"Accept": "application/json",
+//          'X_TOKEN': token});
+//
+//    if(response.statusCode ==200){
+//      setState((){
+//        var bartask =json.decode(response.body);
+//       var New=bartask[0]['count'];
+//           prefs.setString('New',New.toString());
+//       var  Done=bartask[1]['count'];
+//            prefs.setString('Done',Done.toString());
+//        var Pending=bartask[2]['count'];
+//            prefs.setString('Pending',Pending.toString());
+//        print("zzzzzzkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+//        print(response.body);
+////        RoundedNumber = double.parse((bartask).toStringAsFixed(2));
+////        RoundedNumber = RoundedNumber.round();
+//        //  print(bartask[0]['count']);
+//        //print(myRoundedNumber);
+//      });
+//
+//    }
+//    else{
+//      "uhlulekileeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+//    }
+//  }
 
   Future userLogin(String username, String password) async {}
 
@@ -131,6 +168,7 @@ class _Login extends State<LoginBody> {
                                 var loginMessage;
                                 print(response.statusCode);
                                 if (response.statusCode == 200) {
+
                                   message = "login success";
 
                                   loginMessage = json.decode(response.body);
@@ -139,17 +177,25 @@ class _Login extends State<LoginBody> {
                                   SharedPreferences pref=await SharedPreferences.getInstance();
                                   pref.setString('userToken',nn);
 
-                                  setState(() {
+                                  final responseM = await http.get(
+                                      'http://app.idolconsulting.co.za/idols/users/profile',
+                                      headers: {"Accept": "application/json",
+                                        'X_TOKEN': '$nn'});
+                                  var data = json.decode((responseM.body));
+                                  var users = json.decode((responseM.body));
+                                  if(responseM.statusCode == 200) {
+                                    users['id'].toString();
+                                    print(users['roles'].toString());
+                                  }
+
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      new MaterialPageRoute(
+                                          builder: (context) => users['roles'].toString() == '[Employee]' ? Home()
+                                              : HomeAdmin()));
 
 
-                                    //If the authentication is successful switch to the home page
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Home()));
-                                    // loginMessage['message'];
-                                    //print(loginMessage.toString());
-                                  });
                                   sharedPreferences.setString(
                                       "token", loginMessage['token']);
                                 } else {

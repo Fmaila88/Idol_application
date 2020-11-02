@@ -349,7 +349,7 @@ class _ProjectTaskState extends State<ProjectTask> {
                                 lineHeight: 20.0,
                                 animationDuration: 2000,
                                 percent: 0.2,
-                                center: Text("$myRoundedNumber"),
+                                center: Text("$myRoundedNumber" + "% complete"),
                                 linearStrokeCap: LinearStrokeCap.roundAll,
                                 progressColor: Colors.orange,
                               ),

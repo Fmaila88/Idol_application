@@ -10,6 +10,7 @@ import 'package:App_idolconsulting/logout.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'drawer.dart';
 import 'reports.dart';
+import 'package:App_idolconsulting/UserTasks/TaskList.dart';
 import 'package:date_format/date_format.dart';
 import 'package:App_idolconsulting/UserProjects/UserProjects.dart';
 import 'package:App_idolconsulting/UserProjects/FetchProjects.dart';
@@ -18,6 +19,7 @@ import 'package:App_idolconsulting/UserTasks/FetchTasks.dart';
 import 'package:App_idolconsulting/UserProjects/ProjectList.dart';
 import 'package:App_idolconsulting/UserTasks/Tasks.dart';
 import 'package:App_idolconsulting/HomePage/Profile_details.dart';
+
 
 class Home extends StatefulWidget {
   final Widget child;
@@ -108,6 +110,51 @@ class _HomeState extends State<Home> {
           );
         });
   }
+
+
+  var RoundedNumber;
+  var New;
+  var Done= " ";
+  var Pending= " ";
+
+  List<Chart> pertask = new List<Chart>();
+  Map<String,dynamic> taskbar;
+//  Future<String> fetcTaskbar() async {
+//
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String stringValue = prefs.getString('userToken');
+//
+//    final response = await http.get(
+//        'https://app.idolconsulting.co.za/idols/tasks/report',
+//        headers: {"Accept": "application/json",
+//          'X_TOKEN': stringValue});
+//
+//    if(response.statusCode ==200){
+//      setState((){
+//        var bartask =json.decode(response.body);
+//        for (int x = 0; x < bartask.length; x++) {
+//          var charttask = new Chart(
+//            bartask[x]['done'].toString(),
+//            bartask[x]['pedding'].toString(),
+//            bartask[x]['new'].toString(),
+//
+//          );
+//          pertask.add(charttask);
+//        }
+//      //  _generateData();
+//        New=bartask[0]['count'];
+//        Done=bartask[1]['count'];
+//        Pending=bartask[2]['count'];
+//
+////        RoundedNumber = double.parse((bartask).toStringAsFixed(2));
+////        RoundedNumber = RoundedNumber.round();
+//      //  print(bartask[0]['count']);
+//        //print(myRoundedNumber);
+//      });
+//
+//    }
+//  }
+
 
 
   var myRoundedNumber;
@@ -277,18 +324,22 @@ var taskdue=" ";
   List<charts.Series<Pollution, String>> _seriesData1;
   List<charts.Series<Task, String>> _seriesPieData;
   _generateData() {
+    //SharedPreferences prefs = await SharedPreferences.getInstance();
+    //var length=userProjects.name.length;
     var pieData = [
-      new Task('Created', 0, Colors.pinkAccent),
-      new Task('Pending', 19, Colors.blue),
+      new Task('Created', 0 , Colors.pinkAccent),
+      new Task('Pending',19 , Colors.blue),
       //report['0']['count'],
-      new Task('Done', 29, Colors.orangeAccent),
+      new Task('Done', 30, Colors.orangeAccent),
     ];
-
+    //print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+    //print(New);
     var pieData1 = [
       new Pollution('Initialized', 0, Colors.pinkAccent),
       new Pollution('Pending', 2, Colors.blue),
       new Pollution('Complite', 0, Colors.orangeAccent),
     ];
+
 
     _seriesData1.add(
       charts.Series(
@@ -335,17 +386,17 @@ List<UserProjects> filteredProject = List();
       });
     });
 
-//    TaskServices.getTaskList().then((TaskFromServer){
-//      setState(() {
-//        filteredTask = TaskFromServer;
-//        taskList = filteredTask;
-//
-//        print(taskList[1].name);
-//      });
-//    });
+    TaskServices.getTaskList().then((TaskFromServer){
+      setState(() {
+        filteredTask = TaskFromServer;
+        taskList = filteredTask;
+
+       // print(taskList[1].name);
+      });
+    });
 
 
-   // }
+    //}
 
 
     setState(() {
@@ -361,6 +412,7 @@ List<UserProjects> filteredProject = List();
     this.fetchProjects();
     this.fetchTask();
     this.fetchProfileDetails();
+    //this.fetcTaskbar();
     //this.fetchTasks();
     this.fetchProgressBar();
     //this.fetchTaskings();
@@ -515,7 +567,7 @@ List<UserProjects> filteredProject = List();
                             ),
                         ),
                         Container(
-                          height: 100,
+                          height: 90,
                           width: 400,
                           child: SizedBox(
                             width: 400,
@@ -532,7 +584,7 @@ List<UserProjects> filteredProject = List();
               child: DataTable (
                   columnSpacing: 5,
                   dataRowHeight: 50,
-                  headingRowHeight: 60,
+                  headingRowHeight: 40,
                   columns: [
                     DataColumn(label: Text('Name',
                       style: TextStyle(
@@ -598,7 +650,7 @@ List<UserProjects> filteredProject = List();
                   lineHeight: 20.0,
                   animationDuration: 2000,
                   percent: 0.2,
-                  center: Text("$myRoundedNumber"),
+                  center: Text("$myRoundedNumber" ),
                   linearStrokeCap: LinearStrokeCap.roundAll,
                   progressColor: Colors.orange,
                           ),
@@ -679,7 +731,7 @@ List<UserProjects> filteredProject = List();
                         child: Column(
                           children: [
                           Container(
-                          height: 75,
+                          height: 70,
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                           child: TextField(
                             //readOnly: true,
@@ -693,6 +745,12 @@ List<UserProjects> filteredProject = List();
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.blueGrey[500])),
                             ),
+                            onChanged: (string){
+                              setState(() {
+                                taskList = filteredTask.where((c) => c.name
+                                    .toLowerCase().contains(string.toLowerCase())).toList();
+                              });
+                            },
                             onTap: () {
                               //getEndTime(context);
                             },

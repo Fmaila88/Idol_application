@@ -1,11 +1,11 @@
 import 'dart:ffi';
 
 class Chart {
-  String created;
-  String panding;
-  String done;
+  String New;
+  String Panding;
+  String Done;
 
-  Chart(this.created, this.panding,this.done,);
+  Chart(this.New, this.Panding,this.Done,);
 
 //  factory Chart.fromJson(Map<String,dynamic> json){
 //    return Chart(
@@ -23,9 +23,29 @@ class Chart {
 
   @override
   String toString() {
-    return '{ ${this.created}, ${this.panding} }' '{ ${this.done}, ';
+    return '{ ${this.New}, ${this.Panding} }' '{ ${this.Done}, ';
   }
+
+  String getnew(){
+    return this.New;
+  }
+
+  String getpedding(){
+    return this.Panding;
+  }
+
+  String getdone(){
+    return this.Done;
+  }
+
 }
+
+
+
+
+
+
+
 
 
 class Indicator {

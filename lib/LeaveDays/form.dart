@@ -32,16 +32,7 @@ class _FormpageState extends State<Formpage> {
   List<Employees> _employeeName = new List<Employees>();
 
   String startD,endD;
-String leaveType;
-
-
-
-
-
-
-
-
-
+  String leaveType;
 
   Future<String> fetchEmployees() async {
 
@@ -71,9 +62,6 @@ String leaveType;
     }
   }
 
-
-
-
   void getFilePath() async {
     try {
       String filePath = await FilePicker.getFilePath(type: FileType.any);
@@ -88,10 +76,9 @@ String leaveType;
     } on PlatformException catch (e) {
       print("Error while picking the file: " + e.toString());
     }
-
-
-
   }
+
+
   Future<Null> _selectdateTime(BuildContext context) async {
     DateTime datepicker = await showDatePicker(
         context: context,

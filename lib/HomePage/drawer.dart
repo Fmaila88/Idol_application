@@ -53,7 +53,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
       child: Column(
         children: <Widget>[
           Container(
-            height: 80,
+            height: 50,
             margin: EdgeInsets.only(top: 10),
             color: Colors.white,
             child: Image(image: AssetImage('images/logo1.png'),),
@@ -119,7 +119,7 @@ class _DrawerCodeOnlyState extends State<DrawerCodeOnly> {
             child: Column(
               children: <Widget>[
                 SizedBox(
-                  height: 400,
+                  height: 300,
                   child: ListView(
                     children: <Widget>[
                       ListTile(
