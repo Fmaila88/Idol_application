@@ -1,3 +1,4 @@
+import 'package:App_idolconsulting/User/Profile_details.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'dart:convert';
@@ -18,7 +19,6 @@ import 'package:App_idolconsulting/UserTasks/UserTasks.dart';
 import 'package:App_idolconsulting/UserTasks/FetchTasks.dart';
 import 'package:App_idolconsulting/UserProjects/ProjectList.dart';
 import 'package:App_idolconsulting/UserTasks/Tasks.dart';
-import 'package:App_idolconsulting/HomePage/Profile_details.dart';
 
 
 class Home extends StatefulWidget {
@@ -786,7 +786,14 @@ List<UserProjects> filteredProject = List();
                                       Column(
                                         children: <Widget>[
                                           Text(
-                                              taskname
+
+                                              // data3['content'][0]['name'].toString()
+                                              'App UI Home Page screan'
+                                              //userProjects.name
+//                                              userTasks==null || userTasks.project.name==null
+//                                                  ? 'Pending'
+//                                                  : userTasks.project.name
+
                                           ),
                                           FlatButton(
                                             onPressed: () {},

@@ -1,34 +1,38 @@
 import 'dart:convert';
+import 'package:App_idolconsulting/TravelAllowance/Model/Allowance_Model.dart';
+import 'package:App_idolconsulting/TravelAllowance/Service/Allowance_Service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Admin/Admin.dart';
-import 'TravellingAllowance.dart';
+import 'Travel_Allowance.dart';
 
-class Edit_Allowance extends StatefulWidget {
-  Map<String, dynamic> list;
+
+class Admin_modify extends StatefulWidget {
   int index;
-  Edit_Allowance(this.list, this.index);
+  List list;
+  Admin_modify(this.list, this.index);
   @override
-  _Edit_AllowanceState createState() => _Edit_AllowanceState();
+  _Admin_modifyState createState() => _Admin_modifyState();
 }
 
-class _Edit_AllowanceState extends State<Edit_Allowance> {
-  String _filePath;
-  Map<String, dynamic> users;
-  TextEditingController _startKmController;
-  TextEditingController _endKmController;
-  TextEditingController _travelDateController;
-  TextEditingController _commentController;
-  TextEditingController _ratePerKm;
-  TextEditingController _employeeController;
+class _Admin_modifyState extends State<Admin_modify> {
 
-  final DateFormat dateFormat = DateFormat('dd MMMM yyyy');
+  TextEditingController _startKmController = new TextEditingController();
+  TextEditingController _endKmController = new TextEditingController();
+  TextEditingController _travelDateController = new TextEditingController();
+  TextEditingController _commentController = new TextEditingController();
+  TextEditingController _ratePerKmController = new TextEditingController();
+  TextEditingController _employeeController = new TextEditingController();
+
+  String _filePath;
+  String _status;
+
+  final DateFormat dateFormat=DateFormat('dd MMMM yyyy');
   DateTime _date = DateTime.now();
 
   Future<Null> _selectdateTime(BuildContext context) async {
@@ -41,52 +45,10 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
     if (datepicker != null && datepicker != _date) {
       setState(() {
         _date = datepicker;
-        _travelDateController.text = dateFormat.format(_date);
+        _travelDateController.text= dateFormat.format(_date);
+
       });
     }
-  }
-
-  void deleteData() async {
-    var url = "https://app.idolconsulting.co.za/idols/travel-allowance";
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String stringValue = prefs.getString('userToken');
-    Map<String, String> headers = {
-      "content-type": "application/json",
-      "Accept": "application/json",
-      "X_TOKEN": "$stringValue",
-    };
-    String id = "${widget.list['content'][widget.index]['id']}";
-    http.delete(
-      url + "/" + id,
-      headers: headers,
-    );
-  }
-
-  void confirm() {
-    AlertDialog alertDialog = new AlertDialog(
-      title: new Text('Wanring'),
-      content: new Text("Are your sure you want to Delete this  item?"),
-      actions: [
-        new RaisedButton(
-          child: new Text(
-            "YES",
-            style: new TextStyle(color: Colors.black),
-          ),
-          color: Colors.redAccent,
-          onPressed: () {
-            print('${widget.list['content'][widget.index]['id']}');
-            deleteData();
-            Navigator.of(context).push(new MaterialPageRoute(
-                builder: (BuildContext context) => TravelAllowance()));
-          },
-        ),
-        new RaisedButton(
-            child: new Text("NO", style: new TextStyle(color: Colors.black)),
-            color: Colors.redAccent,
-            onPressed: () => Navigator.pop(context)),
-      ],
-    );
-    showDialog(context: context, child: alertDialog);
   }
 
   void getFilePath() async {
@@ -103,22 +65,23 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    // _status = widget.list.elementAt(widget.index).status;
+    print(widget.list.elementAt(widget.index).status);
     _employeeController = new TextEditingController(
-        text:
-            "${widget.list['content'][widget.index]['user']['firstName'] + ' ' + widget.list['content'][widget.index]['user']['lastName'].toString()}");
+        text: widget.list.elementAt(widget.index).firstName + ' ' +
+              widget.list.elementAt(widget.index).lastName);
     _startKmController = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['startKm'].toString()}");
+        text: widget.list.elementAt(widget.index).startKm.toString());
     _endKmController = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['endKm'].toString()}");
-    _ratePerKm = new TextEditingController(
-        text:
-            "${widget.list['content'][widget.index]['ratePerKm'].toString()}");
+        text: widget.list.elementAt(widget.index).endKm.toString());
+    _ratePerKmController = new TextEditingController(
+        text: widget.list.elementAt(widget.index).ratePerKm.toString());
     _travelDateController = new TextEditingController(
-        text:
-            "${widget.list['content'][widget.index]['travelDate'].toString()}");
+        text: widget.list.elementAt(widget.index).travelDate.toString());
     _commentController = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['comment'].toString()}");
-    print('Id = ' + widget.list['content'][widget.index]['id']);
+    text: widget.list.elementAt(widget.index).comment.toString());
+    // print('Id = '+ widget.list.elementAt(widget.index).id);
+    // print('User id = ' + widget.list.elementAt(widget.index).userId);
   }
 
   @override
@@ -143,7 +106,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                 color: Colors.white,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
+                  children: <Widget> [
                     Container(
                       padding: EdgeInsets.fromLTRB(260, 8, 5, 0),
                       child: Text(
@@ -230,7 +193,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                       padding: EdgeInsets.fromLTRB(10, 0, 20, 0),
                       height: 34,
                       child: TextField(
-                        controller: _ratePerKm,
+                        controller: _ratePerKmController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                         ),
@@ -294,15 +257,14 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                                 border: Border.all(color: Colors.black54)),
                             child: _filePath == null
                                 ? new Text('Attach File')
-                                : new Text(_filePath),
+                                : new Text( _filePath),
+
                           ),
                           Container(
                             padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
                             child: RaisedButton(
                               padding: EdgeInsets.symmetric(vertical: 14.0),
-                              onPressed: () {
-                                getFilePath();
-                              },
+                              onPressed: () {getFilePath();},
                               child: Text(
                                 'Browse',
                                 style: TextStyle(
@@ -318,46 +280,44 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                     ),
                     SizedBox(height: 20),
                     Row(
-                      children: <Widget>[
+                      children: <Widget> [
                         Container(
                           padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                           child: RaisedButton(
                             color: Colors.lightBlue,
                             onPressed: () async {
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              String stringValue = prefs.getString('token');
+                              var url = "https://app.idolconsulting.co.za/idols/travel-allowance";
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              String token = prefs.getString('userToken');
                               Map<String, String> headers = {
-                                "content-type": "application/json",
-                                "Accept": "application/json",
-                                "X_TOKEN": "$stringValue",
+                              "content-type": "application/json",
+                              "Accept": "application/json",
+                              "X_TOKEN": "$token",
                               };
+
                               final body = jsonEncode({
-                                "id": widget.list['content'][widget.index]
-                                    ['id'],
+                                'id': widget.list.elementAt(widget.index).id,
+                                'user': {'firstName': widget.list.elementAt(widget.index).firstName,
+                                          'id': widget.list.elementAt(widget.index).userId,
+                                          'lastName':widget.list.elementAt(widget.index).lastName },
                                 'startKm': _startKmController.text,
+                                'status' : widget.list.elementAt(widget.index).status,
                                 'endKm': _endKmController.text,
-                                'ratePerKm': _ratePerKm.text,
+                                'ratePerKm': _ratePerKmController.text,
                                 'travelDate': _travelDateController.text,
                                 'comment': _commentController.text,
-                                'attachment' 'name': _filePath,
-                              });
-                              final response = await http.put(
-                                  'https://app.idolconsulting.co.za/idols/travel-allowance',
-                                  headers: headers,
-                                  body: body);
-                              setState(() {
-                                if (response.statusCode == 200) {
-                                  //print(response.body);
-                                  print(jsonDecode(body));
-                                }
-                              });
-                              Navigator.pop(context);
+                                });
+
+                              final response = await http.put(url, headers: headers, body: body);
+
                               Navigator.push(
                                   context,
-                                  new MaterialPageRoute(
-                                      builder: (context) =>
-                                          new TravelAllowance()));
+                                  MaterialPageRoute(builder: (context) => Admin_Allowance()));
+
+                              print(body);
+                              if (response.statusCode == 200) {
+                              print(json.decode(response.body));
+                              }
                             },
                             child: Text(
                               'Update',
@@ -369,45 +329,7 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                             ),
                           ),
                         ),
-
-                        Container(
-                          padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: RaisedButton(
-                            color: Colors.redAccent,
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (_) => AllowanceDelete());
-                            },
-                            child: Text(
-                              'Delete',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        // Container(
-                        //   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                        //   child: RaisedButton(
-                        //     color: Colors.redAccent,
-                        //     onPressed: () {
-                        //       confirm();
-                        //     },
-                        //     child: Text(
-                        //       'Delete',
-                        //       style: TextStyle(
-                        //         color: Colors.white,
-                        //         fontWeight: FontWeight.w500,
-                        //         fontSize: 18,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                      ],
+                       ],
                     ),
                     Container(
                       padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
@@ -423,77 +345,8 @@ class _Edit_AllowanceState extends State<Edit_Allowance> {
                   ],
                 ),
               ),
-            )));
-  }
-}
-
-class AllowanceDelete extends StatelessWidget {
-  _Edit_AllowanceState obj = new _Edit_AllowanceState();
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        'Warning',
-        style: TextStyle(
-            color: Colors.red, fontWeight: FontWeight.bold, fontSize: 25),
-      ),
-      content: Text(
-        'Are you sure you want to delete this application?',
-        style: TextStyle(fontSize: 16),
-      ),
-      actions: [
-        FlatButton(
-          child: Text('Yes'),
-          onPressed: () {
-            obj.deleteData();
-            Navigator.of(context).push(new MaterialPageRoute(
-                builder: (BuildContext context) => new TravelAllowance()));
-          },
-        ),
-        FlatButton(
-          child: Text('No'),
-          onPressed: () {
-            Navigator.of(context).push(new MaterialPageRoute(
-                builder: (BuildContext context) => new TravelAllowance()));
-          },
+            )
         )
-      ],
     );
   }
 }
-
-// class AllowanceDelete extends StatelessWidget {
-//   _Edit_AllowanceState obj = new _Edit_AllowanceState();
-//   @override
-//   Widget build(BuildContext context) {
-//     return AlertDialog(
-//       title: Text('Warning',
-//         style: TextStyle(
-//             color: Colors.red,
-//             fontWeight: FontWeight.bold,
-//             fontSize: 25
-//         ),),
-//       content: Text('Are you sure you want to delete this item?',
-//         style: TextStyle(
-//             fontSize: 16
-//         ),),
-//       actions: [
-//         FlatButton(
-//           child: Text('Yes'),
-//           onPressed: () {
-//             obj.deleteData();
-//             Navigator.of(context).push(new MaterialPageRoute(
-//                 builder: (BuildContext context) => new TravelAllowance()));
-//           },
-//         ),
-//         FlatButton(
-//           child: Text('No'),
-//           onPressed: () {
-//             Navigator.of(context).push(new MaterialPageRoute(
-//                 builder: (BuildContext context) => new TravelAllowance()));
-//           },
-//         )
-//       ],
-//     );
-//   }
-// }

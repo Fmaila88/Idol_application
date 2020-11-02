@@ -1,3 +1,4 @@
+import 'package:App_idolconsulting/User/Profile_details.dart';
 import 'package:flutter/material.dart';
 import 'Project.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,7 +12,6 @@ import 'package:App_idolconsulting/UserProjects/UserProjects.dart';
 import 'package:App_idolconsulting/UserProjects/FetchProjects.dart';
 import 'package:App_idolconsulting/UserTasks/UserTasks.dart';
 import 'package:App_idolconsulting/UserTasks/FetchTasks.dart';
-import 'package:App_idolconsulting/HomePage/Profile_details.dart';
 
 class ProjectTask extends StatefulWidget {
 

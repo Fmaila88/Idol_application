@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:App_idolconsulting/TravelAllowance/EmployeeData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -8,40 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:file_picker/file_picker.dart';
 
-import 'Admin.dart';
-import '../Employee/TravellingAllowance.dart';
+import 'TravellingAllowance.dart';
 
-class Admin_Edit extends StatefulWidget {
-  Map<String,dynamic> list;
+class Edit_Allowance extends StatefulWidget {
+  Map<String, dynamic> list;
   int index;
-  Admin_Edit(this.list, this.index);
+  Edit_Allowance(this.list, this.index);
   @override
-  _Admin_EditState createState() => _Admin_EditState();
+  _Edit_AllowanceState createState() => _Edit_AllowanceState();
 }
 
-class _Admin_EditState extends State<Admin_Edit> {
-
-
-  String _mySelection;
-  final String url = "https://app.idolconsulting.co.za/idols/users/all";
-  List data = List(); //edited line
-
-  Future<String> getSWData() async {
-    var res = await http
-        .get(Uri.encodeFull(url), headers: {"Accept": "application/json"});
-    var resBody = json.decode(res.body);
-
-    setState(() {
-      data = resBody;
-    });
-
-    print(resBody);
-
-    return "Sucess";
-  }
-
+class _Edit_AllowanceState extends State<Edit_Allowance> {
   String _filePath;
-  Map<String,dynamic> users;
+  Map<String, dynamic> users;
   TextEditingController _startKmController;
   TextEditingController _endKmController;
   TextEditingController _travelDateController;
@@ -49,7 +27,7 @@ class _Admin_EditState extends State<Admin_Edit> {
   TextEditingController _ratePerKm;
   TextEditingController _employeeController;
 
-  final DateFormat dateFormat=DateFormat('dd MMMM yyyy');
+  final DateFormat dateFormat = DateFormat('dd MMMM yyyy');
   DateTime _date = DateTime.now();
 
   Future<Null> _selectdateTime(BuildContext context) async {
@@ -62,8 +40,7 @@ class _Admin_EditState extends State<Admin_Edit> {
     if (datepicker != null && datepicker != _date) {
       setState(() {
         _date = datepicker;
-        _travelDateController.text= dateFormat.format(_date);
-
+        _travelDateController.text = dateFormat.format(_date);
       });
     }
   }
@@ -71,16 +48,44 @@ class _Admin_EditState extends State<Admin_Edit> {
   void deleteData() async {
     var url = "https://app.idolconsulting.co.za/idols/travel-allowance";
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('userToken');
+    String stringValue = prefs.getString('userToken');
     Map<String, String> headers = {
       "content-type": "application/json",
       "Accept": "application/json",
-      "X_TOKEN": "$token",
+      "X_TOKEN": "$stringValue",
     };
+    String id = "${widget.list['content'][widget.index]['id']}";
     http.delete(
-      url + "/${widget.list['content'][widget.index]['id']}",
+      url + "/" + id,
       headers: headers,
     );
+  }
+
+  void confirm() {
+    AlertDialog alertDialog = new AlertDialog(
+      title: new Text('Wanring'),
+      content: new Text("Are your sure you want to Delete this  item?"),
+      actions: [
+        new RaisedButton(
+          child: new Text(
+            "YES",
+            style: new TextStyle(color: Colors.black),
+          ),
+          color: Colors.redAccent,
+          onPressed: () {
+            print('${widget.list['content'][widget.index]['id']}');
+            deleteData();
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (BuildContext context) => TravelAllowance()));
+          },
+        ),
+        new RaisedButton(
+            child: new Text("NO", style: new TextStyle(color: Colors.black)),
+            color: Colors.redAccent,
+            onPressed: () => Navigator.pop(context)),
+      ],
+    );
+    showDialog(context: context, child: alertDialog);
   }
 
   void getFilePath() async {
@@ -97,21 +102,22 @@ class _Admin_EditState extends State<Admin_Edit> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    this.getSWData();
     _employeeController = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['user']['firstName'] + ' ' +
-            widget.list['content'][widget.index]['user']['lastName'].toString()}");
+        text:
+            "${widget.list['content'][widget.index]['user']['firstName'] + ' ' + widget.list['content'][widget.index]['user']['lastName'].toString()}");
     _startKmController = new TextEditingController(
         text: "${widget.list['content'][widget.index]['startKm'].toString()}");
     _endKmController = new TextEditingController(
         text: "${widget.list['content'][widget.index]['endKm'].toString()}");
     _ratePerKm = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['ratePerKm'].toString()}");
+        text:
+            "${widget.list['content'][widget.index]['ratePerKm'].toString()}");
     _travelDateController = new TextEditingController(
-        text: "${widget.list['content'][widget.index]['travelDate'].toString()}");
+        text:
+            "${widget.list['content'][widget.index]['travelDate'].toString()}");
     _commentController = new TextEditingController(
         text: "${widget.list['content'][widget.index]['comment'].toString()}");
-    // // print('Id = '+ widget.list['content'][widget.index]['id']);
+    print('Id = ' + widget.list['content'][widget.index]['id']);
   }
 
   @override
@@ -136,7 +142,7 @@ class _Admin_EditState extends State<Admin_Edit> {
                 color: Colors.white,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget> [
+                  children: <Widget>[
                     Container(
                       padding: EdgeInsets.fromLTRB(260, 8, 5, 0),
                       child: Text(
@@ -287,14 +293,15 @@ class _Admin_EditState extends State<Admin_Edit> {
                                 border: Border.all(color: Colors.black54)),
                             child: _filePath == null
                                 ? new Text('Attach File')
-                                : new Text( _filePath),
-
+                                : new Text(_filePath),
                           ),
                           Container(
                             padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
                             child: RaisedButton(
                               padding: EdgeInsets.symmetric(vertical: 14.0),
-                              onPressed: () {getFilePath();},
+                              onPressed: () {
+                                getFilePath();
+                              },
                               child: Text(
                                 'Browse',
                                 style: TextStyle(
@@ -310,20 +317,23 @@ class _Admin_EditState extends State<Admin_Edit> {
                     ),
                     SizedBox(height: 20),
                     Row(
-                      children: <Widget> [
+                      children: <Widget>[
                         Container(
                           padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                           child: RaisedButton(
                             color: Colors.lightBlue,
                             onPressed: () async {
-                              SharedPreferences prefs =await SharedPreferences.getInstance();
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
                               String stringValue = prefs.getString('token');
-                              Map<String, String> headers = {"content-type": "application/json",
+                              Map<String, String> headers = {
+                                "content-type": "application/json",
                                 "Accept": "application/json",
-                                "X_TOKEN":"$stringValue",
+                                "X_TOKEN": "$stringValue",
                               };
                               final body = jsonEncode({
-                                "id": widget.list['content'][widget.index]['id'],
+                                "id": widget.list['content'][widget.index]
+                                    ['id'],
                                 'startKm': _startKmController.text,
                                 'endKm': _endKmController.text,
                                 'ratePerKm': _ratePerKm.text,
@@ -334,10 +344,9 @@ class _Admin_EditState extends State<Admin_Edit> {
                               final response = await http.put(
                                   'https://app.idolconsulting.co.za/idols/travel-allowance',
                                   headers: headers,
-                                  body: body
-                              );
+                                  body: body);
                               setState(() {
-                                if(response.statusCode == 200) {
+                                if (response.statusCode == 200) {
                                   //print(response.body);
                                   print(jsonDecode(body));
                                 }
@@ -346,7 +355,8 @@ class _Admin_EditState extends State<Admin_Edit> {
                               Navigator.push(
                                   context,
                                   new MaterialPageRoute(
-                                      builder: (context) => new Admin()));
+                                      builder: (context) =>
+                                          new TravelAllowance()));
                             },
                             child: Text(
                               'Update',
@@ -358,31 +368,33 @@ class _Admin_EditState extends State<Admin_Edit> {
                             ),
                           ),
                         ),
+
                         // Container(
                         //   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                         //   child: RaisedButton(
                         //     color: Colors.redAccent,
-                        //     onPressed: () async {
-                        //       SharedPreferences prefs = await SharedPreferences.getInstance();
-                        //       String token = prefs.getString('userToken');
-                        //
-                        //       final response = await http.get(
-                        //           'http://app.idolconsulting.co.za/idols/users/profile',
-                        //           headers: {"Accept": "application/json",
-                        //             'X_TOKEN': '$token'});
-                        //       //var data = json.decode((response.body));
-                        //       users = json.decode((response.body));
-                        //       if(response.statusCode == 200) {
-                        //         users['id'].toString();
-                        //         print(users['roles'].toString());
-                        //       }
-                        //
-                        //       Navigator.pop(context);
-                        //       Navigator.push(
-                        //           context,
-                        //           new MaterialPageRoute(
-                        //               builder: (context) => users['roles'].toString() == '[Employee]' ? TravelAllowance()
-                        //                   : Admin()));
+                        //     onPressed: () {
+                        //       showDialog(
+                        //           context: context,
+                        //           builder: (_) => AllowanceDelete());
+                        //     },
+                        //     child: Text(
+                        //       'Delete',
+                        //       style: TextStyle(
+                        //         color: Colors.white,
+                        //         fontWeight: FontWeight.w500,
+                        //         fontSize: 18,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+
+                        // Container(
+                        //   padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        //   child: RaisedButton(
+                        //     color: Colors.redAccent,
+                        //     onPressed: () {
+                        //       confirm();
                         //     },
                         //     child: Text(
                         //       'Delete',
@@ -410,27 +422,25 @@ class _Admin_EditState extends State<Admin_Edit> {
                   ],
                 ),
               ),
-            )
-        )
+            ))
     );
   }
 }
 
 class AllowanceDelete extends StatelessWidget {
-  _Admin_EditState obj = new _Admin_EditState();
+  _Edit_AllowanceState obj = new _Edit_AllowanceState();
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Warning',
+      title: Text(
+        'Warning',
         style: TextStyle(
-            color: Colors.red,
-            fontWeight: FontWeight.bold,
-            fontSize: 25
-        ),),
-      content: Text('Are you sure you want to delete this item?',
-        style: TextStyle(
-            fontSize: 16
-        ),),
+            color: Colors.red, fontWeight: FontWeight.bold, fontSize: 25),
+      ),
+      content: Text(
+        'Are you sure you want to delete this application?',
+        style: TextStyle(fontSize: 16),
+      ),
       actions: [
         FlatButton(
           child: Text('Yes'),
@@ -451,3 +461,39 @@ class AllowanceDelete extends StatelessWidget {
     );
   }
 }
+
+// class AllowanceDelete extends StatelessWidget {
+//   _Edit_AllowanceState obj = new _Edit_AllowanceState();
+//   @override
+//   Widget build(BuildContext context) {
+//     return AlertDialog(
+//       title: Text('Warning',
+//         style: TextStyle(
+//             color: Colors.red,
+//             fontWeight: FontWeight.bold,
+//             fontSize: 25
+//         ),),
+//       content: Text('Are you sure you want to delete this item?',
+//         style: TextStyle(
+//             fontSize: 16
+//         ),),
+//       actions: [
+//         FlatButton(
+//           child: Text('Yes'),
+//           onPressed: () {
+//             obj.deleteData();
+//             Navigator.of(context).push(new MaterialPageRoute(
+//                 builder: (BuildContext context) => new TravelAllowance()));
+//           },
+//         ),
+//         FlatButton(
+//           child: Text('No'),
+//           onPressed: () {
+//             Navigator.of(context).push(new MaterialPageRoute(
+//                 builder: (BuildContext context) => new TravelAllowance()));
+//           },
+//         )
+//       ],
+//     );
+//   }
+// }
